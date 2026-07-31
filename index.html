@@ -298,29 +298,6 @@
 </style>
 </head>
 <body>
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyC95i4RZ-04M1oWi5fls2YjGj0vKM6AfDg",
-    authDomain: "hillabits.firebaseapp.com",
-    projectId: "hillabits",
-    storageBucket: "hillabits.firebasestorage.app",
-    messagingSenderId: "60033854407",
-    appId: "1:60033854407:web:c930d7bdba4b56caf807e2",
-    measurementId: "G-EX7PWHMRLP"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 <div class="wrap">
 
   <header class="hero">
@@ -333,6 +310,13 @@
       <div class="legend-item"><span class="swatch soft"></span>Content &amp; admin</div>
       <div class="legend-item"><span class="swatch night"></span>Deep work (night)</div>
       <div class="legend-item"><span class="swatch rest"></span>Rest / free</div>
+    </div>
+
+    <div id="authBar" style="display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
+      <button id="loginBtn" type="button" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:inherit;">Sign in with Google</button>
+      <span id="userLabel" hidden></span>
+      <button id="logoutBtn" type="button" hidden style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
+      <span id="syncStatus" style="color:var(--text-faint);"></span>
     </div>
   </header>
 
@@ -402,25 +386,16 @@
   </div>
 
 <!--
-  CROSS-DEVICE SYNC (optional): to make progress sync live between devices, create a free
-  Firebase Realtime Database (console.firebase.google.com -> Add project -> Build ->
-  Realtime Database -> Create, start in test mode), then paste your web app config into
-  SYNC.config below and set SYNC.enabled = true. Without this, everything still saves
-  locally so refresh/close no longer loses progress — it just won't sync across devices.
+  CROSS-DEVICE SYNC: sign in with Google (top of page) to save progress to Supabase and
+  sync it live across devices. Signed out, everything still saves locally to this browser.
 -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SYNC = {
-  enabled: false,
-  roomId: 'default', // change this if you want a second, independent tracker
-  config: {
-    apiKey: "",
-    authDomain: "",
-    databaseURL: "",
-    projectId: "",
-  }
-};
+const sb = supabase.createClient(
+  'https://filciqqqqwpplhnpdeko.supabase.co',
+  'sb_publishable_O9BWULqG4SPvF-d6Y2npcg_XQGJjaLg'
+);
+let currentUser = null;
 </script>
 <script>
 const SCALE_START = 450;   // 7:30
@@ -525,38 +500,83 @@ function applyState(state, {rerenderMatrix} = {}){
   if(rerenderMatrix && !matrixView.hidden) renderMatrix();
 }
 
-// --- cloud sync (Firebase Realtime Database) — no-op if SYNC.enabled is false ---
-let cloudRef = null, lastPushedAt = 0, pushTimer = null;
+// --- cloud sync (Supabase) — active once signed in with Google; local-only otherwise ---
+let lastPushedAt = 0, pushTimer = null, realtimeChannel = null;
+const syncStatusEl = document.getElementById('syncStatus');
+
 function queueCloudPush(){
-  if(!SYNC.enabled || !cloudRef) return;
+  if(!currentUser) return;
   clearTimeout(pushTimer);
-  pushTimer = setTimeout(() => {
+  pushTimer = setTimeout(async () => {
     const state = snapshotState();
     lastPushedAt = state.updatedAt;
-    cloudRef.set(state);
+    if(syncStatusEl) syncStatusEl.textContent = 'saving…';
+    const { error } = await sb.from('progress_states').upsert({
+      user_id: currentUser.id, state, updated_at: new Date(state.updatedAt).toISOString()
+    });
+    if(syncStatusEl) syncStatusEl.textContent = error ? 'sync error' : 'synced';
   }, 900);
 }
+
+async function pullCloudState(){
+  const { data } = await sb.from('progress_states').select('state').eq('user_id', currentUser.id).maybeSingle();
+  return data ? data.state : null;
+}
+
+function subscribeRealtime(){
+  if(realtimeChannel) sb.removeChannel(realtimeChannel);
+  realtimeChannel = sb.channel('progress_' + currentUser.id)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'progress_states', filter: `user_id=eq.${currentUser.id}` }, payload => {
+      const remote = payload.new && payload.new.state;
+      if(!remote || remote.updatedAt === lastPushedAt) return; // ignore our own echo
+      applyState(remote, {rerenderMatrix:true});
+    })
+    .subscribe();
+}
+
+async function onSignedIn(user){
+  currentUser = user;
+  document.getElementById('loginBtn').hidden = true;
+  document.getElementById('logoutBtn').hidden = false;
+  const label = document.getElementById('userLabel');
+  label.hidden = false;
+  label.textContent = user.email || 'signed in';
+
+  const local = loadPomoState();
+  const remote = await pullCloudState();
+  if(remote && (!local.updatedAt || remote.updatedAt > local.updatedAt)){
+    applyState(remote, {rerenderMatrix:true});
+  } else {
+    queueCloudPush(); // this device's local copy is newer (or nothing's saved yet) — push it up
+  }
+  subscribeRealtime();
+}
+
+function onSignedOut(){
+  currentUser = null;
+  if(realtimeChannel){ sb.removeChannel(realtimeChannel); realtimeChannel = null; }
+  document.getElementById('loginBtn').hidden = false;
+  document.getElementById('logoutBtn').hidden = true;
+  document.getElementById('userLabel').hidden = true;
+  if(syncStatusEl) syncStatusEl.textContent = '';
+}
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+});
+document.getElementById('logoutBtn').addEventListener('click', () => sb.auth.signOut());
+
+sb.auth.onAuthStateChange((event, session) => {
+  if(session && session.user) onSignedIn(session.user);
+  else onSignedOut();
+});
+
 function initSync(){
   const local = loadPomoState();
   if(local && local.pomo) applyState(local); // restore this device's own last state first
-
-  if(!SYNC.enabled) return;
-  try{
-    firebase.initializeApp(SYNC.config);
-    cloudRef = firebase.database().ref('weeklyRhythm/' + SYNC.roomId);
-    let firstSnapshot = true;
-    cloudRef.on('value', snap => {
-      const remote = snap.val();
-      if(!remote || remote.updatedAt === lastPushedAt) return; // ignore our own echo
-      if(firstSnapshot && local.updatedAt && local.updatedAt > remote.updatedAt){
-        firstSnapshot = false;
-        queueCloudPush(); // this device's local copy is newer — push it up instead
-        return;
-      }
-      firstSnapshot = false;
-      applyState(remote, {rerenderMatrix:true});
-    });
-  }catch(e){ console.warn('Sync unavailable:', e); }
+  sb.auth.getSession().then(({data}) => {
+    if(data.session && data.session.user) onSignedIn(data.session.user);
+  });
 }
 
 const TRACK_START = new Date(2026, 6, 31); // matrix tracking begins July 31, 2026 — the day this tracker was created
