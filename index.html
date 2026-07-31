@@ -868,16 +868,12 @@ const days = [
 
 const ticks = [450,600,780,960,1140,1320,1500];
 
-// --- figure out "logical" schedule day: the plan runs 7:30 -> 1:00am next day,
-// so between midnight and 7:30am we're still inside *yesterday's* logical day.
+// --- figure out "logical" schedule day: rolls over at real midnight, same as the calendar date.
 function getLogicalNow(){
   const now = new Date();
-  const realIdx = (now.getDay() + 6) % 7; // Mon=0 ... Sun=6
-  const clockMin = now.getHours()*60 + now.getMinutes();
-  if(clockMin < SCALE_START){
-    return { idx:(realIdx + 6) % 7, min: clockMin + 1440 };
-  }
-  return { idx: realIdx, min: clockMin };
+  const idx = (now.getDay() + 6) % 7; // Mon=0 ... Sun=6
+  const min = now.getHours()*60 + now.getMinutes();
+  return { idx, min };
 }
 
 const logical = getLogicalNow();
