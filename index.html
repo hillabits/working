@@ -557,14 +557,19 @@ async function onSignedIn(user){
   const label = document.getElementById('userLabel');
   label.textContent = user.email || 'signed in';
 
-  const local = loadPomoState();
-  const remote = await pullCloudState();
-  if(remote && (!local.updatedAt || remote.updatedAt > local.updatedAt)){
-    applyState(remote, {rerenderMatrix:true});
-  } else {
-    queueCloudPush(); // this device's local copy is newer (or nothing's saved yet) — push it up
+  try{
+    const local = loadPomoState();
+    const remote = await pullCloudState();
+    if(remote && (!local.updatedAt || remote.updatedAt > local.updatedAt)){
+      applyState(remote, {rerenderMatrix:true});
+    } else {
+      queueCloudPush(); // this device's local copy is newer (or nothing's saved yet) — push it up
+    }
+    subscribeRealtime();
+  } catch(e){
+    console.error('cloud sync failed', e);
+    if(syncStatusEl) syncStatusEl.textContent = 'sync error';
   }
-  subscribeRealtime();
 }
 
 function onSignedOut(){
@@ -581,8 +586,15 @@ document.getElementById('signInBtn').addEventListener('click', async () => {
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPass').value;
   authMsgEl.textContent = 'signing in…';
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-  authMsgEl.textContent = error ? error.message : '';
+  try{
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){ authMsgEl.textContent = error.message; return; }
+    authMsgEl.textContent = '';
+    if(data && data.user) onSignedIn(data.user);
+  } catch(e){
+    console.error('sign in failed', e);
+    authMsgEl.textContent = 'sign in failed — check console';
+  }
 });
 document.getElementById('signUpBtn').addEventListener('click', async () => {
   const email = document.getElementById('authEmail').value.trim();
