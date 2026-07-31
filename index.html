@@ -299,20 +299,28 @@
 </head>
 <body>
 
-<div id="authBar" style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px 24px;background:var(--bg);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
-  <div id="loginForm" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:170px;">
-    <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:130px;">
-    <button id="signInBtn" type="button" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:inherit;">Sign in</button>
-    <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Create account</button>
+<div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
+  <div style="max-width:360px;width:100%;text-align:center;">
+    <div class="eyebrow" style="justify-content:center;">Weekly Rhythm</div>
+    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;background:linear-gradient(90deg,var(--day-strong),var(--night));-webkit-background-clip:text;background-clip:text;color:transparent;">held together.</em></h1>
+    <p class="sub" style="margin:0 auto 28px;">Sign in to sync your schedule and progress across every device.</p>
+    <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
+      <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
+      <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
+      <button id="signInBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
+      <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:'JetBrains Mono',monospace;font-size:12px;padding-top:4px;">Create account</button>
+    </div>
+    <div id="authMsg" style="color:var(--text-faint);font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:14px;min-height:16px;"></div>
   </div>
-  <span id="userLabel" hidden></span>
-  <button id="logoutBtn" type="button" hidden style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
-  <span id="authMsg" style="color:var(--text-faint);"></span>
+</div>
+
+<div id="authBar" hidden style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px 24px;background:var(--bg);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
+  <span id="userLabel"></span>
+  <button id="logoutBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
   <span id="syncStatus" style="color:var(--text-faint);"></span>
 </div>
 
-<div class="wrap">
+<div class="wrap" id="appWrap" hidden>
 
   <header class="hero" style="text-align:center;">
     <div class="eyebrow" style="justify-content:center;">Weekly Schedule</div>
@@ -543,10 +551,10 @@ function subscribeRealtime(){
 
 async function onSignedIn(user){
   currentUser = user;
-  document.getElementById('loginForm').hidden = true;
-  document.getElementById('logoutBtn').hidden = false;
+  document.getElementById('authGate').hidden = true;
+  document.getElementById('authBar').hidden = false;
+  document.getElementById('appWrap').hidden = false;
   const label = document.getElementById('userLabel');
-  label.hidden = false;
   label.textContent = user.email || 'signed in';
 
   const local = loadPomoState();
@@ -562,9 +570,9 @@ async function onSignedIn(user){
 function onSignedOut(){
   currentUser = null;
   if(realtimeChannel){ sb.removeChannel(realtimeChannel); realtimeChannel = null; }
-  document.getElementById('loginForm').hidden = false;
-  document.getElementById('logoutBtn').hidden = true;
-  document.getElementById('userLabel').hidden = true;
+  document.getElementById('authGate').hidden = false;
+  document.getElementById('authBar').hidden = true;
+  document.getElementById('appWrap').hidden = true;
   if(syncStatusEl) syncStatusEl.textContent = '';
 }
 
