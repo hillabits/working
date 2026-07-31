@@ -298,31 +298,32 @@
 </style>
 </head>
 <body>
+
+<div id="authBar" style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px 24px;background:var(--bg);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
+  <div id="loginForm" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:170px;">
+    <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:130px;">
+    <button id="signInBtn" type="button" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:inherit;">Sign in</button>
+    <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Create account</button>
+  </div>
+  <span id="userLabel" hidden></span>
+  <button id="logoutBtn" type="button" hidden style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
+  <span id="authMsg" style="color:var(--text-faint);"></span>
+  <span id="syncStatus" style="color:var(--text-faint);"></span>
+</div>
+
 <div class="wrap">
 
-  <header class="hero">
-    <div class="eyebrow">Weekly Schedule</div>
+  <header class="hero" style="text-align:center;">
+    <div class="eyebrow" style="justify-content:center;">Weekly Schedule</div>
     <h1>Scheduled by <em>Hilla</em>,<br>build for <em>productivity</em>.</h1>
-    <p class="sub">be wealth, be rich, be smart, top of the mountain. For indeed, with hardship comes ease.</p>
+    <p class="sub" style="margin-left:auto;margin-right:auto;">be wealth, be rich, be smart, top of the mountain. For indeed, with hardship comes ease.</p>
 
-    <div class="legend">
+    <div class="legend" style="justify-content:center;">
       <div class="legend-item"><span class="swatch strong"></span>Corporate (day job)</div>
       <div class="legend-item"><span class="swatch soft"></span>Content &amp; admin</div>
       <div class="legend-item"><span class="swatch night"></span>Deep work (night)</div>
       <div class="legend-item"><span class="swatch rest"></span>Rest / free</div>
-    </div>
-
-    <div id="authBar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
-      <div id="loginForm" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:170px;">
-        <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:130px;">
-        <button id="signInBtn" type="button" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:inherit;">Sign in</button>
-        <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Create account</button>
-      </div>
-      <span id="userLabel" hidden></span>
-      <button id="logoutBtn" type="button" hidden style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
-      <span id="authMsg" style="color:var(--text-faint);"></span>
-      <span id="syncStatus" style="color:var(--text-faint);"></span>
     </div>
   </header>
 
