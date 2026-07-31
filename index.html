@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Rhythm</title>
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA6klEQVR4nO2XMQ7CMAxFfyJ2xABnYOiVKvYuPQsLO+JKDD1DGRAngAEFiSiJncRJM/RPlVXpv3wlsq3g0Ha3f7vquXo9H8qu/RVKGYdAdG1z20vXNrchNPVjaamU09/Px993N07XfphPAHC7HKIBNqnGLvXDjFgQFgBlnANC3oFYcxdIMkCOORdi8VfgBZA4vVEohTYTkDy9kS+FNhNYAVaAbpzEjXx9oc0EANkUQl2x3QQAmRSomYBMIAeCM5CwJiIDwe0R4iMZFyRlKFXAMnsB8N2Q2ngFrqWxtIyntgs1zQFrOzaquZ5/AEITUjAdi+FhAAAAAElFTkSuQmCC">
+<link rel="icon" type="image/png" sizes="512x512" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFaklEQVR4nO3bPY4TWxRF4W3kvNVBMwYCpoReTsJYSMifmBIBY8CB5RH0C54MhbvKrp9b956z7/oi1C21K1hsjt3ioCCenl9eWz8D1rucT4fWzyBJzR6CgL21CrzqixJxn2rGvfsLETGG9o57tx9OyLhnr7CL/1BCxhKlw35X8ocRM5Yq3UyRvx2EjBJKrPXmhSZmlFKipU1BEzNK29rUqoknZNSw5gRZvNDEjFrWtLYoaGJGbUubmx00MaOVJe0V/RwaaG1W0KwzWpvb4MOgiRlRzGnxbtDEjGgeNckNDSuTQbPOiOpem6NBEzOim2qUkwNW3gTNOiOLsVZZaFj5K2jWGdncNstCwwpBw8rvoDk3kNWw3WPLB3Hy4+uHu9//+OXnv58+//pn6vvfv70v/kw9IugVHsW7xqfPv958jciXO0qcG4/sEfAct5ET+LSn55fXy/l0YKEntIr4nmHgxD2OoAciRjyFuMcRtHKFPOYaN2FLx17v5+wRj+l9tZ+eX167/MWKY8y3xj416UFXJ0cPIQ/1eIp0EXRvId/qKWz7k6P3mId6OENsF5qQx7mvteVCE/NjrmttFzQxz+cYtc3JQcjruJ0gFgtNzNu5rHX6oIm5HIeoUwdNzOVljzpt0MS8n8xRpwyamPeXNep0QRNzPRmjThU0MdeXLeo0QRNzO5miThM0MEeKoFnn9rKsdPigiTmODFGHDpqY44kedeiggaXCBs06xxV5pUMGTczxRY06ZNDAWuGCZp3ziLjS4YIGtggVNOucT7SVDhM0MecVKeowQQMlEDSshAiacyO/KGdHiKCBUpoHzTr7iLDSzYMGSiJoWGkaNOeGn9ZnBwsNKwQNK82C5tzw1fLsYKFhhaBhhaBhpUnQ3M/+Wt3RLDSsEDSsEDSsEDSsVA+aN4T9aPHGkIWGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGlepBf/zys/ZLopHv395Xf00WGlYIGlYIGlYIGlaaBM0bQ38t3hBKLDTMEDSsEDSsNAuaO9pXq/tZYqFhhqBhpWnQnB1+Wp4bEgsNMwQNK82D5uzw0frckAIEDZQUImhWOr8I6ywFCRoohaBhJUzQnB15RTk3pEBBS0SdUaSYpWBBA1uFC5qVziPaOksBgwa2CBk0Kx1fxHWWggYtEXVkUWOWAgcNrBE6aFY6nsjrLAUPWiLqSKLHLCUIWiLqCDLELCUJGpgrTdCsdDtZ1llKFLRE1C1killKFrRE1DVli1lKGLRE1DVkjFlKGrRE1HvKGrOUOGiJqPeQOWYpedASUZeUPWbJIGiJqEtwiFmSjq0foJRr1D++fmj8JLm4hHxlsdBDrPV8bjFLhkFLRD2HY8yS0clxixNknGvIV5YLPcRa/+Ees2S80EO9r3UPIV91EfRVb2H3FPKV/ckxpoczpMeYJel4OZ8OT88vr60fpLZh1C6L3WvEV5fz6dDVyTEl+ynSe8hDBD2QabWJeBxBT4gYNxE/dpT+vz16vKPnun0TWStwAp7vcj4dJBZ6lbFPSbZGTrxlHK5/YKGR2XWh391+Achm2G6Xv1iBL4KGlb+C5uxANrfNstCw8iZoVhpZjLXKQsPKaNCsNKKbanRyoYkaUd1rk5MDVu4GzUojmkdNPlxookYUc1qcdXIQNVqb2yA3NKzMDpqVRitL2lu00ESN2pY2t/jkIGrUsqa1TXHyv1ywhy2juelNIWuN0rY2tflTDqJGKSVaKhojJwjWKDmKRT+HZq2xVOlmdguQtcY9e43f7otK2Bja+1/xqicCcfep5ina7OYlbm+t3k+FeRNH4LlF+UDgPz1+wl5ZQNx1AAAAAElFTkSuQmCC">
+<meta name="apple-mobile-web-app-title" content="Weekly Rhythm">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0F1115">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1115;
+    --surface:#161922;
+    --surface-2:#1D212B;
+    --line:#272B35;
+    --text:#ECE9E2;
+    --text-dim:#8D919B;
+    --text-faint:#5B5F69;
+    --day-strong:#E3A23D;
+    --day-soft:#B98A52;
+    --night:#6C7BFF;
+    --night-glow:rgba(108,123,255,.30);
+    --rest-line:#3A3F4B;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:64px 24px 96px;
+  }
+  ::selection{background:var(--night-glow);}
+  a, button{ font-family:inherit; }
+  :focus-visible{ outline:2px solid var(--night); outline-offset:3px; border-radius:4px; }
+
+  .wrap{ max-width:860px; margin:0 auto; }
+
+  header.hero{ margin-bottom:44px; }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{ content:""; width:16px; height:1px; background:var(--rest-line); display:inline-block; }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(34px,5vw,52px);
+    line-height:1.08;
+    margin:0 0 18px;
+    letter-spacing:-.01em;
+  }
+  h1 em{
+    font-style:italic; font-weight:400;
+    background:linear-gradient(90deg,var(--day-strong),var(--night));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{ color:var(--text-dim); font-size:15.5px; line-height:1.65; max-width:56ch; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:22px; margin-top:26px; padding-top:22px; border-top:1px solid var(--line); }
+  .legend-item{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
+  .swatch{ width:11px; height:11px; border-radius:3px; flex:none; }
+  .swatch.strong{ background:var(--day-strong); }
+  .swatch.soft{ background:var(--day-soft); }
+  .swatch.night{ background:var(--night); box-shadow:0 0 10px var(--night-glow); }
+  .swatch.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
+
+  .foundation{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:20px 24px; margin-bottom:32px; display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;
+  }
+  .foundation .ftitle{ font-family:'Fraunces',serif; font-size:17px; font-weight:500; white-space:nowrap; padding-top:1px; }
+  .foundation .fitems{ display:flex; flex-direction:column; gap:6px; flex:1; min-width:220px; }
+  .frow{ display:flex; gap:14px; font-size:13.5px; color:var(--text-dim); }
+  .frow .t{ font-family:'JetBrains Mono',monospace; color:var(--text); flex:none; width:120px; }
+  .fnote{ font-size:12px; color:var(--text-faint); width:100%; margin-top:2px; }
+
+  /* day tabs */
+  .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+  .tab-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
+    padding:9px 15px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+    display:flex; align-items:center; gap:7px;
+  }
+  .tab-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .tab-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .tab-dot{ width:6px; height:6px; border-radius:50%; background:var(--night); display:none; }
+  .tab-btn.is-today .tab-dot{ display:inline-block; }
+
+  /* day panel */
+  .day{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:26px 26px 24px;
+  }
+  .day[hidden]{ display:none; }
+
+  .day-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
+  .day-name{ font-family:'Fraunces',serif; font-size:24px; font-weight:500; display:flex; align-items:baseline; gap:10px; }
+  .today-pill{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--night); border:1px solid var(--night); border-radius:100px; padding:3px 9px;
+  }
+  .day-tag{ font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
+  .day-total{ font-size:12px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; margin-bottom:20px; }
+
+  /* productivity stats */
+  .stats{
+    display:flex; gap:30px; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    padding:16px 20px; margin-bottom:22px;
+  }
+  .stat{ display:flex; flex-direction:column; gap:4px; min-width:110px; }
+  .stat .lbl{ font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; font-family:'JetBrains Mono',monospace; }
+  .stat .val{ font-family:'JetBrains Mono',monospace; font-size:21px; color:var(--text); }
+  .stat.left .val{ color:var(--night); }
+  .pbar{ flex:1; min-width:160px; align-self:center; height:6px; border-radius:3px; background:var(--line); overflow:hidden; }
+  .pbar-fill{ height:100%; background:var(--night); border-radius:3px; transition:width .3s ease; }
+
+  /* timeline */
+  .rail{ position:relative; height:34px; margin-bottom:10px; }
+  .track{ position:absolute; inset:0; border-radius:8px;
+    background:linear-gradient(90deg,var(--day-strong),var(--day-soft) 32%,#3d3f6a 68%,var(--night)); opacity:.12; }
+  .seg{ position:absolute; top:0; bottom:0; border-radius:7px; }
+  .seg.day-strong{ background:var(--day-strong); }
+  .seg.day-soft{ background:var(--day-soft); }
+  .seg.night{ background:var(--night); box-shadow:0 0 16px var(--night-glow); }
+  .seg.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
+  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:#fff; box-shadow:0 0 8px rgba(255,255,255,.8); }
+  .now-label{
+    position:absolute; top:-22px; transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:#fff; white-space:nowrap;
+  }
+
+  .ticks{ position:relative; height:16px; margin-bottom:20px; }
+  .tick{ position:absolute; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-faint); }
+
+  .list{ display:flex; flex-direction:column; gap:9px; }
+  .row{ display:flex; gap:16px; align-items:baseline; font-size:13.5px; }
+  .row .time{ font-family:'JetBrains Mono',monospace; color:var(--text-dim); flex:none; width:132px; }
+  .row .label{ color:var(--text); }
+  .row.rest .label, .row.rest .time{ color:var(--text-faint); }
+  .row.done .label{ text-decoration:line-through; text-decoration-color:var(--text-faint); text-decoration-thickness:1px; opacity:.55; }
+  .dot{ display:inline-block; width:7px; height:7px; border-radius:2px; margin-right:10px; position:relative; top:-1px; }
+  .dot.day-strong{ background:var(--day-strong); }
+  .dot.day-soft{ background:var(--day-soft); }
+  .dot.night{ background:var(--night); }
+  .dot.rest{ background:transparent; border:1.2px dashed var(--rest-line); }
+
+  .why{ margin-top:48px; border-top:1px solid var(--line); padding-top:34px; }
+  .why h2{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; margin:0 0 22px; }
+  .why-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media (max-width:720px){
+    .why-grid{ grid-template-columns:1fr; }
+    .foundation{ flex-direction:column; gap:12px; }
+    .row .time{ width:110px; }
+    .stats{ gap:20px; }
+    .pbar{ order:99; width:100%; }
+  }
+  .why-item .num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--night); letter-spacing:.1em; }
+  .why-item h3{ font-family:'Fraunces',serif; font-weight:500; font-size:15.5px; margin:8px 0 8px; }
+  .why-item p{ font-size:13px; color:var(--text-dim); line-height:1.6; margin:0; }
+
+  footer{ margin-top:48px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); letter-spacing:.05em; }
+
+  /* pomodoro */
+  .pomodoro{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; margin-bottom:22px;
+    display:flex; align-items:center; gap:22px; flex-wrap:wrap;
+  }
+  .pomo-mode{
+    font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em;
+    padding:4px 10px; border-radius:100px; border:1px solid var(--night); color:var(--night);
+  }
+  .pomo-mode.break{ border-color:var(--day-soft); color:var(--day-soft); }
+  .pomo-time{ font-family:'JetBrains Mono',monospace; font-size:34px; letter-spacing:.02em; min-width:110px; }
+  .pomo-controls{ display:flex; gap:8px; }
+  .pomo-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
+    padding:9px 16px; border-radius:8px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .pomo-btn:hover{ border-color:#3a3f4b; }
+  .pomo-btn.start{ background:var(--night); border-color:var(--night); color:#0F1115; font-weight:600; }
+  .pomo-btn.start.running{ background:var(--surface); color:var(--text); border-color:var(--day-soft); }
+  .pomo-presets{ display:flex; gap:6px; margin-left:auto; }
+  .pomo-preset-btn{
+    background:transparent; border:1px solid var(--line); color:var(--text-faint);
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 10px; border-radius:100px; cursor:pointer;
+  }
+  .pomo-preset-btn.active{ border-color:var(--night); color:var(--text); }
+  .pomo-preset-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .pomo-meta{
+    width:100%; display:flex; gap:22px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+  }
+  .pomo-meta b{ color:var(--text); font-weight:500; }
+  @media (max-width:560px){
+    .pomo-presets{ margin-left:0; width:100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Weekly Schedule</div>
+    <h1>Day job by <em>sunlight</em>,<br>brand work by <em>moonlight</em>.</h1>
+    <p class="sub">A fixed morning foundation carries every weekday, then the week splits: two protected office nights, two deep-work night blocks for content, and a weekend built for review and writing. Pick a day below — today's tab tracks your productive hours live.</p>
+
+    <div class="legend">
+      <div class="legend-item"><span class="swatch strong"></span>Paragon (day job)</div>
+      <div class="legend-item"><span class="swatch soft"></span>Content &amp; admin</div>
+      <div class="legend-item"><span class="swatch night"></span>Deep work (night)</div>
+      <div class="legend-item"><span class="swatch rest"></span>Rest / free</div>
+    </div>
+  </header>
+
+  <div class="foundation">
+    <div class="ftitle">Daily<br>Foundation</div>
+    <div class="fitems">
+      <div class="frow"><span class="t">7:30 – 10:00</span> Paragon Work</div>
+      <div class="frow"><span class="t">10:00 – 11:00</span> Content uploading, distribution &amp; community engagement</div>
+      <div class="fnote">Applies Monday through Friday, before each day's own track begins.</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="days"></div>
+
+  <div class="why">
+    <h2>Why the shape holds up</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="num">01</div>
+        <h3>Office nights stay protected</h3>
+        <p>Tuesday and Wednesday carry zero extra tasks, so the in-office days never bleed into a mid-week crash.</p>
+      </div>
+      <div class="why-item">
+        <div class="num">02</div>
+        <h3>Quiet hours, real focus</h3>
+        <p>Late night removes notifications and noise — the two conditions filming and editing actually need.</p>
+      </div>
+      <div class="why-item">
+        <div class="num">03</div>
+        <h3>One brand, one block</h3>
+        <p>A single five-hour night is given to one brand at a time, so a full flow state produces a week's worth of assets.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Rendered from your weekly plan</footer>
+</div>
+
+<script>
+const SCALE_START = 450;   // 7:30
+const SCALE_END   = 1500;  // 25:00 (1:00 AM)
+const SCALE_RANGE = SCALE_END - SCALE_START;
+
+function fmt(min){
+  let h = Math.floor(min/60) % 24;
+  const m = min % 60;
+  const ampm = (h < 12 || h === 24) ? 'AM' : 'PM';
+  let h12 = h % 12; if(h12 === 0) h12 = 12;
+  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+}
+function tickLabel(min){
+  const t = min >= 1440 ? min - 1440 : min;
+  let h = Math.floor(t/60) % 24;
+  const ampm = (h < 12 || h === 24) ? 'a' : 'p';
+  let h12 = h % 12; if(h12 === 0) h12 = 12;
+  return h12 + ampm;
+}
+function minsToHM(mins){
+  mins = Math.max(0, Math.round(mins));
+  const h = Math.floor(mins/60), m = mins%60;
+  if(h === 0) return m + 'm';
+  if(m === 0) return h + 'h';
+  return h + 'h ' + m + 'm';
+}
+
+const days = [
+  { key:'Monday', tag:'Affiliate & System Setup', blocks:[
+    {s:450,e:600,label:'Paragon Work',type:'day-strong'},
+    {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
+    {s:660,e:840,label:'Affiliate Content & Link Setup — Hilla.space & Hillafuku',type:'day-soft'},
+    {s:840,e:900,label:'Sowhtvr Affiliate & Admin',type:'day-soft'},
+    {s:900,e:960,label:'Study & Skill Acquisition',type:'day-soft'},
+    {s:960,e:1500,label:'Rest / Casual Research',type:'rest'},
+  ]},
+  { key:'Tuesday', tag:'WFO Day — Strict Off', blocks:[
+    {s:450,e:600,label:'Paragon Work (In Office)',type:'day-strong'},
+    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
+  ]},
+  { key:'Wednesday', tag:'WFO Day — Strict Off', blocks:[
+    {s:450,e:600,label:'Paragon Work (In Office)',type:'day-strong'},
+    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
+  ]},
+  { key:'Thursday', tag:'Night-Owl YouTube Creation', blocks:[
+    {s:450,e:600,label:'Paragon Work',type:'day-strong'},
+    {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
+    {s:660,e:720,label:'Study / Trend Analysis',type:'day-soft'},
+    {s:720,e:1170,label:'Free Time / Errands / Rest',type:'rest'},
+    {s:1170,e:1470,label:'Hillabits Deep Work — Scripting, Recording, Editing',type:'night'},
+  ]},
+  { key:'Friday', tag:'Night-Owl Brand Content Creation', blocks:[
+    {s:450,e:600,label:'Paragon Work',type:'day-strong'},
+    {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
+    {s:660,e:720,label:'Study / Creative Direction',type:'day-soft'},
+    {s:720,e:1170,label:'Free Time / Rest',type:'rest'},
+    {s:1170,e:1470,label:'Akutafh Deep Work — Batch Recording & Editing',type:'night'},
+  ]},
+  { key:'Saturday', tag:'Review & Strategy Day', blocks:[
+    {s:780,e:900,label:'Performance Review & Analytics Check',type:'day-soft'},
+    {s:900,e:1020,label:'Next Week Planning & Content Calendar Setup',type:'day-soft'},
+    {s:1140,e:1500,label:'Free / Social / Unwind',type:'rest'},
+  ]},
+  { key:'Sunday', tag:'Deep Writing & Reset', blocks:[
+    {s:780,e:900,label:'Writing — Scripts, Long-form Posts, Ideation',type:'day-soft'},
+    {s:1140,e:1500,label:'Rest / System Reset for the coming week',type:'rest'},
+  ]},
+];
+
+const ticks = [450,600,780,960,1140,1320,1500];
+
+// --- figure out "logical" schedule day: the plan runs 7:30 -> 1:00am next day,
+// so between midnight and 7:30am we're still inside *yesterday's* logical day.
+function getLogicalNow(){
+  const now = new Date();
+  const realIdx = (now.getDay() + 6) % 7; // Mon=0 ... Sun=6
+  const clockMin = now.getHours()*60 + now.getMinutes();
+  if(clockMin < SCALE_START){
+    return { idx:(realIdx + 6) % 7, min: clockMin + 1440 };
+  }
+  return { idx: realIdx, min: clockMin };
+}
+
+const logical = getLogicalNow();
+let activeIdx = logical.idx;
+
+const tabsEl = document.getElementById('tabs');
+const daysEl = document.getElementById('days');
+const dayPanels = [];
+
+days.forEach((day, i) => {
+  const productiveTotal = day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
+
+  // tab button
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (i === logical.idx ? ' is-today' : '');
+  btn.innerHTML = day.key.slice(0,3) + '<span class="tab-dot"></span>';
+  btn.addEventListener('click', () => selectDay(i));
+  tabsEl.appendChild(btn);
+
+  // panel
+  const el = document.createElement('div');
+  el.className = 'day';
+  el.hidden = true;
+
+  const tickHtml = ticks.map(t => `<span class="tick" style="left:${((t-SCALE_START)/SCALE_RANGE)*100}%">${tickLabel(t)}</span>`).join('');
+
+  el.innerHTML = `
+    <div class="day-head">
+      <div class="day-name">${day.key}${i === logical.idx ? '<span class="today-pill">Today</span>' : ''}</div>
+      <div class="day-tag">${day.tag}</div>
+    </div>
+    <div class="day-total">${minsToHM(productiveTotal)} of productive time scheduled</div>
+    <div class="stats-slot"></div>
+    <div class="pomodoro">
+      <span class="pomo-mode">Focus</span>
+      <span class="pomo-time">25:00</span>
+      <span class="pomo-controls">
+        <button class="pomo-btn start">Start</button>
+        <button class="pomo-btn reset">Reset</button>
+      </span>
+      <span class="pomo-presets">
+        <button class="pomo-preset-btn active" data-work="25" data-brk="5">25 / 5</button>
+        <button class="pomo-preset-btn" data-work="50" data-brk="10">50 / 10</button>
+      </span>
+      <span class="pomo-meta">
+        <span>Sessions today: <b class="pomo-sessions">0</b></span>
+        <span>Focus logged: <b class="pomo-logged">0m</b></span>
+      </span>
+    </div>
+    <div class="rail"><div class="track"></div><div class="segs-slot" style="position:absolute;inset:0;"></div></div>
+    <div class="ticks">${tickHtml}</div>
+    <div class="list"></div>
+  `;
+
+  const segsSlot = el.querySelector('.segs-slot');
+  day.blocks.forEach(b => {
+    const left = ((b.s - SCALE_START) / SCALE_RANGE) * 100;
+    const width = ((b.e - b.s) / SCALE_RANGE) * 100;
+    const seg = document.createElement('div');
+    seg.className = 'seg ' + b.type;
+    seg.style.left = left + '%';
+    seg.style.width = width + '%';
+    seg.title = b.label;
+    segsSlot.appendChild(seg);
+  });
+
+  const listEl = el.querySelector('.list');
+  day.blocks.forEach(b => {
+    const row = document.createElement('div');
+    row.className = 'row' + (b.type === 'rest' ? ' rest' : '');
+    row.dataset.s = b.s; row.dataset.e = b.e;
+    row.innerHTML = `<span class="time"><span class="dot ${b.type}"></span>${fmt(b.s)} – ${fmt(b.e)}</span><span class="label">${b.label}</span>`;
+    listEl.appendChild(row);
+  });
+
+  daysEl.appendChild(el);
+
+  // pomodoro state — independent per day, in-memory only (resets on page reload)
+  const pomo = {
+    workLen: 25*60, breakLen: 5*60,
+    mode: 'focus', remaining: 25*60,
+    running: false, timerId: null,
+    sessions: 0, focusSeconds: 0,
+  };
+
+  const pomoEl = el.querySelector('.pomodoro');
+  const modeEl = pomoEl.querySelector('.pomo-mode');
+  const timeEl = pomoEl.querySelector('.pomo-time');
+  const startBtn = pomoEl.querySelector('.pomo-btn.start');
+  const resetBtn = pomoEl.querySelector('.pomo-btn.reset');
+  const presetBtns = pomoEl.querySelectorAll('.pomo-preset-btn');
+  const sessionsEl = pomoEl.querySelector('.pomo-sessions');
+  const loggedEl = pomoEl.querySelector('.pomo-logged');
+
+  function clockFmt(s){
+    const m = Math.floor(s/60), sec = s%60;
+    return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  }
+
+  function renderPomo(){
+    timeEl.textContent = clockFmt(pomo.remaining);
+    modeEl.textContent = pomo.mode === 'focus' ? 'Focus' : 'Break';
+    modeEl.classList.toggle('break', pomo.mode === 'break');
+    startBtn.textContent = pomo.running ? 'Pause' : (pomo.remaining < (pomo.mode==='focus'?pomo.workLen:pomo.breakLen) ? 'Resume' : 'Start');
+    startBtn.classList.toggle('running', pomo.running);
+    sessionsEl.textContent = pomo.sessions;
+    loggedEl.textContent = minsToHM(pomo.focusSeconds/60);
+    presetBtns.forEach(b => b.disabled = pomo.running);
+  }
+
+  function pomoTick(){
+    pomo.remaining--;
+    if(pomo.mode === 'focus') pomo.focusSeconds++;
+    if(pomo.remaining <= 0){
+      clearInterval(pomo.timerId);
+      pomo.running = false;
+      if(pomo.mode === 'focus'){
+        pomo.sessions++;
+        pomo.mode = 'break';
+        pomo.remaining = pomo.breakLen;
+      } else {
+        pomo.mode = 'focus';
+        pomo.remaining = pomo.workLen;
+      }
+    }
+    renderPomo();
+  }
+
+  startBtn.addEventListener('click', () => {
+    if(pomo.running){
+      pomo.running = false;
+      clearInterval(pomo.timerId);
+    } else {
+      pomo.running = true;
+      pomo.timerId = setInterval(pomoTick, 1000);
+    }
+    renderPomo();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    pomo.running = false;
+    clearInterval(pomo.timerId);
+    pomo.mode = 'focus';
+    pomo.remaining = pomo.workLen;
+    renderPomo();
+  });
+
+  presetBtns.forEach(b => {
+    b.addEventListener('click', () => {
+      if(pomo.running) return;
+      pomo.workLen = Number(b.dataset.work) * 60;
+      pomo.breakLen = Number(b.dataset.brk) * 60;
+      pomo.mode = 'focus';
+      pomo.remaining = pomo.workLen;
+      presetBtns.forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderPomo();
+    });
+  });
+
+  renderPomo();
+
+  dayPanels.push({ el, btn, day, productiveTotal, segsSlot });
+});
+
+function selectDay(i){
+  activeIdx = i;
+  dayPanels.forEach((p, idx) => {
+    p.el.hidden = idx !== i;
+    p.btn.classList.toggle('active', idx === i);
+  });
+  renderStats();
+}
+
+function renderStats(){
+  const p = dayPanels[activeIdx];
+  const isLogicalToday = activeIdx === logical.idx;
+  const slot = p.el.querySelector('.stats-slot');
+
+  // clear existing now-marker
+  const oldMarker = p.el.querySelector('.now-marker');
+  if(oldMarker) oldMarker.remove();
+  const oldLabel = p.el.querySelector('.now-label');
+  if(oldLabel) oldLabel.remove();
+
+  if(!isLogicalToday){
+    slot.innerHTML = '';
+    p.el.querySelectorAll('.row').forEach(r => r.classList.remove('done'));
+    return;
+  }
+
+  const now = getLogicalNow().min;
+  const nowClamped = Math.min(Math.max(now, SCALE_START), SCALE_END);
+
+  let done = 0;
+  p.day.blocks.forEach(b => {
+    if(b.type === 'rest') return;
+    const overlap = Math.min(nowClamped, b.e) - b.s;
+    if(overlap > 0) done += overlap;
+  });
+  const remaining = Math.max(0, p.productiveTotal - done);
+  const pct = p.productiveTotal ? Math.min(100, (done / p.productiveTotal) * 100) : 0;
+
+  slot.innerHTML = `
+    <div class="stats">
+      <div class="stat">
+        <div class="lbl">Productive — done</div>
+        <div class="val">${minsToHM(done)}</div>
+      </div>
+      <div class="pbar"><div class="pbar-fill" style="width:${pct}%"></div></div>
+      <div class="stat left">
+        <div class="lbl">Productive — left</div>
+        <div class="val">${minsToHM(remaining)}</div>
+      </div>
+    </div>
+  `;
+
+  // now-marker on rail
+  const left = ((nowClamped - SCALE_START) / SCALE_RANGE) * 100;
+  const marker = document.createElement('div');
+  marker.className = 'now-marker';
+  marker.style.left = left + '%';
+  p.segsSlot.appendChild(marker);
+  const label = document.createElement('div');
+  label.className = 'now-label';
+  label.style.left = left + '%';
+  label.textContent = 'now';
+  p.segsSlot.appendChild(label);
+
+  // strike through finished rows
+  p.el.querySelectorAll('.row').forEach(r => {
+    const e = Number(r.dataset.e);
+    r.classList.toggle('done', e <= now);
+  });
+}
+
+selectDay(logical.idx);
+setInterval(() => { if(activeIdx === logical.idx) renderStats(); }, 30000);
+</script>
+</body>
+</html>
