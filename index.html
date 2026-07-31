@@ -343,6 +343,11 @@
 
 <div id="authBar" style="position:fixed;top:0;left:0;right:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
   <span id="userLabel"></span>
+  <button id="editNameBtn" type="button" title="Set a display name" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">✎ name</button>
+  <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
+    <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
+    <button id="saveNameBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
+  </span>
   <button id="logoutBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
   <span id="syncStatus" style="color:var(--text-faint);"></span>
 </div>
@@ -600,13 +605,53 @@ function resetToDefaults(){
   renderStats();
 }
 
+function displayNameFor(user){
+  return (user.user_metadata && user.user_metadata.display_name) || user.email || 'signed in';
+}
+
+const userLabelEl = document.getElementById('userLabel');
+const editNameBtn = document.getElementById('editNameBtn');
+const nameEditor = document.getElementById('nameEditor');
+const nameInput = document.getElementById('nameInput');
+const saveNameBtn = document.getElementById('saveNameBtn');
+
+function showNameEditor(){
+  nameInput.value = (currentUser.user_metadata && currentUser.user_metadata.display_name) || '';
+  userLabelEl.style.display = 'none';
+  editNameBtn.style.display = 'none';
+  nameEditor.style.display = 'inline-flex';
+  nameInput.focus();
+}
+function hideNameEditor(){
+  userLabelEl.style.display = '';
+  editNameBtn.style.display = '';
+  nameEditor.style.display = 'none';
+}
+async function saveDisplayName(){
+  const name = nameInput.value.trim();
+  saveNameBtn.disabled = true;
+  const { data, error } = await sb.auth.updateUser({ data: { display_name: name || null } });
+  saveNameBtn.disabled = false;
+  if(!error && data && data.user){
+    currentUser = data.user;
+    userLabelEl.textContent = displayNameFor(currentUser);
+  }
+  hideNameEditor();
+}
+editNameBtn.addEventListener('click', showNameEditor);
+saveNameBtn.addEventListener('click', saveDisplayName);
+nameInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter') saveDisplayName();
+  if(e.key === 'Escape') hideNameEditor();
+});
+
 async function onSignedIn(user){
   currentUser = user;
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('authBar').style.display = 'flex';
   document.getElementById('appWrap').hidden = false;
-  const label = document.getElementById('userLabel');
-  label.textContent = user.email || 'signed in';
+  hideNameEditor();
+  userLabelEl.textContent = displayNameFor(user);
 
   try{
     const remote = await pullCloudState();
@@ -635,6 +680,7 @@ function onSignedOut(){
   document.getElementById('authBar').style.display = 'none';
   document.getElementById('appWrap').hidden = true;
   if(syncStatusEl) syncStatusEl.textContent = '';
+  hideNameEditor();
   resetToDefaults(); // clear the screen so the next sign-in on this device starts clean
 }
 
