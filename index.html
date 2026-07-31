@@ -511,6 +511,7 @@ function loadPomoState(){
 function snapshotState(){
   return {
     updatedAt: Date.now(),
+    ownerId: currentUser ? currentUser.id : null,
     focusLog: loadFocusLog(),
     schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
     pomo: pomoRefs.map(r => ({
@@ -583,6 +584,22 @@ function subscribeRealtime(){
     .subscribe();
 }
 
+// wipes the on-screen state back to the original template — used whenever we switch to an
+// account that doesn't own whatever's currently cached on this device, so it never leaks over
+function resetToDefaults(){
+  dayPanels.forEach((p, i) => { p.day.blocks = DEFAULT_SCHEDULE[i].map(b => ({...b})); applyScheduleUpdate(p); });
+  saveFocusLog({});
+  pomoRefs.forEach(r => {
+    clearInterval(r.pomo.timerId);
+    Object.assign(r.pomo, {
+      workLen:25*60, breakLen:5*60, mode:'focus', remaining:25*60,
+      running:false, sessions:0, focusSeconds:0, ringing:false, endAt:null
+    });
+    r.render();
+  });
+  renderStats();
+}
+
 async function onSignedIn(user){
   currentUser = user;
   document.getElementById('authGate').style.display = 'none';
@@ -592,12 +609,17 @@ async function onSignedIn(user){
   label.textContent = user.email || 'signed in';
 
   try{
-    const local = loadPomoState();
     const remote = await pullCloudState();
-    if(remote && (!local.updatedAt || remote.updatedAt > local.updatedAt)){
+    if(remote){
       applyState(remote, {rerenderMatrix:true});
     } else {
-      queueCloudPush(); // this device's local copy is newer (or nothing's saved yet) — push it up
+      const local = loadPomoState();
+      if(local && local.ownerId === user.id && local.updatedAt){
+        applyState(local, {rerenderMatrix:true}); // this device's own cache, confirmed to belong to this account
+      } else {
+        resetToDefaults(); // nothing in the cloud yet, and whatever's cached here isn't this account's
+      }
+      queueCloudPush();
     }
     subscribeRealtime();
   } catch(e){
@@ -613,6 +635,7 @@ function onSignedOut(){
   document.getElementById('authBar').style.display = 'none';
   document.getElementById('appWrap').hidden = true;
   if(syncStatusEl) syncStatusEl.textContent = '';
+  resetToDefaults(); // clear the screen so the next sign-in on this device starts clean
 }
 
 const authMsgEl = document.getElementById('authMsg');
@@ -769,7 +792,7 @@ function renderList(panel){
       row.innerHTML = `
         <input class="edit-time edit-s" value="${fmt(b.s)}">
         <input class="edit-time edit-e" value="${fmt(b.e)}">
-        <input class="edit-label" value="${b.label}">
+        <input class="edit-label">
         <select class="edit-type">
           <option value="day-strong">Corporate</option>
           <option value="day-soft">Content/admin</option>
@@ -777,6 +800,7 @@ function renderList(panel){
           <option value="rest">Rest</option>
         </select>
         <button type="button" class="edit-del" title="Remove block">✕</button>`;
+      row.querySelector('.edit-label').value = b.label;
       row.querySelector('.edit-type').value = b.type;
       const commit = () => {
         const ns = parseClock(row.querySelector('.edit-s').value);
@@ -794,7 +818,8 @@ function renderList(panel){
       });
     } else {
       row.className = 'row' + (b.type === 'rest' ? ' rest' : '');
-      row.innerHTML = `<span class="time"><span class="dot ${b.type}"></span>${fmt(b.s)} – ${fmt(b.e)}</span><span class="label">${b.label}</span>`;
+      row.innerHTML = `<span class="time"><span class="dot ${b.type}"></span>${fmt(b.s)} – ${fmt(b.e)}</span><span class="label"></span>`;
+      row.querySelector('.label').textContent = b.label;
     }
     listEl.appendChild(row);
   });
@@ -866,6 +891,8 @@ const days = [
     {s:1140,e:1500,label:'Rest / System Reset for the coming week',type:'rest'},
   ]},
 ];
+
+const DEFAULT_SCHEDULE = days.map(d => d.blocks.map(b => ({...b})));
 
 const ticks = [450,600,780,960,1140,1320,1500];
 
