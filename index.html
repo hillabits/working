@@ -215,6 +215,86 @@
   @media (max-width:560px){
     .pomo-presets{ margin-left:0; width:100%; }
   }
+
+  /* pomodoro alarm */
+  .pomodoro.ringing{
+    border-color:var(--day-strong);
+    animation: pomo-flash 1s ease-in-out infinite;
+  }
+  @keyframes pomo-flash{
+    0%, 100%{ box-shadow:0 0 0 0 rgba(227,162,61,0); }
+    50%{ box-shadow:0 0 0 3px rgba(227,162,61,.35); }
+  }
+  .pomo-alarm{
+    display:none;
+    width:100%; align-items:center; gap:14px;
+    background:rgba(227,162,61,.12); border:1px solid var(--day-strong);
+    border-radius:8px; padding:10px 14px;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--day-strong);
+  }
+  .pomodoro.ringing .pomo-alarm{ display:flex; }
+  .pomo-alarm-text{ flex:1; }
+  .pomo-stop-btn{
+    background:var(--day-strong); border:1px solid var(--day-strong); color:#0F1115;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; letter-spacing:.04em;
+    padding:8px 16px; border-radius:8px; cursor:pointer;
+  }
+  .pomo-stop-btn:hover{ opacity:.9; }
+
+  /* view switcher */
+  .view-switch{ display:flex; gap:8px; margin-bottom:36px; }
+  .view-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
+    padding:9px 16px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+  }
+  .view-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .view-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+
+  /* productivity matrix */
+  .matrix-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:26px; }
+  .matrix-title{ font-family:'Fraunces',serif; font-weight:500; font-size:21px; letter-spacing:-.01em; }
+  .matrix-controls{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .mx-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.03em;
+    padding:8px 13px; border-radius:8px; cursor:pointer; transition:border-color .15s, color .15s;
+  }
+  .mx-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .mx-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .mx-period{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); font-weight:500; min-width:56px; text-align:center; }
+
+  .mx-note{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); margin:-14px 0 22px; }
+
+  .mx-legend{ display:flex; flex-wrap:wrap; gap:18px; margin:0 0 26px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-dim); }
+  .mx-legend-item{ display:flex; align-items:center; gap:7px; }
+  .mx-swatch{ width:10px; height:10px; border-radius:2px; flex:none; }
+
+  /* dense matrix — flat grid, column count computed to keep a ~4:3 shape.
+     Cells fill the container width fluidly (grid + aspect-ratio), so resizing
+     the page just reflows/rescales the dots instead of causing horizontal scroll. */
+  .mx-matrix-wrap{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:22px;
+  }
+  .mx-matrix{
+    display:grid;
+    grid-template-columns:repeat(var(--mx-cols, 20), 1fr);
+    gap:6px;
+    width:100%;
+  }
+  .mx-cell{ width:100%; aspect-ratio:1/1; border-radius:3px; border:1px solid var(--line); }
+  .mx-cell.mx-pretrack{ background:transparent; border:1px dashed rgba(91,95,105,.35); }
+  .mx-cell.mx-future{ background:transparent; border-color:var(--line); }
+  .mx-cell.mx-off{ background:rgba(180,72,66,.32); border-color:rgba(180,72,66,.5); }
+  .mx-cell.mx-d2{ background:rgba(90,120,100,.38); border-color:rgba(90,120,100,.5); }
+  .mx-cell.mx-d1{ background:rgba(70,150,105,.55); border-color:rgba(70,150,105,.65); }
+  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; box-shadow:0 0 6px rgba(47,191,110,.5); }
+  .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--night); }
+
+  @media (max-width:560px){
+    .mx-matrix{ gap:4px; }
+  }
 </style>
 </head>
 <body>
@@ -233,6 +313,12 @@
     </div>
   </header>
 
+  <div class="view-switch">
+    <button class="view-btn active" id="showScheduleBtn" type="button">Weekly Rhythm</button>
+    <button class="view-btn" id="showMatrixBtn" type="button">Productivity Matrix</button>
+  </div>
+
+  <div id="viewSchedule">
   <div class="foundation">
     <div class="ftitle">Daily<br>Foundation</div>
     <div class="fitems">
@@ -267,12 +353,150 @@
   </div>
 
   <footer>Rendered from your weekly plan</footer>
-</div>
+  </div>
+
+  <div id="viewMatrix" hidden>
+    <div class="matrix-head">
+      <div class="matrix-title" id="matrixTitle">Productivity Matrix</div>
+      <div class="matrix-controls">
+        <button class="mx-btn" id="mxPrev" type="button">←</button>
+        <span class="mx-period" id="mxPeriodLabel"></span>
+        <button class="mx-btn" id="mxNext" type="button">→</button>
+        <button class="mx-btn" id="mxToday" type="button">Today</button>
+      </div>
+    </div>
+    <div class="mx-note">Tracking began July 31, 2026 — every cell is one day, left to right, top to bottom.</div>
+    <div class="mx-legend">
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:#2fbf6e;"></span>On target or above</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:rgba(70,150,105,.55);"></span>Below target</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:rgba(90,120,100,.38);"></span>Well below target</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:rgba(180,72,66,.32);"></span>Off / under 30m</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="border:1px dashed rgba(91,95,105,.5);"></span>Not tracked yet</div>
+    </div>
+    <div class="mx-matrix-wrap">
+      <div class="mx-matrix" id="mxMatrix"></div>
+    </div>
+  </div>
 
 <script>
 const SCALE_START = 450;   // 7:30
 const SCALE_END   = 1500;  // 25:00 (1:00 AM)
 const SCALE_RANGE = SCALE_END - SCALE_START;
+
+// --- view switcher: Weekly Rhythm <-> Productivity Matrix ---
+const scheduleView = document.getElementById('viewSchedule');
+const matrixView = document.getElementById('viewMatrix');
+const showScheduleBtn = document.getElementById('showScheduleBtn');
+const showMatrixBtn = document.getElementById('showMatrixBtn');
+
+showScheduleBtn.addEventListener('click', () => {
+  scheduleView.hidden = false;
+  matrixView.hidden = true;
+  showScheduleBtn.classList.add('active');
+  showMatrixBtn.classList.remove('active');
+});
+showMatrixBtn.addEventListener('click', () => {
+  scheduleView.hidden = true;
+  matrixView.hidden = false;
+  showMatrixBtn.classList.add('active');
+  showScheduleBtn.classList.remove('active');
+  renderMatrix();
+});
+
+// --- persistent focus log (per real calendar date, in localStorage) ---
+const FOCUS_LOG_KEY = 'wr_focus_log_v1';
+
+function loadFocusLog(){
+  try{ return JSON.parse(localStorage.getItem(FOCUS_LOG_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function saveFocusLog(log){
+  try{ localStorage.setItem(FOCUS_LOG_KEY, JSON.stringify(log)); }
+  catch(e){ /* storage unavailable — ignore */ }
+}
+function dateKey(d){
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function addFocusSeconds(sec){
+  const log = loadFocusLog();
+  const k = dateKey(new Date());
+  log[k] = (log[k] || 0) + sec;
+  saveFocusLog(log);
+}
+// daily target minutes for a given date = that weekday's scheduled productive total
+function targetMinutesFor(date){
+  const idx = (date.getDay() + 6) % 7; // Mon=0 ... Sun=6
+  const day = days[idx];
+  return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
+}
+function classifyDay(actualMin, targetMin, isFuture){
+  if(isFuture) return 'mx-future';
+  if(actualMin < 30) return 'mx-off';
+  if(actualMin >= targetMin) return 'mx-bright';
+  const ratio = targetMin > 0 ? actualMin / targetMin : 1;
+  return ratio >= 0.5 ? 'mx-d1' : 'mx-d2';
+}
+
+const TRACK_START = new Date(2026, 6, 31); // matrix tracking begins July 31, 2026 — the day this tracker was created
+TRACK_START.setHours(0,0,0,0);
+
+let mxYear = TRACK_START.getFullYear();
+
+const mxPrevBtn = document.getElementById('mxPrev');
+const mxNextBtn = document.getElementById('mxNext');
+const mxTodayBtn = document.getElementById('mxToday');
+const mxPeriodLabel = document.getElementById('mxPeriodLabel');
+const mxMatrixEl = document.getElementById('mxMatrix');
+
+mxPrevBtn.addEventListener('click', () => { mxYear -= 1; renderMatrix(); });
+mxNextBtn.addEventListener('click', () => { mxYear += 1; renderMatrix(); });
+mxTodayBtn.addEventListener('click', () => { mxYear = new Date().getFullYear(); renderMatrix(); });
+
+function renderMatrix(){
+  mxPeriodLabel.textContent = String(mxYear);
+  mxMatrixEl.innerHTML = '';
+
+  const log = loadFocusLog();
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // 2026 is the year tracking began (July 31, 2026) — start that year's grid at August 1
+  // so months before tracking never render as "not tracked" cells. Other years show Jan-Dec.
+  const gridStart = (mxYear === TRACK_START.getFullYear())
+    ? new Date(mxYear, 7, 1)
+    : new Date(mxYear, 0, 1);
+  const yearEnd = new Date(mxYear, 11, 31);
+  const totalDays = Math.round((yearEnd - gridStart) / 86400000) + 1;
+
+  // Pick a column count that keeps the whole grid close to a 4:3 shape (not a wide landscape strip).
+  // Cells are laid out with CSS grid using 1fr + aspect-ratio, so they scale fluidly with the
+  // container on resize — no horizontal scrollbar, the matrix just reflows/rescales in place.
+  const cols = Math.max(7, Math.round(Math.sqrt(totalDays * (4 / 3))));
+  mxMatrixEl.style.setProperty('--mx-cols', cols);
+
+  let cursor = new Date(gridStart);
+  while(cursor.getFullYear() === mxYear){
+    const cell = document.createElement('div');
+    const key = dateKey(cursor);
+
+    if(cursor < TRACK_START){
+      cell.className = 'mx-cell mx-pretrack';
+      cell.title = `${key} — before tracking started`;
+    } else {
+      const isFuture = cursor > today;
+      const actualMin = (log[key] || 0) / 60;
+      const targetMin = targetMinutesFor(cursor);
+      const cls = classifyDay(actualMin, targetMin, isFuture);
+      cell.className = 'mx-cell ' + cls;
+      if(cursor.getTime() === today.getTime()) cell.classList.add('mx-today');
+      cell.title = `${key} — ${isFuture ? 'upcoming' : Math.round(actualMin) + 'm logged / ' + targetMin + 'm target'}`;
+    }
+
+    mxMatrixEl.appendChild(cell);
+    cursor.setDate(cursor.getDate() + 1);
+  }
+}
+
 
 function fmt(min){
   let h = Math.floor(min/60) % 24;
@@ -398,6 +622,10 @@ days.forEach((day, i) => {
         <span>Sessions today: <b class="pomo-sessions">0</b></span>
         <span>Focus logged: <b class="pomo-logged">0m</b></span>
       </span>
+      <div class="pomo-alarm">
+        <span class="pomo-alarm-text">⏰ Time's up — click Stop to silence</span>
+        <button class="pomo-stop-btn" type="button">Stop</button>
+      </div>
     </div>
     <div class="rail"><div class="track"></div><div class="segs-slot" style="position:absolute;inset:0;"></div></div>
     <div class="ticks">${tickHtml}</div>
@@ -433,6 +661,7 @@ days.forEach((day, i) => {
     mode: 'focus', remaining: 25*60,
     running: false, timerId: null,
     sessions: 0, focusSeconds: 0,
+    ringing: false, alarmId: null,
   };
 
   const pomoEl = el.querySelector('.pomodoro');
@@ -443,6 +672,45 @@ days.forEach((day, i) => {
   const presetBtns = pomoEl.querySelectorAll('.pomo-preset-btn');
   const sessionsEl = pomoEl.querySelector('.pomo-sessions');
   const loggedEl = pomoEl.querySelector('.pomo-logged');
+  const stopAlarmBtn = pomoEl.querySelector('.pomo-stop-btn');
+
+  // --- alarm sound: generated with WebAudio, no external file needed ---
+  let audioCtx = null;
+  function beep(){
+    try{
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+      [0, 0.18].forEach(offset => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.35, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.16);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.2);
+      });
+    }catch(e){ /* audio unavailable — ignore */ }
+  }
+
+  function startRinging(){
+    pomo.ringing = true;
+    pomoEl.classList.add('ringing');
+    beep();
+    pomo.alarmId = setInterval(beep, 1200);
+  }
+
+  function stopRinging(){
+    pomo.ringing = false;
+    pomoEl.classList.remove('ringing');
+    clearInterval(pomo.alarmId);
+    pomo.alarmId = null;
+  }
+
+  stopAlarmBtn.addEventListener('click', stopRinging);
 
   function clockFmt(s){
     const m = Math.floor(s/60), sec = s%60;
@@ -462,7 +730,10 @@ days.forEach((day, i) => {
 
   function pomoTick(){
     pomo.remaining--;
-    if(pomo.mode === 'focus') pomo.focusSeconds++;
+    if(pomo.mode === 'focus'){
+      pomo.focusSeconds++;
+      addFocusSeconds(1);
+    }
     if(pomo.remaining <= 0){
       clearInterval(pomo.timerId);
       pomo.running = false;
@@ -474,11 +745,13 @@ days.forEach((day, i) => {
         pomo.mode = 'focus';
         pomo.remaining = pomo.workLen;
       }
+      startRinging();
     }
     renderPomo();
   }
 
   startBtn.addEventListener('click', () => {
+    if(pomo.ringing) stopRinging();
     if(pomo.running){
       pomo.running = false;
       clearInterval(pomo.timerId);
@@ -490,6 +763,7 @@ days.forEach((day, i) => {
   });
 
   resetBtn.addEventListener('click', () => {
+    if(pomo.ringing) stopRinging();
     pomo.running = false;
     clearInterval(pomo.timerId);
     pomo.mode = 'focus';
@@ -589,5 +863,6 @@ function renderStats(){
 selectDay(logical.idx);
 setInterval(() => { if(activeIdx === logical.idx) renderStats(); }, 30000);
 </script>
+</div>
 </body>
 </html>
