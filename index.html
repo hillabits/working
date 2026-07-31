@@ -112,6 +112,32 @@
   .day[hidden]{ display:none; }
 
   .day-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
+  .day-head-right{ display:flex; align-items:center; gap:10px; }
+  .day-edit-btn{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.04em;
+    padding:5px 11px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s;
+  }
+  .day-edit-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .day-edit-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .row.editing{ align-items:center; flex-wrap:wrap; gap:8px; }
+  .edit-time, .edit-label, .edit-type{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    border-radius:6px; padding:5px 8px; font-family:'JetBrains Mono',monospace; font-size:12px;
+  }
+  .edit-time{ width:76px; }
+  .edit-label{ flex:1; min-width:140px; font-family:'Inter',sans-serif; }
+  .edit-del{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    border-radius:6px; width:26px; height:26px; cursor:pointer; flex:none;
+  }
+  .edit-del:hover{ color:#d16b63; border-color:#d16b63; }
+  .add-block-btn{
+    background:none; border:1px dashed var(--rest-line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:8px 12px;
+    border-radius:8px; cursor:pointer; margin-top:2px; align-self:flex-start;
+  }
+  .add-block-btn:hover{ color:var(--text); border-color:var(--text-faint); }
   .day-name{ font-family:'Fraunces',serif; font-size:24px; font-weight:500; display:flex; align-items:baseline; gap:10px; }
   .today-pill{
     font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
@@ -314,7 +340,7 @@
   </div>
 </div>
 
-<div id="authBar" style="position:sticky;top:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
+<div id="authBar" style="position:fixed;top:0;left:0;right:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
   <span id="userLabel"></span>
   <button id="logoutBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
   <span id="syncStatus" style="color:var(--text-faint);"></span>
@@ -485,6 +511,7 @@ function snapshotState(){
   return {
     updatedAt: Date.now(),
     focusLog: loadFocusLog(),
+    schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
     pomo: pomoRefs.map(r => ({
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
@@ -499,6 +526,12 @@ function persistLocal(){
 // apply a full state object (from localStorage on load, or a remote device) to the live UI
 function applyState(state, {rerenderMatrix} = {}){
   if(state.focusLog) saveFocusLog(state.focusLog);
+  if(state.schedule){
+    dayPanels.forEach(p => {
+      const sd = state.schedule[p.day.key];
+      if(sd && sd.length) { p.day.blocks = sd; applyScheduleUpdate(p); }
+    });
+  }
   (state.pomo || []).forEach((s, i) => {
     const r = pomoRefs[i];
     if(!r) return;
@@ -701,6 +734,96 @@ function minsToHM(mins){
   return h + 'h ' + m + 'm';
 }
 
+function parseClock(str){
+  const m = String(str).trim().match(/^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/);
+  if(!m) return null;
+  let h = parseInt(m[1],10) % 12, min = parseInt(m[2],10);
+  if(m[3].toLowerCase() === 'pm') h += 12;
+  let total = h*60 + min;
+  if(total < SCALE_START) total += 1440;
+  return Math.min(SCALE_END, Math.max(SCALE_START, total));
+}
+function computeProductive(day){
+  return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
+}
+function renderRail(panel){
+  panel.segsSlot.innerHTML = '';
+  panel.day.blocks.forEach(b => {
+    const seg = document.createElement('div');
+    seg.className = 'seg ' + b.type;
+    seg.style.left = (((b.s - SCALE_START)/SCALE_RANGE)*100) + '%';
+    seg.style.width = (((b.e - b.s)/SCALE_RANGE)*100) + '%';
+    seg.title = b.label;
+    panel.segsSlot.appendChild(seg);
+  });
+}
+function renderList(panel){
+  const listEl = panel.listEl;
+  listEl.innerHTML = '';
+  panel.day.blocks.forEach((b, idx) => {
+    const row = document.createElement('div');
+    row.dataset.s = b.s; row.dataset.e = b.e;
+    if(panel.editing){
+      row.className = 'row editing';
+      row.innerHTML = `
+        <input class="edit-time edit-s" value="${fmt(b.s)}">
+        <input class="edit-time edit-e" value="${fmt(b.e)}">
+        <input class="edit-label" value="${b.label}">
+        <select class="edit-type">
+          <option value="day-strong">Corporate</option>
+          <option value="day-soft">Content/admin</option>
+          <option value="night">Deep work</option>
+          <option value="rest">Rest</option>
+        </select>
+        <button type="button" class="edit-del" title="Remove block">✕</button>`;
+      row.querySelector('.edit-type').value = b.type;
+      const commit = () => {
+        const ns = parseClock(row.querySelector('.edit-s').value);
+        const ne = parseClock(row.querySelector('.edit-e').value);
+        if(ns != null) b.s = ns;
+        if(ne != null) b.e = ne;
+        b.label = row.querySelector('.edit-label').value.trim() || b.label;
+        b.type = row.querySelector('.edit-type').value;
+        updateDay(panel);
+      };
+      row.querySelectorAll('.edit-s,.edit-e,.edit-label,.edit-type').forEach(inp => inp.addEventListener('change', commit));
+      row.querySelector('.edit-del').addEventListener('click', () => {
+        panel.day.blocks.splice(idx,1);
+        updateDay(panel);
+      });
+    } else {
+      row.className = 'row' + (b.type === 'rest' ? ' rest' : '');
+      row.innerHTML = `<span class="time"><span class="dot ${b.type}"></span>${fmt(b.s)} – ${fmt(b.e)}</span><span class="label">${b.label}</span>`;
+    }
+    listEl.appendChild(row);
+  });
+  if(panel.editing){
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button'; addBtn.className = 'add-block-btn'; addBtn.textContent = '+ Add block';
+    addBtn.addEventListener('click', () => {
+      const last = panel.day.blocks[panel.day.blocks.length - 1];
+      const s = last ? last.e : SCALE_START;
+      panel.day.blocks.push({ s, e: Math.min(s + 60, SCALE_END), label:'New block', type:'day-soft' });
+      updateDay(panel);
+    });
+    listEl.appendChild(addBtn);
+  }
+}
+// re-render rail/list + productive-time total after an edit (or a synced remote change)
+function applyScheduleUpdate(panel){
+  panel.productiveTotal = computeProductive(panel.day);
+  panel.el.querySelector('.day-total').textContent = minsToHM(panel.productiveTotal) + ' of productive time scheduled';
+  renderRail(panel);
+  renderList(panel);
+}
+function updateDay(panel){
+  panel.day.blocks.sort((a,b) => a.s - b.s);
+  applyScheduleUpdate(panel);
+  persistLocal();
+  if(panel === dayPanels[activeIdx]) renderStats();
+  if(!matrixView.hidden) renderMatrix();
+}
+
 const days = [
   { key:'Monday', tag:'Affiliate & System Setup', blocks:[
     {s:450,e:600,label:'Corporate Work',type:'day-strong'},
@@ -784,7 +907,10 @@ days.forEach((day, i) => {
   el.innerHTML = `
     <div class="day-head">
       <div class="day-name">${day.key}${i === logical.idx ? '<span class="today-pill">Today</span>' : ''}</div>
-      <div class="day-tag">${day.tag}</div>
+      <div class="day-head-right">
+        <div class="day-tag">${day.tag}</div>
+        <button type="button" class="day-edit-btn">Edit</button>
+      </div>
     </div>
     <div class="day-total">${minsToHM(productiveTotal)} of productive time scheduled</div>
     <div class="stats-slot"></div>
@@ -814,25 +940,19 @@ days.forEach((day, i) => {
   `;
 
   const segsSlot = el.querySelector('.segs-slot');
-  day.blocks.forEach(b => {
-    const left = ((b.s - SCALE_START) / SCALE_RANGE) * 100;
-    const width = ((b.e - b.s) / SCALE_RANGE) * 100;
-    const seg = document.createElement('div');
-    seg.className = 'seg ' + b.type;
-    seg.style.left = left + '%';
-    seg.style.width = width + '%';
-    seg.title = b.label;
-    segsSlot.appendChild(seg);
+  const listEl = el.querySelector('.list');
+  const editBtn = el.querySelector('.day-edit-btn');
+  const panel = { el, btn, day, productiveTotal, segsSlot, listEl, editing:false };
+
+  editBtn.addEventListener('click', () => {
+    panel.editing = !panel.editing;
+    editBtn.textContent = panel.editing ? 'Done' : 'Edit';
+    editBtn.classList.toggle('active', panel.editing);
+    renderList(panel);
   });
 
-  const listEl = el.querySelector('.list');
-  day.blocks.forEach(b => {
-    const row = document.createElement('div');
-    row.className = 'row' + (b.type === 'rest' ? ' rest' : '');
-    row.dataset.s = b.s; row.dataset.e = b.e;
-    row.innerHTML = `<span class="time"><span class="dot ${b.type}"></span>${fmt(b.s)} – ${fmt(b.e)}</span><span class="label">${b.label}</span>`;
-    listEl.appendChild(row);
-  });
+  renderRail(panel);
+  renderList(panel);
 
   daysEl.appendChild(el);
 
@@ -1020,7 +1140,7 @@ days.forEach((day, i) => {
   renderPomo();
   pomoRefs.push({ pomo, render: renderPomo, tick: pomoTick });
 
-  dayPanels.push({ el, btn, day, productiveTotal, segsSlot });
+  dayPanels.push(panel);
 });
 
 initSync();
