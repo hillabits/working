@@ -298,6 +298,29 @@
 </style>
 </head>
 <body>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyC95i4RZ-04M1oWi5fls2YjGj0vKM6AfDg",
+    authDomain: "hillabits.firebaseapp.com",
+    projectId: "hillabits",
+    storageBucket: "hillabits.firebasestorage.app",
+    messagingSenderId: "60033854407",
+    appId: "1:60033854407:web:c930d7bdba4b56caf807e2",
+    measurementId: "G-EX7PWHMRLP"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 <div class="wrap">
 
   <header class="hero">
