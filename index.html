@@ -120,6 +120,15 @@
   }
   .iconbtn:hover{ color:var(--text); border-color:#3a3f4b; background:var(--surface); }
   .iconbtn svg{ width:14px; height:14px; }
+  .name-chip{
+    display:inline-flex; align-items:center; gap:7px;
+    background:none; border:1px solid transparent; color:var(--text-dim);
+    font:inherit; padding:5px 8px; border-radius:8px; cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .name-chip:hover{ color:var(--text); border-color:var(--line); background:var(--surface); }
+  .name-chip svg{ width:12px; height:12px; flex:none; opacity:.55; transition:opacity .15s; }
+  .name-chip:hover svg{ opacity:1; }
   .day-head-right{ display:flex; align-items:center; gap:10px; }
   .day-edit-btn{
     background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
@@ -350,8 +359,8 @@
 </div>
 
 <div id="authBar" style="position:fixed;top:0;left:0;right:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
-  <span id="userLabel"></span>
-  <button id="editNameBtn" type="button" class="iconbtn" title="Set a display name">
+  <button id="editNameBtn" type="button" class="name-chip" title="Set a display name">
+    <span id="userLabel"></span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
   </button>
   <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
@@ -629,13 +638,11 @@ const saveNameBtn = document.getElementById('saveNameBtn');
 
 function showNameEditor(){
   nameInput.value = (currentUser.user_metadata && currentUser.user_metadata.display_name) || '';
-  userLabelEl.style.display = 'none';
   editNameBtn.style.display = 'none';
   nameEditor.style.display = 'inline-flex';
   nameInput.focus();
 }
 function hideNameEditor(){
-  userLabelEl.style.display = '';
   editNameBtn.style.display = '';
   nameEditor.style.display = 'none';
 }
