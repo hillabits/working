@@ -112,6 +112,14 @@
   .day[hidden]{ display:none; }
 
   .day-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
+  .iconbtn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:28px; flex:none; border-radius:8px; padding:0;
+    background:transparent; border:1px solid var(--line); color:var(--text-faint);
+    cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+  }
+  .iconbtn:hover{ color:var(--text); border-color:#3a3f4b; background:var(--surface); }
+  .iconbtn svg{ width:14px; height:14px; }
   .day-head-right{ display:flex; align-items:center; gap:10px; }
   .day-edit-btn{
     background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
@@ -343,12 +351,16 @@
 
 <div id="authBar" style="position:fixed;top:0;left:0;right:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
   <span id="userLabel"></span>
-  <button id="editNameBtn" type="button" title="Set a display name" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">✎ name</button>
+  <button id="editNameBtn" type="button" class="iconbtn" title="Set a display name">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+  </button>
   <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
     <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
     <button id="saveNameBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
   </span>
-  <button id="logoutBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
+  <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+  </button>
   <span id="syncStatus" style="color:var(--text-faint);"></span>
 </div>
 
