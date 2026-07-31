@@ -314,7 +314,7 @@
   </div>
 </div>
 
-<div id="authBar" hidden style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px 24px;background:var(--bg);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
+<div id="authBar" style="position:sticky;top:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px 24px;background:var(--bg);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
   <span id="userLabel"></span>
   <button id="logoutBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
   <span id="syncStatus" style="color:var(--text-faint);"></span>
@@ -551,8 +551,8 @@ function subscribeRealtime(){
 
 async function onSignedIn(user){
   currentUser = user;
-  document.getElementById('authGate').hidden = true;
-  document.getElementById('authBar').hidden = false;
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('authBar').style.display = 'flex';
   document.getElementById('appWrap').hidden = false;
   const label = document.getElementById('userLabel');
   label.textContent = user.email || 'signed in';
@@ -570,8 +570,8 @@ async function onSignedIn(user){
 function onSignedOut(){
   currentUser = null;
   if(realtimeChannel){ sb.removeChannel(realtimeChannel); realtimeChannel = null; }
-  document.getElementById('authGate').hidden = false;
-  document.getElementById('authBar').hidden = true;
+  document.getElementById('authGate').style.display = 'flex';
+  document.getElementById('authBar').style.display = 'none';
   document.getElementById('appWrap').hidden = true;
   if(syncStatusEl) syncStatusEl.textContent = '';
 }
