@@ -312,10 +312,16 @@
       <div class="legend-item"><span class="swatch rest"></span>Rest / free</div>
     </div>
 
-    <div id="authBar" style="display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
-      <button id="loginBtn" type="button" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:inherit;">Sign in with Google</button>
+    <div id="authBar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
+      <div id="loginForm" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:170px;">
+        <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:8px;font-family:inherit;font-size:inherit;width:130px;">
+        <button id="signInBtn" type="button" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:7px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:inherit;">Sign in</button>
+        <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Create account</button>
+      </div>
       <span id="userLabel" hidden></span>
       <button id="logoutBtn" type="button" hidden style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:inherit;font-size:inherit;">Sign out</button>
+      <span id="authMsg" style="color:var(--text-faint);"></span>
       <span id="syncStatus" style="color:var(--text-faint);"></span>
     </div>
   </header>
@@ -386,8 +392,8 @@
   </div>
 
 <!--
-  CROSS-DEVICE SYNC: sign in with Google (top of page) to save progress to Supabase and
-  sync it live across devices. Signed out, everything still saves locally to this browser.
+  CROSS-DEVICE SYNC: create an account (email + password, top of page) to save progress to
+  Supabase and sync it live across devices. Signed out, everything still saves locally.
 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -500,7 +506,7 @@ function applyState(state, {rerenderMatrix} = {}){
   if(rerenderMatrix && !matrixView.hidden) renderMatrix();
 }
 
-// --- cloud sync (Supabase) — active once signed in with Google; local-only otherwise ---
+// --- cloud sync (Supabase) — active once signed in; local-only otherwise ---
 let lastPushedAt = 0, pushTimer = null, realtimeChannel = null;
 const syncStatusEl = document.getElementById('syncStatus');
 
@@ -536,7 +542,7 @@ function subscribeRealtime(){
 
 async function onSignedIn(user){
   currentUser = user;
-  document.getElementById('loginBtn').hidden = true;
+  document.getElementById('loginForm').hidden = true;
   document.getElementById('logoutBtn').hidden = false;
   const label = document.getElementById('userLabel');
   label.hidden = false;
@@ -555,14 +561,27 @@ async function onSignedIn(user){
 function onSignedOut(){
   currentUser = null;
   if(realtimeChannel){ sb.removeChannel(realtimeChannel); realtimeChannel = null; }
-  document.getElementById('loginBtn').hidden = false;
+  document.getElementById('loginForm').hidden = false;
   document.getElementById('logoutBtn').hidden = true;
   document.getElementById('userLabel').hidden = true;
   if(syncStatusEl) syncStatusEl.textContent = '';
 }
 
-document.getElementById('loginBtn').addEventListener('click', () => {
-  sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+const authMsgEl = document.getElementById('authMsg');
+document.getElementById('signInBtn').addEventListener('click', async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPass').value;
+  authMsgEl.textContent = 'signing in…';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  authMsgEl.textContent = error ? error.message : '';
+});
+document.getElementById('signUpBtn').addEventListener('click', async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPass').value;
+  if(password.length < 6){ authMsgEl.textContent = 'password needs 6+ characters'; return; }
+  authMsgEl.textContent = 'creating account…';
+  const { error } = await sb.auth.signUp({ email, password });
+  authMsgEl.textContent = error ? error.message : 'check your email to confirm, then sign in';
 });
 document.getElementById('logoutBtn').addEventListener('click', () => sb.auth.signOut());
 
