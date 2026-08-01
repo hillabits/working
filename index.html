@@ -284,6 +284,31 @@
   }
   .pomo-stop-btn:hover{ opacity:.9; }
 
+  /* "time almost up" toast */
+  .wr-toast-wrap{
+    position:fixed; top:18px; right:18px; z-index:9999;
+    display:flex; flex-direction:column; gap:10px; align-items:flex-end;
+    pointer-events:none;
+  }
+  .wr-toast{
+    pointer-events:auto;
+    display:flex; align-items:center; gap:10px;
+    background:var(--surface-2); border:1px solid var(--night); border-radius:10px;
+    padding:12px 16px; max-width:320px;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text); line-height:1.5;
+    box-shadow:0 8px 24px rgba(0,0,0,.35), 0 0 0 1px var(--night-glow);
+    animation: wr-toast-in .22s ease-out;
+  }
+  .wr-toast b{ color:var(--night); }
+  @keyframes wr-toast-in{
+    from{ opacity:0; transform:translateY(-8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @media (max-width:560px){
+    .wr-toast-wrap{ left:14px; right:14px; top:14px; align-items:stretch; }
+    .wr-toast{ max-width:none; }
+  }
+
   /* custom timer / stopwatch page */
   .ct-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
   .ct-title{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; }
@@ -389,6 +414,7 @@
 </style>
 </head>
 <body>
+<div class="wr-toast-wrap" id="wrToastWrap"></div>
 
 <div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
   <div style="max-width:360px;width:100%;text-align:center;">
@@ -584,16 +610,70 @@ function releaseWakeLockIfIdle(){
     wakeLock = null;
   }
 }
+// --- shared audio-context registry: a WebAudio context can be left "suspended" by the browser
+// unless it was created/resumed off a very recent user gesture. Every place that creates an
+// alarm AudioContext registers a getter here so it can be nudged back to running the moment the
+// tab is foregrounded again (see resyncRunningPomos below), instead of possibly staying silent.
+const wrAudioResumers = [];
+function wrRegisterAudioCtx(getCtx){ wrAudioResumers.push(getCtx); }
+function wrResumeAudioContexts(){
+  wrAudioResumers.forEach(getCtx => {
+    const ctx = getCtx();
+    if(ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+  });
+}
+
+// --- "time almost up" toast + system notification, shared by every timer on the page ---
+const wrToastWrap = document.getElementById('wrToastWrap');
+function showToast(message, ms = 6000){
+  const t = document.createElement('div');
+  t.className = 'wr-toast';
+  t.innerHTML = `<span>⏳ <b>${message}</b></span>`;
+  wrToastWrap.appendChild(t);
+  setTimeout(() => t.remove(), ms);
+}
+function notifyAlmostDone(label){
+  showToast(`${label} — 30 seconds left`);
+  if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification('Weekly Rhythm', { body: `${label} — 30 seconds left`, tag: 'wr-almost-done' }); }catch(e){}
+  }
+  if('vibrate' in navigator){ try{ navigator.vibrate(150); }catch(e){} }
+}
+
+// Tick every currently-running timer once. Shared by the visibility resync below and by the
+// background heartbeat further down, so both paths stay in sync instead of duplicating the loop.
+function tickAllRunning(){
+  pomoRefs.forEach(r => { if(r.pomo.running) r.tick(); });
+  if(ctState && ctState.running) ctTick();
+}
+
 // Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
 // visible/focused again — covers cases where the interval was throttled or fully suspended.
 function resyncRunningPomos(){
-  pomoRefs.forEach(r => { if(r.pomo.running) r.tick(); });
-  if(ctState && ctState.running) ctTick();
+  tickAllRunning();
   if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) acquireWakeLock();
+  wrResumeAudioContexts();
 }
 document.addEventListener('visibilitychange', () => { if(!document.hidden) resyncRunningPomos(); });
 window.addEventListener('focus', resyncRunningPomos);
 window.addEventListener('pageshow', resyncRunningPomos);
+
+// --- background heartbeat: hidden/minimized tabs get their setInterval throttled (sometimes to
+// once a minute, or fully paused), which is why the alarm could fire late or silently miss
+// entirely. A dedicated Worker's timers are not clamped the same way the main thread's are, so
+// this drives an extra always-on tick from a worker as a backup to the normal per-timer
+// intervals below — tickAllRunning() is a no-op unless something is actually running, so this
+// stays cheap to leave on permanently.
+(function startBackgroundHeartbeat(){
+  try{
+    const src = "let id=null; onmessage=(e)=>{ if(e.data==='start' && !id) id=setInterval(()=>postMessage(1),250); };";
+    const worker = new Worker(URL.createObjectURL(new Blob([src], {type:'application/javascript'})));
+    worker.onmessage = tickAllRunning;
+    worker.postMessage('start');
+  }catch(e){
+    setInterval(tickAllRunning, 250); // Workers unavailable — fall back to a plain interval
+  }
+})();
 
 // --- view switcher: Weekly Rhythm <-> Productivity Matrix <-> Timer ---
 const scheduleView = document.getElementById('viewSchedule');
@@ -1222,7 +1302,7 @@ days.forEach((day, i) => {
     mode: 'focus', remaining: 25*60,
     running: false, timerId: null,
     sessions: 0, focusSeconds: 0,
-    ringing: false, alarmId: null,
+    ringing: false, alarmId: null, warned30: false,
     endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
     lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
   };
@@ -1241,20 +1321,26 @@ days.forEach((day, i) => {
   let audioCtx = null;
   function beep(){
     try{
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        wrRegisterAudioCtx(() => audioCtx);
+      }
       if(audioCtx.state === 'suspended') audioCtx.resume();
       const now = audioCtx.currentTime;
-      [0, 0.18].forEach(offset => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.0001, now + offset);
-        gain.gain.exponentialRampToValueAtTime(0.35, now + offset + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.16);
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start(now + offset);
-        osc.stop(now + offset + 0.2);
+      // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
+      [0, 0.22].forEach(offset => {
+        [880, 1320].forEach(freq => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.0001, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.24);
+        });
       });
     }catch(e){ /* audio unavailable — ignore */ }
   }
@@ -1263,7 +1349,8 @@ days.forEach((day, i) => {
     pomo.ringing = true;
     pomoEl.classList.add('ringing');
     beep();
-    pomo.alarmId = setInterval(beep, 1200);
+    pomo.alarmId = setInterval(beep, 900);
+    if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
     // Browsers often mute or suspend audio in background tabs, so the beep alone can be
     // silent while backgrounded — a system notification is the more reliable signal there.
     if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
@@ -1327,9 +1414,15 @@ days.forEach((day, i) => {
     creditElapsedFocus(now);
     pomo.remaining = Math.max(0, Math.round((pomo.endAt - now) / 1000));
 
+    if(pomo.remaining <= 30 && pomo.remaining > 0 && !pomo.warned30){
+      pomo.warned30 = true;
+      notifyAlmostDone(pomo.mode === 'break' ? 'Break' : 'Focus session');
+    }
+
     if(pomo.remaining <= 0){
       clearInterval(pomo.timerId);
       pomo.running = false;
+      pomo.warned30 = false;
       if(pomo.mode === 'focus'){
         pomo.sessions++;
         pomo.mode = 'break';
@@ -1365,6 +1458,12 @@ days.forEach((day, i) => {
       releaseWakeLockIfIdle();
     } else {
       ensureNotifyPermission();
+      // Warm up the alarm's AudioContext right on this click (a real user gesture) instead of
+      // waiting until the alarm fires — a context first created while the tab is backgrounded
+      // can be left permanently suspended by the browser, which is why the alarm sometimes
+      // never made a sound at all.
+      if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => audioCtx); }
+      if(audioCtx.state === 'suspended') audioCtx.resume();
       pomo.running = true;
       pomo.endAt = Date.now() + pomo.remaining * 1000;
       pomo.lastCredit = Date.now();
@@ -1380,6 +1479,7 @@ days.forEach((day, i) => {
   resetBtn.addEventListener('click', () => {
     if(pomo.ringing) stopRinging();
     pomo.running = false;
+    pomo.warned30 = false;
     clearInterval(pomo.timerId);
     pomo.mode = 'focus';
     pomo.remaining = pomo.workLen;
@@ -1491,7 +1591,7 @@ ctState = {
   targetSeconds: 15*60, remaining: 15*60, elapsedStopwatch: 0,
   endAt: null, runStartedAt: null, sessionStartedAt: null, sessionSeconds: 0,
   lastCredit: null, timerId: null,
-  ringing: false, alarmId: null, _statsSec: null
+  ringing: false, alarmId: null, warned30: false, _statsSec: null
 };
 
 const ctModeTimerBtn = document.getElementById('ctModeTimerBtn');
@@ -1517,18 +1617,24 @@ let ctDialLastFrac = 0;
 let ctAudioCtx = null;
 function ctBeep(){
   try{
-    ctAudioCtx = ctAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if(!ctAudioCtx){
+      ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      wrRegisterAudioCtx(() => ctAudioCtx);
+    }
     if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume();
     const now = ctAudioCtx.currentTime;
-    [0, 0.18].forEach(offset => {
-      const osc = ctAudioCtx.createOscillator();
-      const gain = ctAudioCtx.createGain();
-      osc.type = 'sine'; osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.0001, now + offset);
-      gain.gain.exponentialRampToValueAtTime(0.35, now + offset + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.16);
-      osc.connect(gain).connect(ctAudioCtx.destination);
-      osc.start(now + offset); osc.stop(now + offset + 0.2);
+    // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
+    [0, 0.22].forEach(offset => {
+      [880, 1320].forEach(freq => {
+        const osc = ctAudioCtx.createOscillator();
+        const gain = ctAudioCtx.createGain();
+        osc.type = 'triangle'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
+        osc.connect(gain).connect(ctAudioCtx.destination);
+        osc.start(now + offset); osc.stop(now + offset + 0.24);
+      });
     });
   }catch(e){ /* audio unavailable — ignore */ }
 }
@@ -1536,7 +1642,8 @@ function ctStartRinging(){
   ctState.ringing = true;
   ctPomodoroEl.classList.add('ringing');
   ctBeep();
-  ctState.alarmId = setInterval(ctBeep, 1200);
+  ctState.alarmId = setInterval(ctBeep, 900);
+  if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
   if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
     try{ new Notification('Weekly Rhythm', { body: "Timer's up.", tag: 'wr-timer' }); }catch(e){}
   }
@@ -1692,6 +1799,7 @@ function ctFinishSession(ring){
   ctState.sessionStartedAt = null;
   ctState.remaining = ctState.targetSeconds;
   ctState.elapsedStopwatch = 0;
+  ctState.warned30 = false;
   if(ring) ctStartRinging();
   releaseWakeLockIfIdle();
   renderCt();
@@ -1704,6 +1812,10 @@ function ctTick(){
   ctCreditElapsed(now);
   if(ctState.mode === 'timer'){
     ctState.remaining = Math.max(0, Math.round((ctState.endAt - now)/1000));
+    if(ctState.remaining <= 30 && ctState.remaining > 0 && !ctState.warned30){
+      ctState.warned30 = true;
+      notifyAlmostDone('Timer');
+    }
     if(ctState.remaining <= 0){ ctFinishSession(true); return; }
   }
   renderCt();
@@ -1744,6 +1856,12 @@ ctStartBtn.addEventListener('click', () => {
     releaseWakeLockIfIdle();
   } else {
     if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+    // Warm up the alarm's AudioContext right on this click (a real user gesture) instead of
+    // waiting until the alarm fires — a context first created while the tab is backgrounded
+    // can be left permanently suspended by the browser, which is why the alarm sometimes
+    // never made a sound at all.
+    if(!ctAudioCtx){ ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => ctAudioCtx); }
+    if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume();
     if(!ctState.sessionActive){
       ctState.sessionActive = true;
       ctState.sessionSeconds = 0;
