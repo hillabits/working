@@ -240,6 +240,7 @@
     padding:9px 16px; border-radius:8px; cursor:pointer; transition:border-color .15s, background .15s;
   }
   .pomo-btn:hover{ border-color:#3a3f4b; }
+  .pomo-btn:disabled{ opacity:.4; cursor:not-allowed; }
   .pomo-btn.start{ background:var(--night); border-color:var(--night); color:#0F1115; font-weight:600; }
   .pomo-btn.start.running{ background:var(--surface); color:var(--text); border-color:var(--day-soft); }
   .pomo-presets{ display:flex; gap:6px; margin-left:auto; }
@@ -282,6 +283,38 @@
     padding:8px 16px; border-radius:8px; cursor:pointer;
   }
   .pomo-stop-btn:hover{ opacity:.9; }
+
+  /* custom timer / stopwatch page */
+  .ct-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .ct-title{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; }
+  .ct-note{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); line-height:1.6; margin-bottom:18px; }
+  .ct-custom-min{
+    width:84px; background:transparent; border:1px solid var(--line); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 10px; border-radius:100px;
+  }
+  .ct-label-input{
+    width:100%; background:var(--surface); border:1px solid var(--line); color:var(--text);
+    font-family:'Inter',sans-serif; font-size:13px; padding:10px 12px; border-radius:8px;
+  }
+  .ct-history{ margin-top:28px; }
+  .ct-history-head{ font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:12px; }
+  .ct-history-list{ display:flex; flex-direction:column; gap:8px; }
+  .ct-history-empty{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-faint); }
+  .ct-row{
+    display:flex; align-items:center; gap:14px;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:10px 14px;
+  }
+  .ct-row-type{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--text-faint); border:1px solid var(--line); border-radius:100px; padding:3px 9px; flex:none;
+  }
+  .ct-row-label{ flex:1; font-size:13px; color:var(--text); min-width:80px; }
+  .ct-row-dur{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim); flex:none; }
+  .ct-row-del{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    border-radius:6px; width:24px; height:24px; cursor:pointer; flex:none; font-size:12px; line-height:1;
+  }
+  .ct-row-del:hover{ color:#d16b63; border-color:#d16b63; }
 
   /* view switcher */
   .view-switch{ display:flex; gap:8px; margin-bottom:36px; }
@@ -388,6 +421,7 @@
   <div class="view-switch">
     <button class="view-btn active" id="showScheduleBtn" type="button">Weekly Rhythm</button>
     <button class="view-btn" id="showMatrixBtn" type="button">Productivity Matrix</button>
+    <button class="view-btn" id="showTimerBtn" type="button">Timer</button>
   </div>
 
   <div id="viewSchedule">
@@ -450,6 +484,44 @@
     </div>
   </div>
 
+  <div id="viewTimer" hidden>
+    <div class="ct-head">
+      <div class="ct-title">Timer</div>
+      <span class="pomo-presets" id="ctModeSwitch">
+        <button class="pomo-preset-btn active" id="ctModeTimerBtn" type="button">Timer</button>
+        <button class="pomo-preset-btn" id="ctModeStopwatchBtn" type="button">Stopwatch</button>
+      </span>
+    </div>
+    <div class="ct-note">Running time here also counts toward today's productive progress, same as the pomodoro. History resets every day — delete an entry to correct its time if you forgot to stop it.</div>
+
+    <div class="pomodoro" id="ctPomodoro">
+      <div class="pomo-mode" id="ctModeTag">Timer</div>
+      <div class="pomo-time" id="ctTimeEl">25:00</div>
+      <div class="pomo-controls">
+        <button class="pomo-btn start" id="ctStartBtn" type="button">Start</button>
+        <button class="pomo-btn reset" id="ctResetBtn" type="button">Reset</button>
+      </div>
+      <span class="pomo-presets" id="ctDurationPresets">
+        <button class="pomo-preset-btn active" data-min="15" type="button">15m</button>
+        <button class="pomo-preset-btn" data-min="25" type="button">25m</button>
+        <button class="pomo-preset-btn" data-min="45" type="button">45m</button>
+        <button class="pomo-preset-btn" data-min="60" type="button">60m</button>
+        <input type="number" id="ctCustomMin" class="ct-custom-min" min="1" max="999" placeholder="custom min">
+      </span>
+      <input type="text" id="ctLabelInput" class="ct-label-input" maxlength="60" placeholder="What are you working on? (optional)">
+      <div class="pomo-alarm" id="ctAlarm">
+        <span class="pomo-alarm-text">⏰ Time's up — click Stop to silence</span>
+        <button class="pomo-stop-btn" id="ctStopAlarmBtn" type="button">Stop</button>
+      </div>
+    </div>
+
+    <div class="ct-history">
+      <div class="ct-history-head">Today's sessions</div>
+      <div class="ct-history-list" id="ctHistoryList"></div>
+      <div class="ct-history-empty" id="ctHistoryEmpty">Nothing logged yet today.</div>
+    </div>
+  </div>
+
 <!--
   CROSS-DEVICE SYNC: create an account (email + password, top of page) to save progress to
   Supabase and sync it live across devices. Signed out, everything still saves locally.
@@ -474,6 +546,7 @@ const SCALE_RANGE = SCALE_END - SCALE_START;
 // suspended, it snaps back to the correct remaining time the moment it's foregrounded again
 // instead of losing or "pausing" time.
 let wakeLock = null;
+let ctState = null; // forward declaration — the custom timer/stopwatch, built further below
 async function acquireWakeLock(){
   if(!('wakeLock' in navigator)) return;
   try{
@@ -482,40 +555,43 @@ async function acquireWakeLock(){
   }catch(e){ /* unavailable or denied — the endAt-based resync below still keeps time correct */ }
 }
 function releaseWakeLockIfIdle(){
-  if(wakeLock && !pomoRefs.some(r => r.pomo.running)){
+  if(wakeLock && !pomoRefs.some(r => r.pomo.running) && !(ctState && ctState.running)){
     wakeLock.release().catch(() => {});
     wakeLock = null;
   }
 }
-// Re-sync every running pomodoro the moment the page becomes visible/focused again — covers
-// cases where the interval was throttled or fully suspended while backgrounded.
+// Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
+// visible/focused again — covers cases where the interval was throttled or fully suspended.
 function resyncRunningPomos(){
   pomoRefs.forEach(r => { if(r.pomo.running) r.tick(); });
-  if(pomoRefs.some(r => r.pomo.running)) acquireWakeLock();
+  if(ctState && ctState.running) ctTick();
+  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) acquireWakeLock();
 }
 document.addEventListener('visibilitychange', () => { if(!document.hidden) resyncRunningPomos(); });
 window.addEventListener('focus', resyncRunningPomos);
 window.addEventListener('pageshow', resyncRunningPomos);
 
-// --- view switcher: Weekly Rhythm <-> Productivity Matrix ---
+// --- view switcher: Weekly Rhythm <-> Productivity Matrix <-> Timer ---
 const scheduleView = document.getElementById('viewSchedule');
 const matrixView = document.getElementById('viewMatrix');
+const timerView = document.getElementById('viewTimer');
 const showScheduleBtn = document.getElementById('showScheduleBtn');
 const showMatrixBtn = document.getElementById('showMatrixBtn');
+const showTimerBtn = document.getElementById('showTimerBtn');
 
-showScheduleBtn.addEventListener('click', () => {
-  scheduleView.hidden = false;
-  matrixView.hidden = true;
-  showScheduleBtn.classList.add('active');
-  showMatrixBtn.classList.remove('active');
-});
-showMatrixBtn.addEventListener('click', () => {
-  scheduleView.hidden = true;
-  matrixView.hidden = false;
-  showMatrixBtn.classList.add('active');
-  showScheduleBtn.classList.remove('active');
-  renderMatrix();
-});
+function showView(which){
+  scheduleView.hidden = which !== 'schedule';
+  matrixView.hidden = which !== 'matrix';
+  timerView.hidden = which !== 'timer';
+  showScheduleBtn.classList.toggle('active', which === 'schedule');
+  showMatrixBtn.classList.toggle('active', which === 'matrix');
+  showTimerBtn.classList.toggle('active', which === 'timer');
+  if(which === 'matrix') renderMatrix();
+  if(which === 'timer') renderCtHistory();
+}
+showScheduleBtn.addEventListener('click', () => showView('schedule'));
+showMatrixBtn.addEventListener('click', () => showView('matrix'));
+showTimerBtn.addEventListener('click', () => showView('timer'));
 
 // --- persistent focus log (per real calendar date, in localStorage) ---
 const FOCUS_LOG_KEY = 'wr_focus_log_v1';
@@ -571,7 +647,15 @@ function snapshotState(){
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
       sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds
-    }))
+    })),
+    customTimer: ctState ? {
+      mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
+      targetSeconds:ctState.targetSeconds, remaining:ctState.remaining, elapsedStopwatch:ctState.elapsedStopwatch,
+      endAt:ctState.endAt, runStartedAt:ctState.runStartedAt, sessionStartedAt:ctState.sessionStartedAt,
+      sessionSeconds:ctState.sessionSeconds, label:ctState.label
+    } : null,
+    // history resets every day, so this never accumulates more than one day's worth of entries
+    timerHistory: pruneTimerHistoryToToday()
   };
 }
 function persistLocal(){
@@ -599,6 +683,28 @@ function applyState(state, {rerenderMatrix} = {}){
     }
     r.render();
   });
+  if(state.timerHistory){
+    timerHistory = (state.timerHistory.date === dateKey(new Date())) ? state.timerHistory : { date: dateKey(new Date()), entries: [] };
+    saveTimerHistoryLocal();
+    renderCtHistory();
+  }
+  if(state.customTimer && ctState){
+    if(ctState.running) clearInterval(ctState.timerId);
+    Object.assign(ctState, state.customTimer);
+    if(ctState.running){
+      const now = Date.now();
+      if(ctState.mode === 'timer' && ctState.endAt){
+        const left = Math.round((ctState.endAt - now)/1000);
+        if(left <= 0){ ctState.running = false; ctState.remaining = 0; }
+        else { ctState.remaining = left; ctState.lastCredit = now; ctState.timerId = setInterval(ctTick, 250); acquireWakeLock(); }
+      } else if(ctState.mode === 'stopwatch'){
+        ctState.lastCredit = now;
+        ctState.timerId = setInterval(ctTick, 250);
+        acquireWakeLock();
+      }
+    }
+    renderCt();
+  }
   renderStats();
   if(rerenderMatrix && !matrixView.hidden) renderMatrix();
 }
@@ -650,6 +756,17 @@ function resetToDefaults(){
     });
     r.render();
   });
+  if(ctState){
+    clearInterval(ctState.timerId);
+    Object.assign(ctState, {
+      running:false, sessionActive:false, remaining:ctState.targetSeconds, elapsedStopwatch:0,
+      endAt:null, runStartedAt:null, sessionStartedAt:null, sessionSeconds:0, lastCredit:null, label:''
+    });
+    renderCt();
+  }
+  timerHistory = { date: dateKey(new Date()), entries: [] };
+  saveTimerHistoryLocal();
+  renderCtHistory();
   renderStats();
 }
 
@@ -1257,6 +1374,272 @@ days.forEach((day, i) => {
 
   dayPanels.push(panel);
 });
+
+// ============================================================================
+// Custom Timer / Stopwatch page
+// ============================================================================
+
+// --- today's session history — always reset on a new day, so it never grows the saved blob ---
+const TIMER_HISTORY_KEY = 'wr_timer_history_v1';
+let timerHistory = { date: dateKey(new Date()), entries: [] };
+function loadTimerHistoryLocal(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(TIMER_HISTORY_KEY) || 'null');
+    if(raw && raw.date === dateKey(new Date())) return raw;
+  }catch(e){}
+  return { date: dateKey(new Date()), entries: [] };
+}
+function saveTimerHistoryLocal(){
+  try{ localStorage.setItem(TIMER_HISTORY_KEY, JSON.stringify(timerHistory)); }catch(e){}
+}
+// called whenever the state is about to be saved/synced — drops yesterday's entries first
+function pruneTimerHistoryToToday(){
+  const today = dateKey(new Date());
+  if(timerHistory.date !== today){ timerHistory = { date: today, entries: [] }; saveTimerHistoryLocal(); }
+  return timerHistory;
+}
+timerHistory = loadTimerHistoryLocal();
+
+function addTimerHistoryEntry(entry){
+  pruneTimerHistoryToToday();
+  timerHistory.entries.unshift(entry);
+  saveTimerHistoryLocal();
+  renderCtHistory();
+}
+// removing an entry also un-credits the seconds it added to today's productive total — this is
+// the fix for "forgot to stop it": delete the mistaken entry and the progress bar corrects itself
+function deleteTimerHistoryEntry(id){
+  const idx = timerHistory.entries.findIndex(e => e.id === id);
+  if(idx === -1) return;
+  const entry = timerHistory.entries[idx];
+  timerHistory.entries.splice(idx, 1);
+  saveTimerHistoryLocal();
+  const log = loadFocusLog();
+  const k = dateKey(new Date());
+  log[k] = Math.max(0, (log[k] || 0) - entry.seconds);
+  saveFocusLog(log);
+  renderCtHistory();
+  renderStats();
+  persistLocal();
+}
+function renderCtHistory(){
+  pruneTimerHistoryToToday();
+  const list = document.getElementById('ctHistoryList');
+  const empty = document.getElementById('ctHistoryEmpty');
+  list.innerHTML = '';
+  empty.style.display = timerHistory.entries.length ? 'none' : 'block';
+  timerHistory.entries.forEach(entry => {
+    const mins = entry.seconds / 60;
+    const dur = mins < 1 ? Math.round(entry.seconds) + 's' : minsToHM(mins);
+    const row = document.createElement('div');
+    row.className = 'ct-row';
+    row.innerHTML = `
+      <span class="ct-row-type">${entry.type === 'timer' ? 'Timer' : 'Stopwatch'}</span>
+      <span class="ct-row-label"></span>
+      <span class="ct-row-dur">${dur}</span>
+      <button type="button" class="ct-row-del" title="Remove and un-credit this time">✕</button>`;
+    row.querySelector('.ct-row-label').textContent = entry.label || '—';
+    row.querySelector('.ct-row-del').addEventListener('click', () => deleteTimerHistoryEntry(entry.id));
+    list.appendChild(row);
+  });
+}
+
+// --- the timer/stopwatch engine itself — same endAt-based, background-safe pattern as the pomodoro ---
+ctState = {
+  mode: 'timer', running: false, sessionActive: false,
+  targetSeconds: 15*60, remaining: 15*60, elapsedStopwatch: 0,
+  endAt: null, runStartedAt: null, sessionStartedAt: null, sessionSeconds: 0,
+  label: '', lastCredit: null, timerId: null,
+  ringing: false, alarmId: null, _statsSec: null
+};
+
+const ctModeTimerBtn = document.getElementById('ctModeTimerBtn');
+const ctModeStopwatchBtn = document.getElementById('ctModeStopwatchBtn');
+const ctModeTag = document.getElementById('ctModeTag');
+const ctTimeEl = document.getElementById('ctTimeEl');
+const ctStartBtn = document.getElementById('ctStartBtn');
+const ctResetBtn = document.getElementById('ctResetBtn');
+const ctDurationPresets = document.getElementById('ctDurationPresets');
+const ctPresetBtns = ctDurationPresets.querySelectorAll('.pomo-preset-btn');
+const ctCustomMin = document.getElementById('ctCustomMin');
+const ctLabelInput = document.getElementById('ctLabelInput');
+const ctPomodoroEl = document.getElementById('ctPomodoro');
+const ctAlarmEl = document.getElementById('ctAlarm');
+const ctStopAlarmBtn = document.getElementById('ctStopAlarmBtn');
+
+let ctAudioCtx = null;
+function ctBeep(){
+  try{
+    ctAudioCtx = ctAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume();
+    const now = ctAudioCtx.currentTime;
+    [0, 0.18].forEach(offset => {
+      const osc = ctAudioCtx.createOscillator();
+      const gain = ctAudioCtx.createGain();
+      osc.type = 'sine'; osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.0001, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.35, now + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.16);
+      osc.connect(gain).connect(ctAudioCtx.destination);
+      osc.start(now + offset); osc.stop(now + offset + 0.2);
+    });
+  }catch(e){ /* audio unavailable — ignore */ }
+}
+function ctStartRinging(){
+  ctState.ringing = true;
+  ctPomodoroEl.classList.add('ringing');
+  ctBeep();
+  ctState.alarmId = setInterval(ctBeep, 1200);
+  if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification('Weekly Rhythm', { body: "Timer's up.", tag: 'wr-timer' }); }catch(e){}
+  }
+}
+function ctStopRinging(){
+  ctState.ringing = false;
+  ctPomodoroEl.classList.remove('ringing');
+  clearInterval(ctState.alarmId);
+  ctState.alarmId = null;
+}
+ctStopAlarmBtn.addEventListener('click', ctStopRinging);
+
+function ctClockFmt(s){
+  s = Math.max(0, Math.round(s));
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  const mm = String(m).padStart(2,'0'), ss = String(sec).padStart(2,'0');
+  return h > 0 ? h + ':' + mm + ':' + ss : mm + ':' + ss;
+}
+function ctStopwatchElapsed(){
+  return ctState.elapsedStopwatch + (ctState.running && ctState.runStartedAt ? (Date.now() - ctState.runStartedAt)/1000 : 0);
+}
+function renderCt(){
+  const isTimer = ctState.mode === 'timer';
+  ctModeTag.textContent = isTimer ? 'Timer' : 'Stopwatch';
+  ctModeTag.classList.toggle('break', !isTimer);
+  ctTimeEl.textContent = isTimer ? ctClockFmt(ctState.remaining) : ctClockFmt(ctStopwatchElapsed());
+  ctStartBtn.textContent = ctState.running ? 'Pause' : (ctState.sessionActive ? 'Resume' : 'Start');
+  ctStartBtn.classList.toggle('running', ctState.running);
+  ctResetBtn.disabled = !ctState.sessionActive && !ctState.running;
+  ctDurationPresets.style.display = isTimer ? 'flex' : 'none';
+  ctPresetBtns.forEach(b => b.disabled = ctState.sessionActive);
+  ctCustomMin.disabled = ctState.sessionActive;
+  ctModeTimerBtn.disabled = ctState.sessionActive;
+  ctModeStopwatchBtn.disabled = ctState.sessionActive;
+  ctModeTimerBtn.classList.toggle('active', isTimer);
+  ctModeStopwatchBtn.classList.toggle('active', !isTimer);
+}
+
+function ctCreditElapsed(now){
+  if(ctState.lastCredit != null){
+    const elapsed = Math.floor((now - ctState.lastCredit) / 1000);
+    if(elapsed > 0){ addFocusSeconds(elapsed); ctState.sessionSeconds += elapsed; }
+  }
+  ctState.lastCredit = now;
+}
+function ctFinishSession(ring){
+  clearInterval(ctState.timerId);
+  ctState.running = false;
+  if(ctState.sessionActive && ctState.sessionSeconds > 0){
+    addTimerHistoryEntry({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      type: ctState.mode, label: ctState.label.trim(),
+      seconds: ctState.sessionSeconds, startedAt: ctState.sessionStartedAt, endedAt: Date.now()
+    });
+  }
+  ctState.sessionActive = false;
+  ctState.sessionSeconds = 0;
+  ctState.lastCredit = null;
+  ctState.endAt = null;
+  ctState.runStartedAt = null;
+  ctState.sessionStartedAt = null;
+  ctState.remaining = ctState.targetSeconds;
+  ctState.elapsedStopwatch = 0;
+  if(ring) ctStartRinging();
+  releaseWakeLockIfIdle();
+  renderCt();
+  renderStats();
+  persistLocal();
+}
+function ctTick(){
+  if(!ctState.running) return;
+  const now = Date.now();
+  ctCreditElapsed(now);
+  if(ctState.mode === 'timer'){
+    ctState.remaining = Math.max(0, Math.round((ctState.endAt - now)/1000));
+    if(ctState.remaining <= 0){ ctFinishSession(true); return; }
+  }
+  renderCt();
+  const nowSec = Math.floor(now/1000);
+  if(nowSec !== ctState._statsSec){ ctState._statsSec = nowSec; renderStats(); }
+}
+
+ctModeTimerBtn.addEventListener('click', () => {
+  if(ctState.sessionActive) return;
+  ctState.mode = 'timer'; ctState.remaining = ctState.targetSeconds;
+  renderCt();
+});
+ctModeStopwatchBtn.addEventListener('click', () => {
+  if(ctState.sessionActive) return;
+  ctState.mode = 'stopwatch';
+  renderCt();
+});
+ctPresetBtns.forEach(b => {
+  b.addEventListener('click', () => {
+    if(ctState.sessionActive) return;
+    ctPresetBtns.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    ctState.targetSeconds = Number(b.dataset.min) * 60;
+    ctState.remaining = ctState.targetSeconds;
+    ctCustomMin.value = '';
+    renderCt();
+  });
+});
+ctCustomMin.addEventListener('change', () => {
+  if(ctState.sessionActive) return;
+  const v = Math.max(1, Math.min(999, Math.round(Number(ctCustomMin.value))));
+  if(!v) return;
+  ctPresetBtns.forEach(x => x.classList.remove('active'));
+  ctState.targetSeconds = v * 60;
+  ctState.remaining = ctState.targetSeconds;
+  renderCt();
+});
+ctLabelInput.addEventListener('change', () => { ctState.label = ctLabelInput.value; });
+
+ctStartBtn.addEventListener('click', () => {
+  if(ctState.ringing) ctStopRinging();
+  if(ctState.running){
+    // pause — credit what's elapsed so far, freeze the clock, keep the session open for Resume
+    ctCreditElapsed(Date.now());
+    if(ctState.mode === 'timer') ctState.remaining = Math.max(0, Math.round((ctState.endAt - Date.now())/1000));
+    else ctState.elapsedStopwatch = ctStopwatchElapsed();
+    ctState.running = false;
+    clearInterval(ctState.timerId);
+    releaseWakeLockIfIdle();
+  } else {
+    if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+    if(!ctState.sessionActive){
+      ctState.sessionActive = true;
+      ctState.sessionSeconds = 0;
+      ctState.sessionStartedAt = Date.now();
+      ctState.label = ctLabelInput.value;
+    }
+    ctState.running = true;
+    ctState.lastCredit = Date.now();
+    if(ctState.mode === 'timer') ctState.endAt = Date.now() + ctState.remaining * 1000;
+    else ctState.runStartedAt = Date.now();
+    ctState.timerId = setInterval(ctTick, 250);
+    acquireWakeLock();
+  }
+  renderCt();
+  persistLocal();
+});
+ctResetBtn.addEventListener('click', () => {
+  if(ctState.ringing) ctStopRinging();
+  ctFinishSession(false); // logs whatever was accumulated (even partial) so it stays correctable
+  ctLabelInput.value = '';
+});
+
+renderCt();
+renderCtHistory();
 
 initSync();
 
