@@ -288,14 +288,31 @@
   .ct-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
   .ct-title{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; }
   .ct-note{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); line-height:1.6; margin-bottom:18px; }
-  .ct-custom-min{
-    width:84px; background:transparent; border:1px solid var(--line); color:var(--text);
-    font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 10px; border-radius:100px;
+
+  /* draggable custom-time dial */
+  .ct-pomodoro{ flex-direction:column; align-items:center; }
+  .ct-pomodoro .pomo-controls{ justify-content:center; }
+  .ct-pomodoro .pomo-presets{ margin-left:0; width:100%; justify-content:center; }
+  .ct-pomodoro .pomo-alarm{ margin-top:6px; }
+  .ct-dial-wrap{ position:relative; width:220px; height:220px; max-width:70vw; max-height:70vw; margin:2px auto 8px; touch-action:none; }
+  .ct-dial{ width:100%; height:100%; display:block; }
+  .ct-dial-wrap:not(.locked) .ct-dial{ cursor:pointer; }
+  .ct-dial-wrap.locked .ct-dial{ cursor:default; }
+  .ct-dial-track{ fill:none; stroke:var(--line); stroke-width:10; }
+  .ct-dial-arc{ fill:none; stroke:var(--night); stroke-width:10; stroke-linecap:round; }
+  .ct-dial.stopwatch-mode .ct-dial-arc{ stroke:var(--day-soft); }
+  .ct-dial-handle{ fill:var(--bg); stroke:var(--night); stroke-width:3; }
+  .ct-dial-wrap.locked .ct-dial-handle{ display:none; }
+  .ct-dial-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    pointer-events:none;
   }
-  .ct-label-input{
-    width:100%; background:var(--surface); border:1px solid var(--line); color:var(--text);
-    font-family:'Inter',sans-serif; font-size:13px; padding:10px 12px; border-radius:8px;
+  .ct-dial-hint{
+    font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.06em; color:var(--text-faint);
+    text-transform:uppercase; opacity:0; transition:opacity .15s;
   }
+  .ct-dial-wrap:not(.locked) .ct-dial-hint{ opacity:1; }
+
   .ct-history{ margin-top:28px; }
   .ct-history-head{ font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:12px; }
   .ct-history-list{ display:flex; flex-direction:column; gap:8px; }
@@ -308,8 +325,7 @@
     font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em;
     color:var(--text-faint); border:1px solid var(--line); border-radius:100px; padding:3px 9px; flex:none;
   }
-  .ct-row-label{ flex:1; font-size:13px; color:var(--text); min-width:80px; }
-  .ct-row-dur{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim); flex:none; }
+  .ct-row-dur{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim); flex:none; margin-left:auto; }
   .ct-row-del{
     background:none; border:1px solid var(--line); color:var(--text-faint);
     border-radius:6px; width:24px; height:24px; cursor:pointer; flex:none; font-size:12px; line-height:1;
@@ -492,23 +508,31 @@
         <button class="pomo-preset-btn" id="ctModeStopwatchBtn" type="button">Stopwatch</button>
       </span>
     </div>
-    <div class="ct-note">Running time here also counts toward today's productive progress, same as the pomodoro. History resets every day — delete an entry to correct its time if you forgot to stop it.</div>
+    <div class="ct-note">Running time here also counts toward today's productive progress, same as the pomodoro. Drag the dial to set a custom time. History resets every day — delete an entry to correct its time if you forgot to stop it.</div>
 
-    <div class="pomodoro" id="ctPomodoro">
-      <div class="pomo-mode" id="ctModeTag">Timer</div>
-      <div class="pomo-time" id="ctTimeEl">25:00</div>
+    <div class="pomodoro ct-pomodoro" id="ctPomodoro">
+      <div class="ct-dial-wrap" id="ctDialWrap">
+        <svg class="ct-dial" id="ctDial" viewBox="0 0 220 220">
+          <circle class="ct-dial-track" cx="110" cy="110" r="96"></circle>
+          <path class="ct-dial-arc" id="ctDialArc" d=""></path>
+          <circle class="ct-dial-handle" id="ctDialHandle" cx="110" cy="14" r="9"></circle>
+        </svg>
+        <div class="ct-dial-center">
+          <div class="pomo-mode" id="ctModeTag">Timer</div>
+          <div class="pomo-time" id="ctTimeEl">25:00</div>
+          <div class="ct-dial-hint">Drag to set time</div>
+        </div>
+      </div>
       <div class="pomo-controls">
         <button class="pomo-btn start" id="ctStartBtn" type="button">Start</button>
-        <button class="pomo-btn reset" id="ctResetBtn" type="button">Reset</button>
+        <button class="pomo-btn reset" id="ctResetBtn" type="button">Stop</button>
       </div>
       <span class="pomo-presets" id="ctDurationPresets">
         <button class="pomo-preset-btn active" data-min="15" type="button">15m</button>
         <button class="pomo-preset-btn" data-min="25" type="button">25m</button>
         <button class="pomo-preset-btn" data-min="45" type="button">45m</button>
         <button class="pomo-preset-btn" data-min="60" type="button">60m</button>
-        <input type="number" id="ctCustomMin" class="ct-custom-min" min="1" max="999" placeholder="custom min">
       </span>
-      <input type="text" id="ctLabelInput" class="ct-label-input" maxlength="60" placeholder="What are you working on? (optional)">
       <div class="pomo-alarm" id="ctAlarm">
         <span class="pomo-alarm-text">⏰ Time's up — click Stop to silence</span>
         <button class="pomo-stop-btn" id="ctStopAlarmBtn" type="button">Stop</button>
@@ -614,6 +638,9 @@ function addFocusSeconds(sec){
   log[k] = (log[k] || 0) + sec;
   saveFocusLog(log);
   queueCloudPush();
+  // keep the productivity matrix's reached/not-reached status live if it happens to be open
+  // while a timer or pomodoro is running in the background
+  if(typeof matrixView !== 'undefined' && matrixView && !matrixView.hidden) renderMatrix();
 }
 // daily target minutes for a given date = that weekday's scheduled productive total
 function targetMinutesFor(date){
@@ -652,7 +679,7 @@ function snapshotState(){
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
       targetSeconds:ctState.targetSeconds, remaining:ctState.remaining, elapsedStopwatch:ctState.elapsedStopwatch,
       endAt:ctState.endAt, runStartedAt:ctState.runStartedAt, sessionStartedAt:ctState.sessionStartedAt,
-      sessionSeconds:ctState.sessionSeconds, label:ctState.label
+      sessionSeconds:ctState.sessionSeconds
     } : null,
     // history resets every day, so this never accumulates more than one day's worth of entries
     timerHistory: pruneTimerHistoryToToday()
@@ -760,7 +787,7 @@ function resetToDefaults(){
     clearInterval(ctState.timerId);
     Object.assign(ctState, {
       running:false, sessionActive:false, remaining:ctState.targetSeconds, elapsedStopwatch:0,
-      endAt:null, runStartedAt:null, sessionStartedAt:null, sessionSeconds:0, lastCredit:null, label:''
+      endAt:null, runStartedAt:null, sessionStartedAt:null, sessionSeconds:0, lastCredit:null
     });
     renderCt();
   }
@@ -1435,10 +1462,8 @@ function renderCtHistory(){
     row.className = 'ct-row';
     row.innerHTML = `
       <span class="ct-row-type">${entry.type === 'timer' ? 'Timer' : 'Stopwatch'}</span>
-      <span class="ct-row-label"></span>
       <span class="ct-row-dur">${dur}</span>
       <button type="button" class="ct-row-del" title="Remove and un-credit this time">✕</button>`;
-    row.querySelector('.ct-row-label').textContent = entry.label || '—';
     row.querySelector('.ct-row-del').addEventListener('click', () => deleteTimerHistoryEntry(entry.id));
     list.appendChild(row);
   });
@@ -1449,7 +1474,7 @@ ctState = {
   mode: 'timer', running: false, sessionActive: false,
   targetSeconds: 15*60, remaining: 15*60, elapsedStopwatch: 0,
   endAt: null, runStartedAt: null, sessionStartedAt: null, sessionSeconds: 0,
-  label: '', lastCredit: null, timerId: null,
+  lastCredit: null, timerId: null,
   ringing: false, alarmId: null, _statsSec: null
 };
 
@@ -1461,11 +1486,17 @@ const ctStartBtn = document.getElementById('ctStartBtn');
 const ctResetBtn = document.getElementById('ctResetBtn');
 const ctDurationPresets = document.getElementById('ctDurationPresets');
 const ctPresetBtns = ctDurationPresets.querySelectorAll('.pomo-preset-btn');
-const ctCustomMin = document.getElementById('ctCustomMin');
-const ctLabelInput = document.getElementById('ctLabelInput');
 const ctPomodoroEl = document.getElementById('ctPomodoro');
 const ctAlarmEl = document.getElementById('ctAlarm');
 const ctStopAlarmBtn = document.getElementById('ctStopAlarmBtn');
+const ctDialWrap = document.getElementById('ctDialWrap');
+const ctDialSvg = document.getElementById('ctDial');
+const ctDialArc = document.getElementById('ctDialArc');
+const ctDialHandle = document.getElementById('ctDialHandle');
+const CT_DIAL_MAX_MIN = 180; // custom dial supports up to 3 laps (3 hours)
+let ctDialDragging = false;
+let ctDialLaps = 0;
+let ctDialLastFrac = 0;
 
 let ctAudioCtx = null;
 function ctBeep(){
@@ -1511,6 +1542,90 @@ function ctClockFmt(s){
 function ctStopwatchElapsed(){
   return ctState.elapsedStopwatch + (ctState.running && ctState.runStartedAt ? (Date.now() - ctState.runStartedAt)/1000 : 0);
 }
+
+// --- custom-time dial: drag directly on the clock face to set a duration, instead of typing a number ---
+function ctDialEnabled(){
+  return ctState.mode === 'timer' && !ctState.sessionActive;
+}
+function ctDialPoint(fraction){
+  const r = 96, cx = 110, cy = 110;
+  const angle = Math.min(Math.max(fraction, 0), 0.9999) * 2 * Math.PI;
+  return { x: cx + r * Math.sin(angle), y: cy - r * Math.cos(angle) };
+}
+function ctDialArcPath(fraction){
+  if(fraction <= 0) return '';
+  const r = 96, cx = 110, cy = 110;
+  const p = ctDialPoint(fraction);
+  const angle = Math.min(fraction, 0.9999) * 2 * Math.PI;
+  const largeArc = angle > Math.PI ? 1 : 0;
+  return `M ${cx} ${cy - r} A ${r} ${r} 0 ${largeArc} 1 ${p.x} ${p.y}`;
+}
+function ctFracForSeconds(sec){
+  if(sec <= 0) return 0;
+  const m = sec % 3600;
+  return m === 0 ? 1 : m / 3600;
+}
+function renderCtDial(){
+  const isTimer = ctState.mode === 'timer';
+  ctDialSvg.classList.toggle('stopwatch-mode', !isTimer);
+  ctDialWrap.classList.toggle('locked', !ctDialEnabled());
+  let frac;
+  if(isTimer){
+    frac = ctState.sessionActive ? ctFracForSeconds(ctState.remaining) : ctFracForSeconds(ctState.targetSeconds);
+  } else {
+    frac = ctFracForSeconds(Math.round(ctStopwatchElapsed()));
+  }
+  ctDialArc.setAttribute('d', ctDialArcPath(frac));
+  const p = ctDialPoint(frac);
+  ctDialHandle.setAttribute('cx', p.x);
+  ctDialHandle.setAttribute('cy', p.y);
+}
+function ctDialAngleFraction(evt){
+  const rect = ctDialSvg.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+  const dx = evt.clientX - cx, dy = evt.clientY - cy;
+  let angle = Math.atan2(dx, -dy);
+  if(angle < 0) angle += Math.PI * 2;
+  return angle / (Math.PI * 2);
+}
+function ctDialApplyMinutes(minutes){
+  minutes = Math.max(1, Math.min(CT_DIAL_MAX_MIN, minutes));
+  ctPresetBtns.forEach(b => b.classList.remove('active'));
+  ctState.targetSeconds = minutes * 60;
+  ctState.remaining = ctState.targetSeconds;
+  renderCt();
+}
+function ctDialPointerDown(evt){
+  if(!ctDialEnabled()) return;
+  evt.preventDefault();
+  ctDialDragging = true;
+  try{ ctDialSvg.setPointerCapture(evt.pointerId); }catch(e){}
+  const curMin = Math.max(1, Math.round(ctState.targetSeconds / 60));
+  ctDialLaps = Math.floor((curMin - 1) / 60);
+  const frac = ctDialAngleFraction(evt);
+  ctDialLastFrac = frac;
+  ctDialApplyMinutes(ctDialLaps * 60 + Math.round(frac * 60));
+}
+function ctDialPointerMove(evt){
+  if(!ctDialDragging) return;
+  const frac = ctDialAngleFraction(evt);
+  const diff = frac - ctDialLastFrac;
+  if(diff < -0.5) ctDialLaps++;
+  else if(diff > 0.5) ctDialLaps--;
+  ctDialLastFrac = frac;
+  ctDialApplyMinutes(ctDialLaps * 60 + Math.round(frac * 60));
+}
+function ctDialPointerUp(evt){
+  if(!ctDialDragging) return;
+  ctDialDragging = false;
+  try{ ctDialSvg.releasePointerCapture(evt.pointerId); }catch(e){}
+  persistLocal();
+}
+ctDialSvg.addEventListener('pointerdown', ctDialPointerDown);
+ctDialSvg.addEventListener('pointermove', ctDialPointerMove);
+ctDialSvg.addEventListener('pointerup', ctDialPointerUp);
+ctDialSvg.addEventListener('pointercancel', ctDialPointerUp);
+
 function renderCt(){
   const isTimer = ctState.mode === 'timer';
   ctModeTag.textContent = isTimer ? 'Timer' : 'Stopwatch';
@@ -1518,14 +1633,15 @@ function renderCt(){
   ctTimeEl.textContent = isTimer ? ctClockFmt(ctState.remaining) : ctClockFmt(ctStopwatchElapsed());
   ctStartBtn.textContent = ctState.running ? 'Pause' : (ctState.sessionActive ? 'Resume' : 'Start');
   ctStartBtn.classList.toggle('running', ctState.running);
+  ctResetBtn.textContent = 'Stop';
   ctResetBtn.disabled = !ctState.sessionActive && !ctState.running;
   ctDurationPresets.style.display = isTimer ? 'flex' : 'none';
   ctPresetBtns.forEach(b => b.disabled = ctState.sessionActive);
-  ctCustomMin.disabled = ctState.sessionActive;
   ctModeTimerBtn.disabled = ctState.sessionActive;
   ctModeStopwatchBtn.disabled = ctState.sessionActive;
   ctModeTimerBtn.classList.toggle('active', isTimer);
   ctModeStopwatchBtn.classList.toggle('active', !isTimer);
+  renderCtDial();
 }
 
 function ctCreditElapsed(now){
@@ -1541,7 +1657,7 @@ function ctFinishSession(ring){
   if(ctState.sessionActive && ctState.sessionSeconds > 0){
     addTimerHistoryEntry({
       id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-      type: ctState.mode, label: ctState.label.trim(),
+      type: ctState.mode,
       seconds: ctState.sessionSeconds, startedAt: ctState.sessionStartedAt, endedAt: Date.now()
     });
   }
@@ -1589,20 +1705,9 @@ ctPresetBtns.forEach(b => {
     b.classList.add('active');
     ctState.targetSeconds = Number(b.dataset.min) * 60;
     ctState.remaining = ctState.targetSeconds;
-    ctCustomMin.value = '';
     renderCt();
   });
 });
-ctCustomMin.addEventListener('change', () => {
-  if(ctState.sessionActive) return;
-  const v = Math.max(1, Math.min(999, Math.round(Number(ctCustomMin.value))));
-  if(!v) return;
-  ctPresetBtns.forEach(x => x.classList.remove('active'));
-  ctState.targetSeconds = v * 60;
-  ctState.remaining = ctState.targetSeconds;
-  renderCt();
-});
-ctLabelInput.addEventListener('change', () => { ctState.label = ctLabelInput.value; });
 
 ctStartBtn.addEventListener('click', () => {
   if(ctState.ringing) ctStopRinging();
@@ -1620,7 +1725,6 @@ ctStartBtn.addEventListener('click', () => {
       ctState.sessionActive = true;
       ctState.sessionSeconds = 0;
       ctState.sessionStartedAt = Date.now();
-      ctState.label = ctLabelInput.value;
     }
     ctState.running = true;
     ctState.lastCredit = Date.now();
@@ -1635,7 +1739,6 @@ ctStartBtn.addEventListener('click', () => {
 ctResetBtn.addEventListener('click', () => {
   if(ctState.ringing) ctStopRinging();
   ctFinishSession(false); // logs whatever was accumulated (even partial) so it stays correctable
-  ctLabelInput.value = '';
 });
 
 renderCt();
