@@ -127,8 +127,6 @@
     transition:border-color .15s, color .15s, background .15s;
   }
   .name-chip:hover{ color:var(--text); border-color:var(--line); background:var(--surface); }
-  .name-chip svg{ width:12px; height:12px; flex:none; opacity:.55; transition:opacity .15s; }
-  .name-chip:hover svg{ opacity:1; }
   .day-head-right{ display:flex; align-items:center; gap:10px; }
   .day-edit-btn{
     background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
@@ -361,7 +359,6 @@
 <div id="authBar" style="position:fixed;top:0;left:0;right:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
   <button id="editNameBtn" type="button" class="name-chip" title="Set a display name">
     <span id="userLabel"></span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
   </button>
   <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
     <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
@@ -470,6 +467,36 @@ const SCALE_START = 450;   // 7:30
 const SCALE_END   = 1500;  // 25:00 (1:00 AM)
 const SCALE_RANGE = SCALE_END - SCALE_START;
 
+// --- keep the screen awake while a pomodoro is running, so mobile auto-lock doesn't suspend
+// the tab mid-session. This only prevents the OS's idle-timeout sleep — it can't override a
+// manual power-button lock, and no website API can. The countdown is still safe either way:
+// it's driven off a fixed end-timestamp (see pomoTick below), so even if the tab does get
+// suspended, it snaps back to the correct remaining time the moment it's foregrounded again
+// instead of losing or "pausing" time.
+let wakeLock = null;
+async function acquireWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  }catch(e){ /* unavailable or denied — the endAt-based resync below still keeps time correct */ }
+}
+function releaseWakeLockIfIdle(){
+  if(wakeLock && !pomoRefs.some(r => r.pomo.running)){
+    wakeLock.release().catch(() => {});
+    wakeLock = null;
+  }
+}
+// Re-sync every running pomodoro the moment the page becomes visible/focused again — covers
+// cases where the interval was throttled or fully suspended while backgrounded.
+function resyncRunningPomos(){
+  pomoRefs.forEach(r => { if(r.pomo.running) r.tick(); });
+  if(pomoRefs.some(r => r.pomo.running)) acquireWakeLock();
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) resyncRunningPomos(); });
+window.addEventListener('focus', resyncRunningPomos);
+window.addEventListener('pageshow', resyncRunningPomos);
+
 // --- view switcher: Weekly Rhythm <-> Productivity Matrix ---
 const scheduleView = document.getElementById('viewSchedule');
 const matrixView = document.getElementById('viewMatrix');
@@ -568,7 +595,7 @@ function applyState(state, {rerenderMatrix} = {}){
     if(r.pomo.running && r.pomo.endAt){
       const left = Math.round((r.pomo.endAt - Date.now())/1000);
       if(left <= 0){ r.pomo.running = false; r.pomo.remaining = 0; }
-      else { r.pomo.remaining = left; r.pomo.lastCredit = Date.now(); r.pomo.timerId = setInterval(r.tick, 250); }
+      else { r.pomo.remaining = left; r.pomo.lastCredit = Date.now(); r.pomo.timerId = setInterval(r.tick, 250); acquireWakeLock(); }
     }
     r.render();
   });
@@ -1163,18 +1190,10 @@ days.forEach((day, i) => {
       }
       startRinging();
       persistLocal();
+      releaseWakeLockIfIdle();
     }
     renderPomo();
   }
-
-  // Background tabs (and locked mobile screens) throttle or fully suspend setInterval, which
-  // is what made the countdown look "paused". Recomputing remaining from a fixed end timestamp
-  // (instead of decrementing once per tick) means whenever the tick DOES fire — even minutes
-  // late — it snaps straight to the correct value. This resync on tab-focus catches the case
-  // where the interval was suspended entirely and only resumes once the tab is visible again.
-  document.addEventListener('visibilitychange', () => {
-    if(!document.hidden && pomo.running) pomoTick();
-  });
 
   function ensureNotifyPermission(){
     if('Notification' in window && Notification.permission === 'default'){
@@ -1189,6 +1208,7 @@ days.forEach((day, i) => {
       pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
       pomo.running = false;
       clearInterval(pomo.timerId);
+      releaseWakeLockIfIdle();
     } else {
       ensureNotifyPermission();
       pomo.running = true;
@@ -1197,6 +1217,7 @@ days.forEach((day, i) => {
       // Tick every 250ms so the visible countdown feels smooth; when foregrounded, throttling
       // has no effect on correctness since every tick re-derives remaining from endAt.
       pomo.timerId = setInterval(pomoTick, 250);
+      acquireWakeLock();
     }
     renderPomo();
     persistLocal();
@@ -1210,6 +1231,7 @@ days.forEach((day, i) => {
     pomo.remaining = pomo.workLen;
     renderPomo();
     persistLocal();
+    releaseWakeLockIfIdle();
   });
 
   presetBtns.forEach(b => {
