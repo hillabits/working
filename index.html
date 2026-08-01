@@ -1193,6 +1193,10 @@ days.forEach((day, i) => {
       releaseWakeLockIfIdle();
     }
     renderPomo();
+    if(panel === dayPanels[activeIdx]){
+      const nowSec = Math.floor(now / 1000);
+      if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderStats(); }
+    }
   }
 
   function ensureNotifyPermission(){
@@ -1285,12 +1289,9 @@ function renderStats(){
   const now = getLogicalNow().min;
   const nowClamped = Math.min(Math.max(now, SCALE_START), SCALE_END);
 
-  let done = 0;
-  p.day.blocks.forEach(b => {
-    if(b.type === 'rest') return;
-    const overlap = Math.min(nowClamped, b.e) - b.s;
-    if(overlap > 0) done += overlap;
-  });
+  const focusLog = loadFocusLog();
+  const doneSeconds = focusLog[dateKey(new Date())] || 0;
+  const done = Math.min(p.productiveTotal, doneSeconds / 60);
   const remaining = Math.max(0, p.productiveTotal - done);
   const pct = p.productiveTotal ? Math.min(100, (done / p.productiveTotal) * 100) : 0;
 
