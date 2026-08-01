@@ -1304,15 +1304,21 @@ days.forEach((day, i) => {
   // Credit any focus-seconds that elapsed since the last credit, in one lump sum. This runs
   // whether the tick fired every second (normal) or was delayed several minutes (backgrounded
   // tab) — either way the log ends up correct instead of losing time spent in the background.
+  // IMPORTANT: lastCredit only advances by the whole seconds actually credited (not to `now`),
+  // so the sub-second remainder between 250ms ticks keeps accumulating instead of being
+  // discarded every tick — otherwise a 250ms tick interval means (now - lastCredit) never
+  // reaches a full second and nothing ever gets credited.
   function creditElapsedFocus(now){
     if(pomo.mode === 'focus' && pomo.lastCredit != null){
       const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
       if(elapsed > 0){
         pomo.focusSeconds += elapsed;
         addFocusSeconds(elapsed);
+        pomo.lastCredit += elapsed * 1000;
       }
+    } else {
+      pomo.lastCredit = now;
     }
-    pomo.lastCredit = now;
   }
 
   function pomoTick(){
@@ -1449,6 +1455,17 @@ function deleteTimerHistoryEntry(id){
   renderStats();
   persistLocal();
 }
+// unlike minsToHM (used for the daily productive-time totals), session history always shows
+// seconds too, since individual sessions can be as short as a few seconds or a minute
+function ctDurationFmt(totalSeconds){
+  const s = Math.max(0, Math.round(totalSeconds));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  const parts = [];
+  if(h > 0) parts.push(h + 'h');
+  if(h > 0 || m > 0) parts.push(m + 'm');
+  parts.push(sec + 's');
+  return parts.join(' ');
+}
 function renderCtHistory(){
   pruneTimerHistoryToToday();
   const list = document.getElementById('ctHistoryList');
@@ -1456,8 +1473,7 @@ function renderCtHistory(){
   list.innerHTML = '';
   empty.style.display = timerHistory.entries.length ? 'none' : 'block';
   timerHistory.entries.forEach(entry => {
-    const mins = entry.seconds / 60;
-    const dur = mins < 1 ? Math.round(entry.seconds) + 's' : minsToHM(mins);
+    const dur = ctDurationFmt(entry.seconds);
     const row = document.createElement('div');
     row.className = 'ct-row';
     row.innerHTML = `
@@ -1644,12 +1660,19 @@ function renderCt(){
   renderCtDial();
 }
 
+// See the note above creditElapsedFocus for why lastCredit must advance by the whole
+// seconds actually credited rather than being reset to `now` on every tick.
 function ctCreditElapsed(now){
   if(ctState.lastCredit != null){
     const elapsed = Math.floor((now - ctState.lastCredit) / 1000);
-    if(elapsed > 0){ addFocusSeconds(elapsed); ctState.sessionSeconds += elapsed; }
+    if(elapsed > 0){
+      addFocusSeconds(elapsed);
+      ctState.sessionSeconds += elapsed;
+      ctState.lastCredit += elapsed * 1000;
+    }
+  } else {
+    ctState.lastCredit = now;
   }
-  ctState.lastCredit = now;
 }
 function ctFinishSession(ring){
   clearInterval(ctState.timerId);
