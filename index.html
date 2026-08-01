@@ -410,7 +410,20 @@
 
   @media (max-width:560px){
     .mx-matrix{ gap:4px; }
+    .sync-dot{ right:14px; }
   }
+
+  /* account-bar sync indicator */
+  .sync-dot{
+    position:absolute; right:24px; top:50%; transform:translateY(-50%);
+    width:8px; height:8px; border-radius:50%;
+    background:var(--text-faint); opacity:0;
+    transition:background .2s, opacity .2s;
+  }
+  .sync-dot.syncing{ background:#2fbf6e; opacity:1; animation: sync-pulse 1s ease-in-out infinite; }
+  .sync-dot.synced{ background:#2fbf6e; opacity:1; }
+  .sync-dot.error{ background:var(--text-faint); opacity:.55; }
+  @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
 </style>
 </head>
 <body>
@@ -442,7 +455,7 @@
   <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
   </button>
-  <span id="syncStatus" style="color:var(--text-faint);"></span>
+  <span id="syncStatus" class="sync-dot" title=""></span>
 </div>
 
 <div class="wrap" id="appWrap" hidden>
@@ -820,17 +833,26 @@ function applyState(state, {rerenderMatrix} = {}){
 let lastPushedAt = 0, pushTimer = null, realtimeChannel = null;
 const syncStatusEl = document.getElementById('syncStatus');
 
+// Drives the small corner dot: green (pulsing) while a save is in flight, solid green once
+// synced, faded gray on failure, and invisible (no dot) when there's nothing to report.
+function setSyncStatus(state){
+  if(!syncStatusEl) return;
+  syncStatusEl.classList.remove('syncing', 'synced', 'error');
+  if(state) syncStatusEl.classList.add(state);
+  syncStatusEl.title = state === 'syncing' ? 'Syncing…' : state === 'synced' ? 'Synced' : state === 'error' ? 'Sync failed' : '';
+}
+
 function queueCloudPush(){
   if(!currentUser) return;
   clearTimeout(pushTimer);
   pushTimer = setTimeout(async () => {
     const state = snapshotState();
     lastPushedAt = state.updatedAt;
-    if(syncStatusEl) syncStatusEl.textContent = 'saving…';
+    setSyncStatus('syncing');
     const { error } = await sb.from('progress_states').upsert({
       user_id: currentUser.id, state, updated_at: new Date(state.updatedAt).toISOString()
     });
-    if(syncStatusEl) syncStatusEl.textContent = error ? 'sync error' : 'synced';
+    if(syncStatusEl) setSyncStatus(error ? 'error' : 'synced');
   }, 900);
 }
 
@@ -939,7 +961,7 @@ async function onSignedIn(user){
     subscribeRealtime();
   } catch(e){
     console.error('cloud sync failed', e);
-    if(syncStatusEl) syncStatusEl.textContent = 'sync error';
+    if(syncStatusEl) setSyncStatus('error');
   }
 }
 
@@ -949,7 +971,7 @@ function onSignedOut(){
   document.getElementById('authGate').style.display = 'flex';
   document.getElementById('authBar').style.display = 'none';
   document.getElementById('appWrap').hidden = true;
-  if(syncStatusEl) syncStatusEl.textContent = '';
+  if(syncStatusEl) setSyncStatus(null);
   hideNameEditor();
   resetToDefaults(); // clear the screen so the next sign-in on this device starts clean
 }
