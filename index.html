@@ -120,6 +120,7 @@
   }
   .iconbtn:hover{ color:var(--text); border-color:#3a3f4b; background:var(--surface); }
   .iconbtn svg{ width:14px; height:14px; }
+  .iconbtn.enabled{ color:var(--night); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
   .name-chip{
     display:inline-flex; align-items:center; gap:7px;
     background:none; border:1px solid transparent; color:var(--text-dim);
@@ -455,6 +456,9 @@
   <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
   </button>
+  <button id="enableAlarmsBtn" type="button" class="iconbtn" title="Enable alarms even when the screen is off">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+  </button>
   <span id="syncStatus" class="sync-dot" title=""></span>
 </div>
 
@@ -636,6 +640,41 @@ function wrResumeAudioContexts(){
   });
 }
 
+// --- service worker registration, purely so notifications can be shown on Android ---
+// Android refuses `new Notification()` called from the page itself (throws "Illegal
+// constructor") — it only allows notifications shown via a registered service worker's
+// ServiceWorkerRegistration.showNotification(). Desktop browsers support both, so routing
+// everything through the service worker keeps behavior consistent everywhere. This requires
+// sw.js to be hosted next to this file on a real https:// (or http://localhost) origin — it
+// silently no-ops on file:// or if sw.js isn't reachable, and the code below falls back to
+// `new Notification()` in that case (which still works on desktop).
+let wrSwReg = null;
+if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => { wrSwReg = reg; })
+    .catch(() => { /* no sw.js at this origin yet, or registration failed — notifications will fall back below */ });
+}
+
+// --- shared notification helper used by every alarm on the page ---
+// Always prefer showing it through the service worker (required on Android; also more
+// reliable on desktop). Falls back to the plain constructor only when no service worker
+// registration is available (e.g. desktop before sw.js is deployed, or file:// during testing).
+function wrNotify(title, body, tag){
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  const options = { body, tag, vibrate: [200,100,200], renotify: true, requireInteraction: false };
+  if(wrSwReg){
+    wrSwReg.showNotification(title, options).catch(() => {});
+    return;
+  }
+  if(navigator.serviceWorker && navigator.serviceWorker.ready){
+    navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => {
+      try{ new Notification(title, options); }catch(e){ /* Android will throw here — no-op */ }
+    });
+    return;
+  }
+  try{ new Notification(title, options); }catch(e){ /* Android: Notification() itself is illegal — nothing more we can do without sw.js */ }
+}
+
 // --- "time almost up" toast + system notification, shared by every timer on the page ---
 const wrToastWrap = document.getElementById('wrToastWrap');
 function showToast(message, ms = 6000){
@@ -647,9 +686,7 @@ function showToast(message, ms = 6000){
 }
 function notifyAlmostDone(label){
   showToast(`${label} — 30 seconds left`);
-  if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
-    try{ new Notification('Weekly Rhythm', { body: `${label} — 30 seconds left`, tag: 'wr-almost-done' }); }catch(e){}
-  }
+  if(document.hidden) wrNotify('Weekly Rhythm', `${label} — 30 seconds left`, 'wr-almost-done');
   if('vibrate' in navigator){ try{ navigator.vibrate(150); }catch(e){} }
 }
 
@@ -963,6 +1000,7 @@ async function onSignedIn(user){
     console.error('cloud sync failed', e);
     if(syncStatusEl) setSyncStatus('error');
   }
+  refreshPushButtonState();
 }
 
 function onSignedOut(){
@@ -974,6 +1012,8 @@ function onSignedOut(){
   if(syncStatusEl) setSyncStatus(null);
   hideNameEditor();
   resetToDefaults(); // clear the screen so the next sign-in on this device starts clean
+  pushSubscribed = false;
+  if(enableAlarmsBtn) enableAlarmsBtn.classList.remove('enabled');
 }
 
 const authMsgEl = document.getElementById('authMsg');
@@ -1012,6 +1052,108 @@ function initSync(){
   sb.auth.getSession().then(({data}) => {
     if(data.session && data.session.user) onSignedIn(data.session.user);
   });
+}
+
+// --- screen-off alarms: real Web Push, sent from the server (see
+// supabase/functions/send-due-alarms) ---
+// Everything earlier in this file only works while the tab is at least a little bit alive.
+// This section additionally asks the server to push a system notification at the moment each
+// running alarm is due, which rings even with the screen fully locked, because it's delivered
+// by the OS's own push service rather than by this (possibly frozen) page. Tied to the signed-
+// in account; one-time opt-in via the bell button in the top bar. See SETUP.md.
+const VAPID_PUBLIC_KEY = 'BFqUJ0VAFZ9eCYPT5oGJPz5qpvkB1RNsiHhKVkjL23Y9RiDh5aZpbl-dzFI3NJrU2MeUYQwzkdxrTt6mtJBPkbU';
+function urlBase64ToUint8Array(base64String){
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+const enableAlarmsBtn = document.getElementById('enableAlarmsBtn');
+let pushSubscribed = false;
+
+async function refreshPushButtonState(){
+  if(!currentUser || !('serviceWorker' in navigator) || !('PushManager' in window)){
+    pushSubscribed = false;
+    enableAlarmsBtn.classList.remove('enabled');
+    return;
+  }
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    pushSubscribed = !!sub;
+    enableAlarmsBtn.classList.toggle('enabled', pushSubscribed);
+  }catch(e){ /* ignore — button just stays off */ }
+}
+
+async function enablePushAlarms(){
+  if(!currentUser){ alert('Sign in first — screen-off alarms are tied to your account.'); return; }
+  if(!('serviceWorker' in navigator) || !('PushManager' in window)){
+    alert("This browser doesn't support push notifications, so alarms can't ring with the screen off here — the sound/vibration alarm while the tab is open still works.");
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if(perm !== 'granted'){ alert("Notification permission wasn't granted, so screen-off alarms can't be enabled."); return; }
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if(!sub){
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+    const json = sub.toJSON();
+    const { error } = await sb.from('push_subscriptions').upsert({
+      user_id: currentUser.id,
+      endpoint: json.endpoint,
+      p256dh: json.keys.p256dh,
+      auth: json.keys.auth
+    });
+    if(error) throw error;
+    pushSubscribed = true;
+    enableAlarmsBtn.classList.add('enabled');
+  }catch(e){
+    console.error('push subscribe failed', e);
+    alert('Could not enable screen-off alarms — see console for details.');
+  }
+}
+
+async function disablePushAlarms(){
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if(sub){
+      await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+      await sub.unsubscribe();
+    }
+  }catch(e){ console.error('push unsubscribe failed', e); }
+  pushSubscribed = false;
+  enableAlarmsBtn.classList.remove('enabled');
+}
+
+enableAlarmsBtn.addEventListener('click', () => {
+  if(pushSubscribed) disablePushAlarms(); else enablePushAlarms();
+});
+
+// Upsert (or move) the server-side alarm for one timer instance. Safe to call on every
+// pause/resume — it just replaces fire_at for that same client_key instead of piling up rows.
+function wrScheduleAlarm(key, fireAtMs, title, body, tag){
+  if(!currentUser || !pushSubscribed) return;
+  sb.from('scheduled_alarms').upsert({
+    user_id: currentUser.id, client_key: key,
+    fire_at: new Date(fireAtMs).toISOString(),
+    title, body, tag, sent: false
+  }, { onConflict: 'user_id,client_key' }).then(({error}) => {
+    if(error) console.error('schedule alarm failed', error);
+  });
+}
+// Cancel a previously-scheduled server-side alarm — on pause, reset, or right when it's already
+// rung locally (tab was in the foreground), so the cron job doesn't also push a redundant one.
+function wrCancelAlarm(key){
+  if(!currentUser) return;
+  sb.from('scheduled_alarms').delete().eq('user_id', currentUser.id).eq('client_key', key)
+    .then(({error}) => { if(error) console.error('cancel alarm failed', error); });
 }
 
 const TRACK_START = new Date(2026, 6, 31); // matrix tracking begins July 31, 2026 — the day this tracker was created
@@ -1329,6 +1471,8 @@ days.forEach((day, i) => {
     lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
   };
 
+  const pushAlarmKey = 'pomo-' + day.key; // stable id for this day's server-side scheduled alarm
+
   const pomoEl = el.querySelector('.pomodoro');
   const modeEl = pomoEl.querySelector('.pomo-mode');
   const timeEl = pomoEl.querySelector('.pomo-time');
@@ -1375,14 +1519,10 @@ days.forEach((day, i) => {
     if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
     // Browsers often mute or suspend audio in background tabs, so the beep alone can be
     // silent while backgrounded — a system notification is the more reliable signal there.
-    if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
-      try{
-        new Notification('Weekly Rhythm', {
-          body: pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.",
-          tag: 'wr-pomo'
-        });
-      }catch(e){ /* notifications unavailable — ignore */ }
+    if(document.hidden){
+      wrNotify('Weekly Rhythm', pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.", 'wr-pomo');
     }
+    wrCancelAlarm(pushAlarmKey); // already rung locally — no need for the server to also push it
   }
 
   function stopRinging(){
@@ -1478,6 +1618,7 @@ days.forEach((day, i) => {
       pomo.running = false;
       clearInterval(pomo.timerId);
       releaseWakeLockIfIdle();
+      wrCancelAlarm(pushAlarmKey);
     } else {
       ensureNotifyPermission();
       // Warm up the alarm's AudioContext right on this click (a real user gesture) instead of
@@ -1493,6 +1634,10 @@ days.forEach((day, i) => {
       // has no effect on correctness since every tick re-derives remaining from endAt.
       pomo.timerId = setInterval(pomoTick, 250);
       acquireWakeLock();
+      wrScheduleAlarm(pushAlarmKey, pomo.endAt,
+        'Weekly Rhythm',
+        pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.",
+        'wr-pomo');
     }
     renderPomo();
     persistLocal();
@@ -1508,6 +1653,7 @@ days.forEach((day, i) => {
     renderPomo();
     persistLocal();
     releaseWakeLockIfIdle();
+    wrCancelAlarm(pushAlarmKey);
   });
 
   presetBtns.forEach(b => {
@@ -1666,9 +1812,8 @@ function ctStartRinging(){
   ctBeep();
   ctState.alarmId = setInterval(ctBeep, 900);
   if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
-  if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
-    try{ new Notification('Weekly Rhythm', { body: "Timer's up.", tag: 'wr-timer' }); }catch(e){}
-  }
+  if(document.hidden) wrNotify('Weekly Rhythm', "Timer's up.", 'wr-timer');
+  wrCancelAlarm('ct');
 }
 function ctStopRinging(){
   ctState.ringing = false;
@@ -1876,6 +2021,7 @@ ctStartBtn.addEventListener('click', () => {
     ctState.running = false;
     clearInterval(ctState.timerId);
     releaseWakeLockIfIdle();
+    wrCancelAlarm('ct');
   } else {
     if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
     // Warm up the alarm's AudioContext right on this click (a real user gesture) instead of
@@ -1891,8 +2037,12 @@ ctStartBtn.addEventListener('click', () => {
     }
     ctState.running = true;
     ctState.lastCredit = Date.now();
-    if(ctState.mode === 'timer') ctState.endAt = Date.now() + ctState.remaining * 1000;
-    else ctState.runStartedAt = Date.now();
+    if(ctState.mode === 'timer'){
+      ctState.endAt = Date.now() + ctState.remaining * 1000;
+      wrScheduleAlarm('ct', ctState.endAt, 'Weekly Rhythm', "Timer's up.", 'wr-timer');
+    } else {
+      ctState.runStartedAt = Date.now(); // stopwatch mode never rings, so nothing to schedule
+    }
     ctState.timerId = setInterval(ctTick, 250);
     acquireWakeLock();
   }
@@ -1902,6 +2052,7 @@ ctStartBtn.addEventListener('click', () => {
 ctResetBtn.addEventListener('click', () => {
   if(ctState.ringing) ctStopRinging();
   ctFinishSession(false); // logs whatever was accumulated (even partial) so it stays correctable
+  wrCancelAlarm('ct');
 });
 
 renderCt();
