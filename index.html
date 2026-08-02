@@ -1143,7 +1143,11 @@ function wrScheduleAlarm(key, fireAtMs, title, body, tag){
   sb.from('scheduled_alarms').upsert({
     user_id: currentUser.id, client_key: key,
     fire_at: new Date(fireAtMs).toISOString(),
-    title, body, tag, sent: false, repeat_count: 0
+    title, body, tag, sent: false, repeat_count: 0,
+    // Explicit, not left to the column default — otherwise an *existing* row (re-scheduled on
+    // every restart of the same timer) keeps whatever interval it was first created with,
+    // even after the table's default gets tuned faster later.
+    repeat_every_seconds: 5, max_repeats: 18
   }, { onConflict: 'user_id,client_key' }).then(({error}) => {
     if(error) console.error('schedule alarm failed', error);
   });
