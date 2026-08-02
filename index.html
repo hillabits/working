@@ -1143,7 +1143,7 @@ function wrScheduleAlarm(key, fireAtMs, title, body, tag){
   sb.from('scheduled_alarms').upsert({
     user_id: currentUser.id, client_key: key,
     fire_at: new Date(fireAtMs).toISOString(),
-    title, body, tag, sent: false
+    title, body, tag, sent: false, repeat_count: 0
   }, { onConflict: 'user_id,client_key' }).then(({error}) => {
     if(error) console.error('schedule alarm failed', error);
   });
@@ -1523,7 +1523,11 @@ days.forEach((day, i) => {
     if(document.hidden){
       wrNotify('Weekly Rhythm', pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.", 'wr-pomo');
     }
-    wrCancelAlarm(pushAlarmKey); // already rung locally — no need for the server to also push it
+    // Deliberately NOT cancelling the server-side push here. We can't be sure the beep actually
+    // played or this notification actually rendered — if the tab freezes moments after this
+    // line runs, we'd never know. Leaving the scheduled push in place means the server still
+    // sends its own alert a few seconds later as a guaranteed backup; since it uses the same
+    // notification tag, it just replaces/re-buzzes the existing one instead of duplicating it.
   }
 
   function stopRinging(){
@@ -1531,6 +1535,7 @@ days.forEach((day, i) => {
     pomoEl.classList.remove('ringing');
     clearInterval(pomo.alarmId);
     pomo.alarmId = null;
+    wrCancelAlarm(pushAlarmKey); // acknowledged locally — stop the server's repeat pushes
   }
 
   stopAlarmBtn.addEventListener('click', stopRinging);
@@ -1814,13 +1819,16 @@ function ctStartRinging(){
   ctState.alarmId = setInterval(ctBeep, 900);
   if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
   if(document.hidden) wrNotify('Weekly Rhythm', "Timer's up.", 'wr-timer');
-  wrCancelAlarm('ct');
+  // Deliberately NOT cancelling the server-side push here — see the matching comment in the
+  // pomodoro's finish handler. The server-side alert is the guaranteed backup for exactly the
+  // case where this line never got the chance to run reliably.
 }
 function ctStopRinging(){
   ctState.ringing = false;
   ctPomodoroEl.classList.remove('ringing');
   clearInterval(ctState.alarmId);
   ctState.alarmId = null;
+  wrCancelAlarm('ct'); // acknowledged locally — stop the server's repeat pushes
 }
 ctStopAlarmBtn.addEventListener('click', ctStopRinging);
 
