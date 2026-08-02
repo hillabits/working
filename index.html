@@ -1386,6 +1386,7 @@ function getLogicalNow(){
 
 const logical = getLogicalNow();
 let activeIdx = logical.idx;
+let followingToday = true; // false once the user manually taps a different day tab
 
 const tabsEl = document.getElementById('tabs');
 const daysEl = document.getElementById('days');
@@ -1398,7 +1399,7 @@ days.forEach((day, i) => {
   const btn = document.createElement('button');
   btn.className = 'tab-btn' + (i === logical.idx ? ' is-today' : '');
   btn.innerHTML = day.key.slice(0,3) + '<span class="tab-dot"></span>';
-  btn.addEventListener('click', () => selectDay(i));
+  btn.addEventListener('click', () => { followingToday = false; selectDay(i); });
   tabsEl.appendChild(btn);
 
   // panel
@@ -2130,6 +2131,32 @@ function renderStats(){
 
 selectDay(logical.idx);
 setInterval(() => { if(activeIdx === logical.idx) renderStats(); }, 30000);
+
+// The tab stays open for hours (that's the whole point of the alarms) — so the "today" the app
+// booted with can go stale if midnight passes while it's open. Check for that periodically and
+// refresh which tab is marked Today, following along automatically unless the user has
+// manually picked a different day to look at.
+setInterval(() => {
+  const fresh = getLogicalNow();
+  if(fresh.idx === logical.idx) return; // still the same day — nothing to do
+  const wasFollowing = followingToday;
+  const oldIdx = logical.idx;
+  logical.idx = fresh.idx;
+  logical.min = fresh.min;
+  dayPanels.forEach((p, idx) => {
+    p.btn.classList.toggle('is-today', idx === fresh.idx);
+    const pill = p.el.querySelector('.today-pill');
+    if(pill && idx === oldIdx) pill.remove();
+    if(idx === fresh.idx && !pill){
+      const nameEl = p.el.querySelector('.day-name');
+      if(nameEl && !nameEl.querySelector('.today-pill')){
+        nameEl.insertAdjacentHTML('beforeend', '<span class="today-pill">Today</span>');
+      }
+    }
+  });
+  if(wasFollowing) selectDay(fresh.idx);
+  else renderStats(); // still refresh the now-marker/stats even on a day the user pinned
+}, 30000);
 </script>
 </div>
 </body>
