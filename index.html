@@ -67,9 +67,7 @@
     letter-spacing:-.01em;
   }
   h1 em{
-    font-style:italic; font-weight:400;
-    background:linear-gradient(90deg,var(--day-strong),var(--night));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
+    font-style:italic; font-weight:400; color:var(--night);
   }
   .sub{ color:var(--text-dim); font-size:15.5px; line-height:1.65; max-width:56ch; }
 
@@ -78,7 +76,7 @@
   .swatch{ width:11px; height:11px; border-radius:3px; flex:none; }
   .swatch.strong{ background:var(--day-strong); }
   .swatch.soft{ background:var(--day-soft); }
-  .swatch.night{ background:var(--night); box-shadow:0 0 10px var(--night-glow); }
+  .swatch.night{ background:var(--night); }
   .swatch.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
 
   .foundation{
@@ -178,13 +176,13 @@
   /* timeline */
   .rail{ position:relative; height:34px; margin-bottom:10px; }
   .track{ position:absolute; inset:0; border-radius:8px;
-    background:linear-gradient(90deg,var(--day-strong),var(--day-soft) 32%,#3d3f6a 68%,var(--night)); opacity:.12; }
+    background:var(--line); opacity:.5; }
   .seg{ position:absolute; top:0; bottom:0; border-radius:7px; }
   .seg.day-strong{ background:var(--day-strong); }
   .seg.day-soft{ background:var(--day-soft); }
-  .seg.night{ background:var(--night); box-shadow:0 0 16px var(--night-glow); }
+  .seg.night{ background:var(--night); }
   .seg.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
-  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:#fff; box-shadow:0 0 8px rgba(255,255,255,.8); }
+  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:#fff; }
   .now-label{
     position:absolute; top:-22px; transform:translateX(-50%);
     font-family:'JetBrains Mono',monospace; font-size:10px; color:#fff; white-space:nowrap;
@@ -406,7 +404,7 @@
   .mx-cell.mx-off{ background:rgba(180,72,66,.32); border-color:rgba(180,72,66,.5); }
   .mx-cell.mx-d2{ background:rgba(90,120,100,.38); border-color:rgba(90,120,100,.5); }
   .mx-cell.mx-d1{ background:rgba(70,150,105,.55); border-color:rgba(70,150,105,.65); }
-  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; box-shadow:0 0 6px rgba(47,191,110,.5); }
+  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; }
   .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--night); }
 
   @media (max-width:560px){
@@ -433,7 +431,7 @@
 <div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
   <div style="max-width:360px;width:100%;text-align:center;">
     <div class="eyebrow" style="justify-content:center;">Weekly Rhythm</div>
-    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;background:linear-gradient(90deg,var(--day-strong),var(--night));-webkit-background-clip:text;background-clip:text;color:transparent;">held together.</em></h1>
+    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;color:var(--night);">held together.</em></h1>
     <p class="sub" style="margin:0 auto 28px;">Sign in to sync your schedule and progress across every device.</p>
     <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
       <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
