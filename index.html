@@ -831,9 +831,31 @@ function applyState(state, {rerenderMatrix} = {}){
     if(!r) return;
     if(r.pomo.running) { clearInterval(r.pomo.timerId); }
     Object.assign(r.pomo, s);
+    // Second safety net for the daily "Focus logged" reset (renderPomo below also checks this,
+    // but checking here too means a stale total can't slip through before the credit-on-restore
+    // logic just below adds to it).
+    const today = dateKey(new Date());
+    if(r.pomo.loggedDate !== today){ r.pomo.focusSeconds = 0; r.pomo.sessions = 0; r.pomo.loggedDate = today; }
     if(r.pomo.running && r.pomo.endAt){
       const left = Math.round((r.pomo.endAt - Date.now())/1000);
-      if(left <= 0){ r.pomo.running = false; r.pomo.remaining = 0; }
+      if(left <= 0){
+        // The session actually finished while this tab/device was closed or asleep — credit it
+        // properly instead of silently dropping it. `remaining` is exactly how many focus
+        // seconds hadn't been logged yet when this was last saved, so that (not the real-world
+        // gap, which could be hours) is the correct amount to add now.
+        if(r.pomo.mode === 'focus'){
+          r.pomo.focusSeconds += r.pomo.remaining;
+          addFocusSeconds(r.pomo.remaining);
+          r.pomo.sessions++;
+          r.pomo.mode = 'break';
+          r.pomo.remaining = r.pomo.breakLen;
+        } else {
+          r.pomo.mode = 'focus';
+          r.pomo.remaining = r.pomo.workLen;
+        }
+        r.pomo.running = false;
+        persistLocal();
+      }
       else { r.pomo.remaining = left; r.pomo.lastCredit = Date.now(); r.pomo.timerId = setInterval(r.tick, 250); acquireWakeLock(); }
     }
     r.render();
@@ -1527,6 +1549,10 @@ days.forEach((day, i) => {
     pomoEl.classList.add('ringing');
     beep();
     pomo.alarmId = setInterval(beep, 900);
+    // No one may be there to tap Stop — don't beep forever, give up after 5 minutes the same
+    // way the server-side push backup does.
+    clearTimeout(pomo.alarmAutoStopId);
+    pomo.alarmAutoStopId = setTimeout(() => { if(pomo.ringing) stopRinging(); }, 5*60*1000);
     if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
     // Browsers often mute or suspend audio in background tabs, so the beep alone can be
     // silent while backgrounded — a system notification is the more reliable signal there.
@@ -1545,6 +1571,7 @@ days.forEach((day, i) => {
     pomoEl.classList.remove('ringing');
     clearInterval(pomo.alarmId);
     pomo.alarmId = null;
+    clearTimeout(pomo.alarmAutoStopId);
     wrCancelAlarm(pushAlarmKey); // acknowledged locally — stop the server's repeat pushes
   }
 
@@ -1840,6 +1867,8 @@ function ctStartRinging(){
   ctPomodoroEl.classList.add('ringing');
   ctBeep();
   ctState.alarmId = setInterval(ctBeep, 900);
+  clearTimeout(ctState.alarmAutoStopId);
+  ctState.alarmAutoStopId = setTimeout(() => { if(ctState.ringing) ctStopRinging(); }, 5*60*1000);
   if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
   if(document.hidden) wrNotify('Weekly Rhythm', "Timer's up.", 'wr-timer');
   // Deliberately NOT cancelling the server-side push here — see the matching comment in the
@@ -1851,6 +1880,7 @@ function ctStopRinging(){
   ctPomodoroEl.classList.remove('ringing');
   clearInterval(ctState.alarmId);
   ctState.alarmId = null;
+  clearTimeout(ctState.alarmAutoStopId);
   wrCancelAlarm('ct'); // acknowledged locally — stop the server's repeat pushes
 }
 ctStopAlarmBtn.addEventListener('click', ctStopRinging);
