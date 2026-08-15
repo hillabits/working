@@ -830,12 +830,15 @@ function applyState(state, {rerenderMatrix} = {}){
     const r = pomoRefs[i];
     if(!r) return;
     if(r.pomo.running) { clearInterval(r.pomo.timerId); }
-    Object.assign(r.pomo, s);
-    // Second safety net for the daily "Focus logged" reset (renderPomo below also checks this,
-    // but checking here too means a stale total can't slip through before the credit-on-restore
-    // logic just below adds to it).
+    // Check the INCOMING data's own loggedDate before merging — not the local field afterward.
+    // A sync from an older cached tab (from before this field existed) won't have loggedDate at
+    // all; merging its focusSeconds/sessions in while leaving the local "today" loggedDate
+    // untouched would make a stale total look freshly-dated and slip past the reset check.
     const today = dateKey(new Date());
-    if(r.pomo.loggedDate !== today){ r.pomo.focusSeconds = 0; r.pomo.sessions = 0; r.pomo.loggedDate = today; }
+    const incomingIsToday = s.loggedDate === today;
+    Object.assign(r.pomo, s);
+    if(!incomingIsToday){ r.pomo.focusSeconds = 0; r.pomo.sessions = 0; persistLocal(); }
+    r.pomo.loggedDate = today;
     if(r.pomo.running && r.pomo.endAt){
       const left = Math.round((r.pomo.endAt - Date.now())/1000);
       if(left <= 0){
