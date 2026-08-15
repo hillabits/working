@@ -803,7 +803,7 @@ function snapshotState(){
     pomo: pomoRefs.map(r => ({
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
-      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds
+      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, loggedDate:r.pomo.loggedDate
     })),
     customTimer: ctState ? {
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
@@ -1470,7 +1470,7 @@ days.forEach((day, i) => {
     workLen: 25*60, breakLen: 5*60,
     mode: 'focus', remaining: 25*60,
     running: false, timerId: null,
-    sessions: 0, focusSeconds: 0,
+    sessions: 0, focusSeconds: 0, loggedDate: dateKey(new Date()),
     ringing: false, alarmId: null, warned30: false,
     endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
     lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
@@ -1490,6 +1490,14 @@ days.forEach((day, i) => {
 
   // --- alarm sound: generated with WebAudio, no external file needed ---
   let audioCtx = null;
+  function warmPomoAudioCtx(){
+    if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => audioCtx); }
+    if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  }
+  // Browsers only allow audio after a click/tap on THIS tab — cross-device sync can start a
+  // countdown here without the user ever pressing this panel's own Start button, so unlock on
+  // the very first interaction anywhere on the page, not just this button specifically.
+  document.addEventListener('pointerdown', warmPomoAudioCtx, { once: true, passive: true });
   function beep(){
     try{
       if(!audioCtx){
@@ -1550,6 +1558,14 @@ days.forEach((day, i) => {
   }
 
   function renderPomo(){
+    // "Focus logged" is meant to be today's total, not an ever-growing lifetime counter — reset
+    // it the moment the calendar date has moved on since it was last credited.
+    const today = dateKey(new Date());
+    if(pomo.loggedDate !== today){
+      pomo.focusSeconds = 0;
+      pomo.sessions = 0;
+      pomo.loggedDate = today;
+    }
     timeEl.textContent = clockFmt(pomo.remaining);
     modeEl.textContent = pomo.mode === 'focus' ? 'Focus' : 'Break';
     modeEl.classList.toggle('break', pomo.mode === 'break');
@@ -1793,6 +1809,11 @@ let ctDialLaps = 0;
 let ctDialLastFrac = 0;
 
 let ctAudioCtx = null;
+function warmCtAudioCtx(){
+  if(!ctAudioCtx){ ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => ctAudioCtx); }
+  if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume().catch(() => {});
+}
+document.addEventListener('pointerdown', warmCtAudioCtx, { once: true, passive: true });
 function ctBeep(){
   try{
     if(!ctAudioCtx){
