@@ -747,6 +747,7 @@ showTimerBtn.addEventListener('click', () => showView('timer'));
 
 // --- persistent focus log (per real calendar date, in localStorage) ---
 const FOCUS_LOG_KEY = 'wr_focus_log_v1';
+const SESSIONS_LOG_KEY = 'wr_sessions_log_v1';
 
 function loadFocusLog(){
   try{ return JSON.parse(localStorage.getItem(FOCUS_LOG_KEY) || '{}'); }
@@ -755,6 +756,21 @@ function loadFocusLog(){
 function saveFocusLog(log){
   try{ localStorage.setItem(FOCUS_LOG_KEY, JSON.stringify(log)); }
   catch(e){ /* storage unavailable — ignore */ }
+}
+function loadSessionsLog(){
+  try{ return JSON.parse(localStorage.getItem(SESSIONS_LOG_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function saveSessionsLog(log){
+  try{ localStorage.setItem(SESSIONS_LOG_KEY, JSON.stringify(log)); }
+  catch(e){ /* storage unavailable — ignore */ }
+}
+function bumpSessionsLog(){
+  const log = loadSessionsLog();
+  const k = dateKey(new Date());
+  log[k] = (log[k] || 0) + 1;
+  saveSessionsLog(log);
+  queueCloudPush();
 }
 function dateKey(d){
   const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
@@ -797,6 +813,7 @@ function snapshotState(){
     updatedAt: Date.now(),
     ownerId: currentUser ? currentUser.id : null,
     focusLog: loadFocusLog(),
+    sessionsLog: loadSessionsLog(),
     schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
     pomo: pomoRefs.map(r => ({
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
@@ -820,6 +837,7 @@ function persistLocal(){
 // apply a full state object (from localStorage on load, or a remote device) to the live UI
 function applyState(state, {rerenderMatrix} = {}){
   if(state.focusLog) saveFocusLog(state.focusLog);
+  if(state.sessionsLog) saveSessionsLog(state.sessionsLog);
   if(state.schedule){
     dayPanels.forEach(p => {
       const sd = state.schedule[p.day.key];
@@ -850,6 +868,7 @@ function applyState(state, {rerenderMatrix} = {}){
           r.pomo.focusSeconds += r.pomo.remaining;
           addFocusSeconds(r.pomo.remaining);
           r.pomo.sessions++;
+          bumpSessionsLog();
           r.pomo.mode = 'break';
           r.pomo.remaining = r.pomo.breakLen;
         } else {
@@ -1586,21 +1605,19 @@ days.forEach((day, i) => {
   }
 
   function renderPomo(){
-    // "Focus logged" is meant to be today's total, not an ever-growing lifetime counter — reset
-    // it the moment the calendar date has moved on since it was last credited.
+    // Read straight from the date-keyed logs — today's key can never carry a stale total from
+    // another day, since old entries simply live under their own (different) date key forever.
+    // No reset-on-date-change logic needed, and nothing here can be defeated by sync ordering.
     const today = dateKey(new Date());
-    if(pomo.loggedDate !== today){
-      pomo.focusSeconds = 0;
-      pomo.sessions = 0;
-      pomo.loggedDate = today;
-    }
+    const todayFocusSeconds = loadFocusLog()[today] || 0;
+    const todaySessions = loadSessionsLog()[today] || 0;
     timeEl.textContent = clockFmt(pomo.remaining);
     modeEl.textContent = pomo.mode === 'focus' ? 'Focus' : 'Break';
     modeEl.classList.toggle('break', pomo.mode === 'break');
     startBtn.textContent = pomo.running ? 'Pause' : (pomo.remaining < (pomo.mode==='focus'?pomo.workLen:pomo.breakLen) ? 'Resume' : 'Start');
     startBtn.classList.toggle('running', pomo.running);
-    sessionsEl.textContent = pomo.sessions;
-    loggedEl.textContent = minsToHM(pomo.focusSeconds/60);
+    sessionsEl.textContent = todaySessions;
+    loggedEl.textContent = minsToHM(todayFocusSeconds/60);
     presetBtns.forEach(b => b.disabled = pomo.running);
   }
 
@@ -1641,6 +1658,7 @@ days.forEach((day, i) => {
       pomo.warned30 = false;
       if(pomo.mode === 'focus'){
         pomo.sessions++;
+        bumpSessionsLog();
         pomo.mode = 'break';
         pomo.remaining = pomo.breakLen;
       } else {
