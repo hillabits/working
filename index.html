@@ -27,6 +27,23 @@
     --night:#6C7BFF;
     --night-glow:rgba(108,123,255,.30);
     --rest-line:#3A3F4B;
+    /* generic monochrome accent — used for page chrome (buttons, focus rings, nav) that
+       isn't the schedule, its categories, the matrix, or the timer, so those keep their color. */
+    --accent:#D7D9E0;
+    --accent-glow:rgba(215,217,224,.25);
+    color-scheme:dark;
+  }
+  [data-theme="light"]{
+    --bg:#F6F5F1;
+    --surface:#FFFFFF;
+    --surface-2:#EFEDE6;
+    --line:#DEDBD1;
+    --text:#1B1C20;
+    --text-dim:#5B5F69;
+    --text-faint:#8A8E97;
+    --accent:#1B1C20;
+    --accent-glow:rgba(27,28,32,.14);
+    color-scheme:light;
   }
 
   *{box-sizing:border-box;}
@@ -38,10 +55,11 @@
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
     padding:64px 24px 96px;
+    transition:background .2s ease, color .2s ease;
   }
-  ::selection{background:var(--night-glow);}
+  ::selection{background:var(--accent-glow);}
   a, button{ font-family:inherit; }
-  :focus-visible{ outline:2px solid var(--night); outline-offset:3px; border-radius:4px; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
 
   .wrap{ max-width:860px; margin:0 auto; }
 
@@ -67,7 +85,7 @@
     letter-spacing:-.01em;
   }
   h1 em{
-    font-style:italic; font-weight:400; color:var(--night);
+    font-style:italic; font-weight:400; color:var(--accent);
   }
   .sub{ color:var(--text-dim); font-size:15.5px; line-height:1.65; max-width:56ch; }
 
@@ -118,7 +136,7 @@
   }
   .iconbtn:hover{ color:var(--text); border-color:#3a3f4b; background:var(--surface); }
   .iconbtn svg{ width:14px; height:14px; }
-  .iconbtn.enabled{ color:var(--night); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .iconbtn.enabled{ color:var(--accent); border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
   .name-chip{
     display:inline-flex; align-items:center; gap:7px;
     background:none; border:1px solid transparent; color:var(--text-dim);
@@ -139,7 +157,7 @@
     background:var(--surface-2); border:1px solid var(--line); color:var(--text);
     border-radius:6px; padding:5px 8px; font-family:'JetBrains Mono',monospace; font-size:12px;
   }
-  .edit-time{ width:76px; }
+  .edit-time{ width:118px; }
   .edit-label{ flex:1; min-width:140px; font-family:'Inter',sans-serif; }
   .edit-del{
     background:none; border:1px solid var(--line); color:var(--text-faint);
@@ -364,7 +382,7 @@
     padding:9px 16px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
   }
   .view-btn:hover{ color:var(--text); border-color:#3a3f4b; }
-  .view-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .view-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
 
   /* productivity matrix */
   .matrix-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:26px; }
@@ -423,20 +441,38 @@
   .sync-dot.synced{ background:#2fbf6e; opacity:1; }
   .sync-dot.error{ background:var(--text-faint); opacity:.55; }
   @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+
+  /* light/dark toggle — fixed top-left, above everything else */
+  .theme-toggle{
+    position:fixed; top:14px; left:14px; z-index:9999;
+    width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    border-radius:100px; cursor:pointer; padding:0;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .theme-toggle:hover{ color:var(--text); border-color:var(--accent); }
+  .theme-toggle svg{ width:16px; height:16px; }
+  .theme-toggle .icon-moon{ display:none; }
+  [data-theme="light"] .theme-toggle .icon-sun{ display:none; }
+  [data-theme="light"] .theme-toggle .icon-moon{ display:inline-flex; }
 </style>
 </head>
 <body>
+<button class="theme-toggle" id="themeToggle" type="button" title="Toggle light / dark mode" aria-label="Toggle light and dark mode">
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+</button>
 <div class="wr-toast-wrap" id="wrToastWrap"></div>
 
 <div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
   <div style="max-width:360px;width:100%;text-align:center;">
     <div class="eyebrow" style="justify-content:center;">Weekly Rhythm</div>
-    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;color:var(--night);">held together.</em></h1>
+    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;color:var(--accent);">held together.</em></h1>
     <p class="sub" style="margin:0 auto 28px;">Sign in to sync your schedule and progress across every device.</p>
     <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
       <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
       <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
-      <button id="signInBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
+      <button id="signInBtn" type="button" style="background:var(--accent);border:none;color:var(--bg);padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
       <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:'JetBrains Mono',monospace;font-size:12px;padding-top:4px;">Create account</button>
     </div>
     <div id="authMsg" style="color:var(--text-faint);font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:14px;min-height:16px;"></div>
@@ -449,7 +485,7 @@
   </button>
   <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
     <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
-    <button id="saveNameBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
+    <button id="saveNameBtn" type="button" style="background:var(--accent);border:none;color:var(--bg);padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
   </span>
   <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -600,9 +636,28 @@ const sb = supabase.createClient(
 let currentUser = null;
 </script>
 <script>
-const SCALE_START = 450;   // 7:30
-const SCALE_END   = 1500;  // 25:00 (1:00 AM)
+const SCALE_START = 0;     // 12:00 AM
+const SCALE_END   = 1440;  // 24:00 (12:00 AM next day) — a full 24h cycle
 const SCALE_RANGE = SCALE_END - SCALE_START;
+
+// --- light/dark toggle. Persisted locally; falls back to the OS preference the first time.
+(function initTheme(){
+  const KEY = 'wr-theme';
+  const saved = localStorage.getItem(KEY);
+  const initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  const apply = (mode) => {
+    document.documentElement.setAttribute('data-theme', mode);
+    if(metaTheme) metaTheme.setAttribute('content', mode === 'light' ? '#F6F5F1' : '#0F1115');
+  };
+  apply(initial);
+  const btn = document.getElementById('themeToggle');
+  btn.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    apply(next);
+    localStorage.setItem(KEY, next);
+  });
+})();
 
 // --- keep the screen awake while a pomodoro is running, so mobile auto-lock doesn't suspend
 // the tab mid-session. This only prevents the OS's idle-timeout sleep — it can't override a
@@ -1286,11 +1341,9 @@ function renderMatrix(){
 
 
 function fmt(min){
-  let h = Math.floor(min/60) % 24;
-  const m = min % 60;
-  const ampm = (h < 12 || h === 24) ? 'AM' : 'PM';
-  let h12 = h % 12; if(h12 === 0) h12 = 12;
-  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+  const t = ((min % 1440) + 1440) % 1440;
+  const h = Math.floor(t/60), m = t % 60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
 }
 function tickLabel(min){
   const t = min >= 1440 ? min - 1440 : min;
@@ -1307,13 +1360,18 @@ function minsToHM(mins){
   return h + 'h ' + m + 'm';
 }
 
-function parseClock(str){
-  const m = String(str).trim().match(/^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/);
+// 24h "HH:MM" helpers for the native <input type="time"> editing controls — lets people pick
+// a time with the browser's own time picker instead of typing "9:00 AM" by hand.
+function fmt24(min){
+  const t = ((min % 1440) + 1440) % 1440;
+  const h = Math.floor(t/60), m = t % 60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+}
+function parseClock24(str){
+  const m = String(str).trim().match(/^(\d{1,2}):(\d{2})$/);
   if(!m) return null;
-  let h = parseInt(m[1],10) % 12, min = parseInt(m[2],10);
-  if(m[3].toLowerCase() === 'pm') h += 12;
-  let total = h*60 + min;
-  if(total < SCALE_START) total += 1440;
+  let h = parseInt(m[1],10), min = parseInt(m[2],10);
+  const total = h*60 + min;
   return Math.min(SCALE_END, Math.max(SCALE_START, total));
 }
 function computeProductive(day){
@@ -1339,8 +1397,8 @@ function renderList(panel){
     if(panel.editing){
       row.className = 'row editing';
       row.innerHTML = `
-        <input class="edit-time edit-s" value="${fmt(b.s)}">
-        <input class="edit-time edit-e" value="${fmt(b.e)}">
+        <input type="time" class="edit-time edit-s" value="${fmt24(b.s)}">
+        <input type="time" class="edit-time edit-e" value="${fmt24(b.e)}">
         <input class="edit-label">
         <select class="edit-type">
           <option value="day-strong">Corporate</option>
@@ -1352,8 +1410,8 @@ function renderList(panel){
       row.querySelector('.edit-label').value = b.label;
       row.querySelector('.edit-type').value = b.type;
       const commit = () => {
-        const ns = parseClock(row.querySelector('.edit-s').value);
-        const ne = parseClock(row.querySelector('.edit-e').value);
+        const ns = parseClock24(row.querySelector('.edit-s').value);
+        const ne = parseClock24(row.querySelector('.edit-e').value);
         if(ns != null) b.s = ns;
         if(ne != null) b.e = ne;
         b.label = row.querySelector('.edit-label').value.trim() || b.label;
@@ -1412,44 +1470,44 @@ const days = [
     {s:660,e:840,label:'Affiliate Content & Link Setup — Hilla.space & Hillafuku',type:'day-soft'},
     {s:840,e:900,label:'Sowhtvr Affiliate & Admin',type:'day-soft'},
     {s:900,e:960,label:'Study & Skill Acquisition',type:'day-soft'},
-    {s:960,e:1500,label:'Rest / Casual Research',type:'rest'},
+    {s:960,e:1440,label:'Rest / Casual Research',type:'rest'},
   ]},
   { key:'Tuesday', tag:'WFO Day — Strict Off', blocks:[
     {s:450,e:600,label:'Corporate Work (In Office)',type:'day-strong'},
-    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
+    {s:600,e:1440,label:'Full Rest — zero extra tasks',type:'rest'},
   ]},
   { key:'Wednesday', tag:'WFO Day — Strict Off', blocks:[
     {s:450,e:600,label:'Corporate Work (In Office)',type:'day-strong'},
-    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
+    {s:600,e:1440,label:'Full Rest — zero extra tasks',type:'rest'},
   ]},
   { key:'Thursday', tag:'Night-Owl YouTube Creation', blocks:[
     {s:450,e:600,label:'Corporate Work',type:'day-strong'},
     {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
     {s:660,e:720,label:'Study / Trend Analysis',type:'day-soft'},
     {s:720,e:1170,label:'Free Time / Errands / Rest',type:'rest'},
-    {s:1170,e:1470,label:'Hillabits Deep Work — Scripting, Recording, Editing',type:'night'},
+    {s:1170,e:1440,label:'Hillabits Deep Work — Scripting, Recording, Editing',type:'night'},
   ]},
   { key:'Friday', tag:'Night-Owl Brand Content Creation', blocks:[
     {s:450,e:600,label:'Corporate Work',type:'day-strong'},
     {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
     {s:660,e:720,label:'Study / Creative Direction',type:'day-soft'},
     {s:720,e:1170,label:'Free Time / Rest',type:'rest'},
-    {s:1170,e:1470,label:'Akutafh Deep Work — Batch Recording & Editing',type:'night'},
+    {s:1170,e:1440,label:'Akutafh Deep Work — Batch Recording & Editing',type:'night'},
   ]},
   { key:'Saturday', tag:'Review & Strategy Day', blocks:[
     {s:780,e:900,label:'Performance Review & Analytics Check',type:'day-soft'},
     {s:900,e:1020,label:'Next Week Planning & Content Calendar Setup',type:'day-soft'},
-    {s:1140,e:1500,label:'Free / Social / Unwind',type:'rest'},
+    {s:1140,e:1440,label:'Free / Social / Unwind',type:'rest'},
   ]},
   { key:'Sunday', tag:'Deep Writing & Reset', blocks:[
     {s:780,e:900,label:'Writing — Scripts, Long-form Posts, Ideation',type:'day-soft'},
-    {s:1140,e:1500,label:'Rest / System Reset for the coming week',type:'rest'},
+    {s:1140,e:1440,label:'Rest / System Reset for the coming week',type:'rest'},
   ]},
 ];
 
 const DEFAULT_SCHEDULE = days.map(d => d.blocks.map(b => ({...b})));
 
-const ticks = [450,600,780,960,1140,1320,1500];
+const ticks = [0,180,360,540,720,900,1080,1260,1440];
 
 // --- figure out "logical" schedule day: rolls over at real midnight, same as the calendar date.
 function getLogicalNow(){
