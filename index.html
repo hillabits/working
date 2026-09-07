@@ -753,13 +753,36 @@ function tickAllRunning(){
 // Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
 // visible/focused again — covers cases where the interval was throttled or fully suspended.
 function resyncRunningPomos(){
+  // Browser lifecycle throttling must never determine how much time is logged.
+  // The timer timestamps are the source of truth; lifecycle events simply
+  // force an immediate reconciliation and persistence checkpoint.
   tickAllRunning();
   if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) acquireWakeLock();
   wrResumeAudioContexts();
+  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) persistLocal();
 }
-document.addEventListener('visibilitychange', () => { if(!document.hidden) resyncRunningPomos(); });
+function checkpointRunningTimers(){
+  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)){
+    tickAllRunning();
+    persistLocal();
+  }
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden){
+    // Save the exact elapsed time before the browser can throttle/suspend us.
+    checkpointRunningTimers();
+    releaseWakeLockIfIdle();
+  } else {
+    resyncRunningPomos();
+  }
+});
 window.addEventListener('focus', resyncRunningPomos);
 window.addEventListener('pageshow', resyncRunningPomos);
+window.addEventListener('pagehide', checkpointRunningTimers);
+window.addEventListener('freeze', checkpointRunningTimers);
+// Crash/reload safety net. Correctness still comes from endAt/lastCredit, so
+// if this interval is throttled the next lifecycle event catches up exactly.
+setInterval(checkpointRunningTimers, 5000);
 
 // --- background heartbeat: hidden/minimized tabs get their setInterval throttled (sometimes to
 // once a minute, or fully paused), which is why the alarm could fire late or silently miss
@@ -1717,7 +1740,15 @@ days.forEach((day, i) => {
   // reaches a full second and nothing ever gets credited.
   function creditElapsedFocus(now){
     if(pomo.mode === 'focus' && pomo.lastCredit != null){
-      const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
+      let elapsed = Math.floor((now - pomo.lastCredit) / 1000);
+
+      // Never let a delayed/background callback credit time from the following
+      // break as focus. The phase deadline is the hard upper bound.
+      if(pomo.endAt){
+        const untilEnd = Math.floor((pomo.endAt - pomo.lastCredit) / 1000);
+        elapsed = Math.min(elapsed, Math.max(0, untilEnd));
+      }
+
       if(elapsed > 0){
         pomo.focusSeconds += elapsed;
         addFocusSeconds(elapsed);
@@ -1772,8 +1803,12 @@ days.forEach((day, i) => {
   startBtn.addEventListener('click', () => {
     if(pomo.ringing) stopRinging();
     if(pomo.running){
+      // Credit elapsed focus BEFORE pausing. A delayed background tick must not
+      // cause the elapsed portion to disappear from the focus log.
+      const pauseNow = Date.now();
+      creditElapsedFocus(pauseNow);
       // pause: lock in the precise remaining time from the deadline, not a tick count
-      pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
+      pomo.remaining = Math.max(0, Math.round((pomo.endAt - pauseNow) / 1000));
       pomo.running = false;
       clearInterval(pomo.timerId);
       releaseWakeLockIfIdle();
@@ -2108,7 +2143,15 @@ function renderCt(){
 // seconds actually credited rather than being reset to `now` on every tick.
 function ctCreditElapsed(now){
   if(ctState.lastCredit != null){
-    const elapsed = Math.floor((now - ctState.lastCredit) / 1000);
+    let elapsed = Math.floor((now - ctState.lastCredit) / 1000);
+
+    // A countdown cannot accrue more focus time than its configured duration.
+    // If the browser wakes the page late, only credit time up to endAt.
+    if(ctState.mode === 'timer' && ctState.endAt){
+      const untilEnd = Math.floor((ctState.endAt - ctState.lastCredit) / 1000);
+      elapsed = Math.min(elapsed, Math.max(0, untilEnd));
+    }
+
     if(elapsed > 0){
       addFocusSeconds(elapsed);
       ctState.sessionSeconds += elapsed;
