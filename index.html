@@ -27,23 +27,6 @@
     --night:#6C7BFF;
     --night-glow:rgba(108,123,255,.30);
     --rest-line:#3A3F4B;
-    /* generic monochrome accent — used for page chrome (buttons, focus rings, nav) that
-       isn't the schedule, its categories, the matrix, or the timer, so those keep their color. */
-    --accent:#D7D9E0;
-    --accent-glow:rgba(215,217,224,.25);
-    color-scheme:dark;
-  }
-  [data-theme="light"]{
-    --bg:#F6F5F1;
-    --surface:#FFFFFF;
-    --surface-2:#EFEDE6;
-    --line:#DEDBD1;
-    --text:#1B1C20;
-    --text-dim:#5B5F69;
-    --text-faint:#8A8E97;
-    --accent:#1B1C20;
-    --accent-glow:rgba(27,28,32,.14);
-    color-scheme:light;
   }
 
   *{box-sizing:border-box;}
@@ -55,11 +38,10 @@
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
     padding:64px 24px 96px;
-    transition:background .2s ease, color .2s ease;
   }
-  ::selection{background:var(--accent-glow);}
+  ::selection{background:var(--night-glow);}
   a, button{ font-family:inherit; }
-  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
+  :focus-visible{ outline:2px solid var(--night); outline-offset:3px; border-radius:4px; }
 
   .wrap{ max-width:860px; margin:0 auto; }
 
@@ -85,7 +67,9 @@
     letter-spacing:-.01em;
   }
   h1 em{
-    font-style:italic; font-weight:400; color:var(--accent);
+    font-style:italic; font-weight:400;
+    background:linear-gradient(90deg,var(--day-strong),var(--night));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
   }
   .sub{ color:var(--text-dim); font-size:15.5px; line-height:1.65; max-width:56ch; }
 
@@ -94,7 +78,7 @@
   .swatch{ width:11px; height:11px; border-radius:3px; flex:none; }
   .swatch.strong{ background:var(--day-strong); }
   .swatch.soft{ background:var(--day-soft); }
-  .swatch.night{ background:var(--night); }
+  .swatch.night{ background:var(--night); box-shadow:0 0 10px var(--night-glow); }
   .swatch.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
 
   .foundation{
@@ -136,7 +120,7 @@
   }
   .iconbtn:hover{ color:var(--text); border-color:#3a3f4b; background:var(--surface); }
   .iconbtn svg{ width:14px; height:14px; }
-  .iconbtn.enabled{ color:var(--accent); border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+  .iconbtn.enabled{ color:var(--night); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
   .name-chip{
     display:inline-flex; align-items:center; gap:7px;
     background:none; border:1px solid transparent; color:var(--text-dim);
@@ -157,7 +141,7 @@
     background:var(--surface-2); border:1px solid var(--line); color:var(--text);
     border-radius:6px; padding:5px 8px; font-family:'JetBrains Mono',monospace; font-size:12px;
   }
-  .edit-time{ width:118px; }
+  .edit-time{ width:76px; }
   .edit-label{ flex:1; min-width:140px; font-family:'Inter',sans-serif; }
   .edit-del{
     background:none; border:1px solid var(--line); color:var(--text-faint);
@@ -194,13 +178,13 @@
   /* timeline */
   .rail{ position:relative; height:34px; margin-bottom:10px; }
   .track{ position:absolute; inset:0; border-radius:8px;
-    background:var(--line); opacity:.5; }
+    background:linear-gradient(90deg,var(--day-strong),var(--day-soft) 32%,#3d3f6a 68%,var(--night)); opacity:.12; }
   .seg{ position:absolute; top:0; bottom:0; border-radius:7px; }
   .seg.day-strong{ background:var(--day-strong); }
   .seg.day-soft{ background:var(--day-soft); }
-  .seg.night{ background:var(--night); }
+  .seg.night{ background:var(--night); box-shadow:0 0 16px var(--night-glow); }
   .seg.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
-  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:#fff; }
+  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:#fff; box-shadow:0 0 8px rgba(255,255,255,.8); }
   .now-label{
     position:absolute; top:-22px; transform:translateX(-50%);
     font-family:'JetBrains Mono',monospace; font-size:10px; color:#fff; white-space:nowrap;
@@ -382,7 +366,7 @@
     padding:9px 16px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
   }
   .view-btn:hover{ color:var(--text); border-color:#3a3f4b; }
-  .view-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+  .view-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
 
   /* productivity matrix */
   .matrix-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:26px; }
@@ -422,7 +406,7 @@
   .mx-cell.mx-off{ background:rgba(180,72,66,.32); border-color:rgba(180,72,66,.5); }
   .mx-cell.mx-d2{ background:rgba(90,120,100,.38); border-color:rgba(90,120,100,.5); }
   .mx-cell.mx-d1{ background:rgba(70,150,105,.55); border-color:rgba(70,150,105,.65); }
-  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; }
+  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; box-shadow:0 0 6px rgba(47,191,110,.5); }
   .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--night); }
 
   @media (max-width:560px){
@@ -441,38 +425,20 @@
   .sync-dot.synced{ background:#2fbf6e; opacity:1; }
   .sync-dot.error{ background:var(--text-faint); opacity:.55; }
   @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
-
-  /* light/dark toggle — fixed top-left, above everything else */
-  .theme-toggle{
-    position:fixed; top:14px; left:14px; z-index:9999;
-    width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;
-    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
-    border-radius:100px; cursor:pointer; padding:0;
-    transition:border-color .15s, color .15s, background .15s;
-  }
-  .theme-toggle:hover{ color:var(--text); border-color:var(--accent); }
-  .theme-toggle svg{ width:16px; height:16px; }
-  .theme-toggle .icon-moon{ display:none; }
-  [data-theme="light"] .theme-toggle .icon-sun{ display:none; }
-  [data-theme="light"] .theme-toggle .icon-moon{ display:inline-flex; }
 </style>
 </head>
 <body>
-<button class="theme-toggle" id="themeToggle" type="button" title="Toggle light / dark mode" aria-label="Toggle light and dark mode">
-  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
-  <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-</button>
 <div class="wr-toast-wrap" id="wrToastWrap"></div>
 
 <div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
   <div style="max-width:360px;width:100%;text-align:center;">
     <div class="eyebrow" style="justify-content:center;">Weekly Rhythm</div>
-    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;color:var(--accent);">held together.</em></h1>
+    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;background:linear-gradient(90deg,var(--day-strong),var(--night));-webkit-background-clip:text;background-clip:text;color:transparent;">held together.</em></h1>
     <p class="sub" style="margin:0 auto 28px;">Sign in to sync your schedule and progress across every device.</p>
     <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
       <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
       <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
-      <button id="signInBtn" type="button" style="background:var(--accent);border:none;color:var(--bg);padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
+      <button id="signInBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
       <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:'JetBrains Mono',monospace;font-size:12px;padding-top:4px;">Create account</button>
     </div>
     <div id="authMsg" style="color:var(--text-faint);font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:14px;min-height:16px;"></div>
@@ -485,7 +451,7 @@
   </button>
   <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
     <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
-    <button id="saveNameBtn" type="button" style="background:var(--accent);border:none;color:var(--bg);padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
+    <button id="saveNameBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
   </span>
   <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -636,28 +602,9 @@ const sb = supabase.createClient(
 let currentUser = null;
 </script>
 <script>
-const SCALE_START = 0;     // 12:00 AM
-const SCALE_END   = 1440;  // 24:00 (12:00 AM next day) — a full 24h cycle
+const SCALE_START = 450;   // 7:30
+const SCALE_END   = 1500;  // 25:00 (1:00 AM)
 const SCALE_RANGE = SCALE_END - SCALE_START;
-
-// --- light/dark toggle. Persisted locally; falls back to the OS preference the first time.
-(function initTheme(){
-  const KEY = 'wr-theme';
-  const saved = localStorage.getItem(KEY);
-  const initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-  const metaTheme = document.querySelector('meta[name="theme-color"]');
-  const apply = (mode) => {
-    document.documentElement.setAttribute('data-theme', mode);
-    if(metaTheme) metaTheme.setAttribute('content', mode === 'light' ? '#F6F5F1' : '#0F1115');
-  };
-  apply(initial);
-  const btn = document.getElementById('themeToggle');
-  btn.addEventListener('click', () => {
-    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    apply(next);
-    localStorage.setItem(KEY, next);
-  });
-})();
 
 // --- keep the screen awake while a pomodoro is running, so mobile auto-lock doesn't suspend
 // the tab mid-session. This only prevents the OS's idle-timeout sleep — it can't override a
@@ -753,36 +700,13 @@ function tickAllRunning(){
 // Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
 // visible/focused again — covers cases where the interval was throttled or fully suspended.
 function resyncRunningPomos(){
-  // Browser lifecycle throttling must never determine how much time is logged.
-  // The timer timestamps are the source of truth; lifecycle events simply
-  // force an immediate reconciliation and persistence checkpoint.
   tickAllRunning();
   if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) acquireWakeLock();
   wrResumeAudioContexts();
-  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) persistLocal();
 }
-function checkpointRunningTimers(){
-  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)){
-    tickAllRunning();
-    persistLocal();
-  }
-}
-document.addEventListener('visibilitychange', () => {
-  if(document.hidden){
-    // Save the exact elapsed time before the browser can throttle/suspend us.
-    checkpointRunningTimers();
-    releaseWakeLockIfIdle();
-  } else {
-    resyncRunningPomos();
-  }
-});
+document.addEventListener('visibilitychange', () => { if(!document.hidden) resyncRunningPomos(); });
 window.addEventListener('focus', resyncRunningPomos);
 window.addEventListener('pageshow', resyncRunningPomos);
-window.addEventListener('pagehide', checkpointRunningTimers);
-window.addEventListener('freeze', checkpointRunningTimers);
-// Crash/reload safety net. Correctness still comes from endAt/lastCredit, so
-// if this interval is throttled the next lifecycle event catches up exactly.
-setInterval(checkpointRunningTimers, 5000);
 
 // --- background heartbeat: hidden/minimized tabs get their setInterval throttled (sometimes to
 // once a minute, or fully paused), which is why the alarm could fire late or silently miss
@@ -825,7 +749,6 @@ showTimerBtn.addEventListener('click', () => showView('timer'));
 
 // --- persistent focus log (per real calendar date, in localStorage) ---
 const FOCUS_LOG_KEY = 'wr_focus_log_v1';
-const SESSIONS_LOG_KEY = 'wr_sessions_log_v1';
 
 function loadFocusLog(){
   try{ return JSON.parse(localStorage.getItem(FOCUS_LOG_KEY) || '{}'); }
@@ -834,21 +757,6 @@ function loadFocusLog(){
 function saveFocusLog(log){
   try{ localStorage.setItem(FOCUS_LOG_KEY, JSON.stringify(log)); }
   catch(e){ /* storage unavailable — ignore */ }
-}
-function loadSessionsLog(){
-  try{ return JSON.parse(localStorage.getItem(SESSIONS_LOG_KEY) || '{}'); }
-  catch(e){ return {}; }
-}
-function saveSessionsLog(log){
-  try{ localStorage.setItem(SESSIONS_LOG_KEY, JSON.stringify(log)); }
-  catch(e){ /* storage unavailable — ignore */ }
-}
-function bumpSessionsLog(){
-  const log = loadSessionsLog();
-  const k = dateKey(new Date());
-  log[k] = (log[k] || 0) + 1;
-  saveSessionsLog(log);
-  queueCloudPush();
 }
 function dateKey(d){
   const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
@@ -891,12 +799,11 @@ function snapshotState(){
     updatedAt: Date.now(),
     ownerId: currentUser ? currentUser.id : null,
     focusLog: loadFocusLog(),
-    sessionsLog: loadSessionsLog(),
     schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
     pomo: pomoRefs.map(r => ({
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
-      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, loggedDate:r.pomo.loggedDate
+      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds
     })),
     customTimer: ctState ? {
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
@@ -915,7 +822,6 @@ function persistLocal(){
 // apply a full state object (from localStorage on load, or a remote device) to the live UI
 function applyState(state, {rerenderMatrix} = {}){
   if(state.focusLog) saveFocusLog(state.focusLog);
-  if(state.sessionsLog) saveSessionsLog(state.sessionsLog);
   if(state.schedule){
     dayPanels.forEach(p => {
       const sd = state.schedule[p.day.key];
@@ -926,36 +832,10 @@ function applyState(state, {rerenderMatrix} = {}){
     const r = pomoRefs[i];
     if(!r) return;
     if(r.pomo.running) { clearInterval(r.pomo.timerId); }
-    // Check the INCOMING data's own loggedDate before merging — not the local field afterward.
-    // A sync from an older cached tab (from before this field existed) won't have loggedDate at
-    // all; merging its focusSeconds/sessions in while leaving the local "today" loggedDate
-    // untouched would make a stale total look freshly-dated and slip past the reset check.
-    const today = dateKey(new Date());
-    const incomingIsToday = s.loggedDate === today;
     Object.assign(r.pomo, s);
-    if(!incomingIsToday){ r.pomo.focusSeconds = 0; r.pomo.sessions = 0; persistLocal(); }
-    r.pomo.loggedDate = today;
     if(r.pomo.running && r.pomo.endAt){
       const left = Math.round((r.pomo.endAt - Date.now())/1000);
-      if(left <= 0){
-        // The session actually finished while this tab/device was closed or asleep — credit it
-        // properly instead of silently dropping it. `remaining` is exactly how many focus
-        // seconds hadn't been logged yet when this was last saved, so that (not the real-world
-        // gap, which could be hours) is the correct amount to add now.
-        if(r.pomo.mode === 'focus'){
-          r.pomo.focusSeconds += r.pomo.remaining;
-          addFocusSeconds(r.pomo.remaining);
-          r.pomo.sessions++;
-          bumpSessionsLog();
-          r.pomo.mode = 'break';
-          r.pomo.remaining = r.pomo.breakLen;
-        } else {
-          r.pomo.mode = 'focus';
-          r.pomo.remaining = r.pomo.workLen;
-        }
-        r.pomo.running = false;
-        persistLocal();
-      }
+      if(left <= 0){ r.pomo.running = false; r.pomo.remaining = 0; }
       else { r.pomo.remaining = left; r.pomo.lastCredit = Date.now(); r.pomo.timerId = setInterval(r.tick, 250); acquireWakeLock(); }
     }
     r.render();
@@ -972,30 +852,7 @@ function applyState(state, {rerenderMatrix} = {}){
       const now = Date.now();
       if(ctState.mode === 'timer' && ctState.endAt){
         const left = Math.round((ctState.endAt - now)/1000);
-        if(left <= 0){
-          // The timer actually finished while this tab/device was closed or asleep. Unlike the
-          // pomodoro's equivalent restore path, this used to just zero it out and drop the
-          // session — the elapsed focus time (and the history entry) never got recorded. Credit
-          // the seconds that hadn't been logged yet (ctState.remaining, same trick as the
-          // pomodoro) and log the session before resetting.
-          ctState.running = false;
-          ctState.sessionSeconds += ctState.remaining;
-          addFocusSeconds(ctState.remaining);
-          if(ctState.sessionActive && ctState.sessionSeconds > 0){
-            addTimerHistoryEntry({
-              id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-              type: ctState.mode,
-              seconds: ctState.sessionSeconds, startedAt: ctState.sessionStartedAt, endedAt: ctState.endAt
-            });
-          }
-          ctState.sessionActive = false;
-          ctState.sessionSeconds = 0;
-          ctState.remaining = ctState.targetSeconds;
-          ctState.endAt = null;
-          ctState.runStartedAt = null;
-          ctState.sessionStartedAt = null;
-          persistLocal();
-        }
+        if(left <= 0){ ctState.running = false; ctState.remaining = 0; }
         else { ctState.remaining = left; ctState.lastCredit = now; ctState.timerId = setInterval(ctTick, 250); acquireWakeLock(); }
       } else if(ctState.mode === 'stopwatch'){
         ctState.lastCredit = now;
@@ -1364,9 +1221,11 @@ function renderMatrix(){
 
 
 function fmt(min){
-  const t = ((min % 1440) + 1440) % 1440;
-  const h = Math.floor(t/60), m = t % 60;
-  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+  let h = Math.floor(min/60) % 24;
+  const m = min % 60;
+  const ampm = (h < 12 || h === 24) ? 'AM' : 'PM';
+  let h12 = h % 12; if(h12 === 0) h12 = 12;
+  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
 }
 function tickLabel(min){
   const t = min >= 1440 ? min - 1440 : min;
@@ -1383,18 +1242,13 @@ function minsToHM(mins){
   return h + 'h ' + m + 'm';
 }
 
-// 24h "HH:MM" helpers for the native <input type="time"> editing controls — lets people pick
-// a time with the browser's own time picker instead of typing "9:00 AM" by hand.
-function fmt24(min){
-  const t = ((min % 1440) + 1440) % 1440;
-  const h = Math.floor(t/60), m = t % 60;
-  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
-}
-function parseClock24(str){
-  const m = String(str).trim().match(/^(\d{1,2}):(\d{2})$/);
+function parseClock(str){
+  const m = String(str).trim().match(/^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/);
   if(!m) return null;
-  let h = parseInt(m[1],10), min = parseInt(m[2],10);
-  const total = h*60 + min;
+  let h = parseInt(m[1],10) % 12, min = parseInt(m[2],10);
+  if(m[3].toLowerCase() === 'pm') h += 12;
+  let total = h*60 + min;
+  if(total < SCALE_START) total += 1440;
   return Math.min(SCALE_END, Math.max(SCALE_START, total));
 }
 function computeProductive(day){
@@ -1420,8 +1274,8 @@ function renderList(panel){
     if(panel.editing){
       row.className = 'row editing';
       row.innerHTML = `
-        <input type="time" class="edit-time edit-s" value="${fmt24(b.s)}">
-        <input type="time" class="edit-time edit-e" value="${fmt24(b.e)}">
+        <input class="edit-time edit-s" value="${fmt(b.s)}">
+        <input class="edit-time edit-e" value="${fmt(b.e)}">
         <input class="edit-label">
         <select class="edit-type">
           <option value="day-strong">Corporate</option>
@@ -1433,8 +1287,8 @@ function renderList(panel){
       row.querySelector('.edit-label').value = b.label;
       row.querySelector('.edit-type').value = b.type;
       const commit = () => {
-        const ns = parseClock24(row.querySelector('.edit-s').value);
-        const ne = parseClock24(row.querySelector('.edit-e').value);
+        const ns = parseClock(row.querySelector('.edit-s').value);
+        const ne = parseClock(row.querySelector('.edit-e').value);
         if(ns != null) b.s = ns;
         if(ne != null) b.e = ne;
         b.label = row.querySelector('.edit-label').value.trim() || b.label;
@@ -1458,14 +1312,8 @@ function renderList(panel){
     addBtn.type = 'button'; addBtn.className = 'add-block-btn'; addBtn.textContent = '+ Add block';
     addBtn.addEventListener('click', () => {
       const last = panel.day.blocks[panel.day.blocks.length - 1];
-      // If the previous block already ends at the very end of the scale (common — most days'
-      // last block is a "rest" block running to 25:00), starting the new block there and
-      // capping its end at SCALE_END too collapsed it to zero width (s === e), so it added
-      // nothing to the productive total. Back off 60 minutes from the end instead.
-      let s = last ? last.e : SCALE_START;
-      if(s >= SCALE_END) s = Math.max(SCALE_START, SCALE_END - 60);
-      const e = Math.min(s + 60, SCALE_END);
-      panel.day.blocks.push({ s, e, label:'New block', type:'day-soft' });
+      const s = last ? last.e : SCALE_START;
+      panel.day.blocks.push({ s, e: Math.min(s + 60, SCALE_END), label:'New block', type:'day-soft' });
       updateDay(panel);
     });
     listEl.appendChild(addBtn);
@@ -1493,44 +1341,44 @@ const days = [
     {s:660,e:840,label:'Affiliate Content & Link Setup — Hilla.space & Hillafuku',type:'day-soft'},
     {s:840,e:900,label:'Sowhtvr Affiliate & Admin',type:'day-soft'},
     {s:900,e:960,label:'Study & Skill Acquisition',type:'day-soft'},
-    {s:960,e:1440,label:'Rest / Casual Research',type:'rest'},
+    {s:960,e:1500,label:'Rest / Casual Research',type:'rest'},
   ]},
   { key:'Tuesday', tag:'WFO Day — Strict Off', blocks:[
     {s:450,e:600,label:'Corporate Work (In Office)',type:'day-strong'},
-    {s:600,e:1440,label:'Full Rest — zero extra tasks',type:'rest'},
+    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
   ]},
   { key:'Wednesday', tag:'WFO Day — Strict Off', blocks:[
     {s:450,e:600,label:'Corporate Work (In Office)',type:'day-strong'},
-    {s:600,e:1440,label:'Full Rest — zero extra tasks',type:'rest'},
+    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
   ]},
   { key:'Thursday', tag:'Night-Owl YouTube Creation', blocks:[
     {s:450,e:600,label:'Corporate Work',type:'day-strong'},
     {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
     {s:660,e:720,label:'Study / Trend Analysis',type:'day-soft'},
     {s:720,e:1170,label:'Free Time / Errands / Rest',type:'rest'},
-    {s:1170,e:1440,label:'Hillabits Deep Work — Scripting, Recording, Editing',type:'night'},
+    {s:1170,e:1470,label:'Hillabits Deep Work — Scripting, Recording, Editing',type:'night'},
   ]},
   { key:'Friday', tag:'Night-Owl Brand Content Creation', blocks:[
     {s:450,e:600,label:'Corporate Work',type:'day-strong'},
     {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
     {s:660,e:720,label:'Study / Creative Direction',type:'day-soft'},
     {s:720,e:1170,label:'Free Time / Rest',type:'rest'},
-    {s:1170,e:1440,label:'Akutafh Deep Work — Batch Recording & Editing',type:'night'},
+    {s:1170,e:1470,label:'Akutafh Deep Work — Batch Recording & Editing',type:'night'},
   ]},
   { key:'Saturday', tag:'Review & Strategy Day', blocks:[
     {s:780,e:900,label:'Performance Review & Analytics Check',type:'day-soft'},
     {s:900,e:1020,label:'Next Week Planning & Content Calendar Setup',type:'day-soft'},
-    {s:1140,e:1440,label:'Free / Social / Unwind',type:'rest'},
+    {s:1140,e:1500,label:'Free / Social / Unwind',type:'rest'},
   ]},
   { key:'Sunday', tag:'Deep Writing & Reset', blocks:[
     {s:780,e:900,label:'Writing — Scripts, Long-form Posts, Ideation',type:'day-soft'},
-    {s:1140,e:1440,label:'Rest / System Reset for the coming week',type:'rest'},
+    {s:1140,e:1500,label:'Rest / System Reset for the coming week',type:'rest'},
   ]},
 ];
 
 const DEFAULT_SCHEDULE = days.map(d => d.blocks.map(b => ({...b})));
 
-const ticks = [0,180,360,540,720,900,1080,1260,1440];
+const ticks = [450,600,780,960,1140,1320,1500];
 
 // --- figure out "logical" schedule day: rolls over at real midnight, same as the calendar date.
 function getLogicalNow(){
@@ -1622,7 +1470,7 @@ days.forEach((day, i) => {
     workLen: 25*60, breakLen: 5*60,
     mode: 'focus', remaining: 25*60,
     running: false, timerId: null,
-    sessions: 0, focusSeconds: 0, loggedDate: dateKey(new Date()),
+    sessions: 0, focusSeconds: 0,
     ringing: false, alarmId: null, warned30: false,
     endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
     lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
@@ -1642,14 +1490,6 @@ days.forEach((day, i) => {
 
   // --- alarm sound: generated with WebAudio, no external file needed ---
   let audioCtx = null;
-  function warmPomoAudioCtx(){
-    if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => audioCtx); }
-    if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-  }
-  // Browsers only allow audio after a click/tap on THIS tab — cross-device sync can start a
-  // countdown here without the user ever pressing this panel's own Start button, so unlock on
-  // the very first interaction anywhere on the page, not just this button specifically.
-  document.addEventListener('pointerdown', warmPomoAudioCtx, { once: true, passive: true });
   function beep(){
     try{
       if(!audioCtx){
@@ -1681,10 +1521,6 @@ days.forEach((day, i) => {
     pomoEl.classList.add('ringing');
     beep();
     pomo.alarmId = setInterval(beep, 900);
-    // No one may be there to tap Stop — don't beep forever, give up after 1 minute the same
-    // way the server-side push backup does.
-    clearTimeout(pomo.alarmAutoStopId);
-    pomo.alarmAutoStopId = setTimeout(() => { if(pomo.ringing) stopRinging(); }, 60*1000);
     if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
     // Browsers often mute or suspend audio in background tabs, so the beep alone can be
     // silent while backgrounded — a system notification is the more reliable signal there.
@@ -1703,7 +1539,6 @@ days.forEach((day, i) => {
     pomoEl.classList.remove('ringing');
     clearInterval(pomo.alarmId);
     pomo.alarmId = null;
-    clearTimeout(pomo.alarmAutoStopId);
     wrCancelAlarm(pushAlarmKey); // acknowledged locally — stop the server's repeat pushes
   }
 
@@ -1715,19 +1550,13 @@ days.forEach((day, i) => {
   }
 
   function renderPomo(){
-    // Read straight from the date-keyed logs — today's key can never carry a stale total from
-    // another day, since old entries simply live under their own (different) date key forever.
-    // No reset-on-date-change logic needed, and nothing here can be defeated by sync ordering.
-    const today = dateKey(new Date());
-    const todayFocusSeconds = loadFocusLog()[today] || 0;
-    const todaySessions = loadSessionsLog()[today] || 0;
     timeEl.textContent = clockFmt(pomo.remaining);
     modeEl.textContent = pomo.mode === 'focus' ? 'Focus' : 'Break';
     modeEl.classList.toggle('break', pomo.mode === 'break');
     startBtn.textContent = pomo.running ? 'Pause' : (pomo.remaining < (pomo.mode==='focus'?pomo.workLen:pomo.breakLen) ? 'Resume' : 'Start');
     startBtn.classList.toggle('running', pomo.running);
-    sessionsEl.textContent = todaySessions;
-    loggedEl.textContent = minsToHM(todayFocusSeconds/60);
+    sessionsEl.textContent = pomo.sessions;
+    loggedEl.textContent = minsToHM(pomo.focusSeconds/60);
     presetBtns.forEach(b => b.disabled = pomo.running);
   }
 
@@ -1740,15 +1569,7 @@ days.forEach((day, i) => {
   // reaches a full second and nothing ever gets credited.
   function creditElapsedFocus(now){
     if(pomo.mode === 'focus' && pomo.lastCredit != null){
-      let elapsed = Math.floor((now - pomo.lastCredit) / 1000);
-
-      // Never let a delayed/background callback credit time from the following
-      // break as focus. The phase deadline is the hard upper bound.
-      if(pomo.endAt){
-        const untilEnd = Math.floor((pomo.endAt - pomo.lastCredit) / 1000);
-        elapsed = Math.min(elapsed, Math.max(0, untilEnd));
-      }
-
+      const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
       if(elapsed > 0){
         pomo.focusSeconds += elapsed;
         addFocusSeconds(elapsed);
@@ -1776,7 +1597,6 @@ days.forEach((day, i) => {
       pomo.warned30 = false;
       if(pomo.mode === 'focus'){
         pomo.sessions++;
-        bumpSessionsLog();
         pomo.mode = 'break';
         pomo.remaining = pomo.breakLen;
       } else {
@@ -1803,12 +1623,8 @@ days.forEach((day, i) => {
   startBtn.addEventListener('click', () => {
     if(pomo.ringing) stopRinging();
     if(pomo.running){
-      // Credit elapsed focus BEFORE pausing. A delayed background tick must not
-      // cause the elapsed portion to disappear from the focus log.
-      const pauseNow = Date.now();
-      creditElapsedFocus(pauseNow);
       // pause: lock in the precise remaining time from the deadline, not a tick count
-      pomo.remaining = Math.max(0, Math.round((pomo.endAt - pauseNow) / 1000));
+      pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
       pomo.running = false;
       clearInterval(pomo.timerId);
       releaseWakeLockIfIdle();
@@ -1977,11 +1793,6 @@ let ctDialLaps = 0;
 let ctDialLastFrac = 0;
 
 let ctAudioCtx = null;
-function warmCtAudioCtx(){
-  if(!ctAudioCtx){ ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => ctAudioCtx); }
-  if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume().catch(() => {});
-}
-document.addEventListener('pointerdown', warmCtAudioCtx, { once: true, passive: true });
 function ctBeep(){
   try{
     if(!ctAudioCtx){
@@ -2010,8 +1821,6 @@ function ctStartRinging(){
   ctPomodoroEl.classList.add('ringing');
   ctBeep();
   ctState.alarmId = setInterval(ctBeep, 900);
-  clearTimeout(ctState.alarmAutoStopId);
-  ctState.alarmAutoStopId = setTimeout(() => { if(ctState.ringing) ctStopRinging(); }, 60*1000);
   if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
   if(document.hidden) wrNotify('Weekly Rhythm', "Timer's up.", 'wr-timer');
   // Deliberately NOT cancelling the server-side push here — see the matching comment in the
@@ -2023,7 +1832,6 @@ function ctStopRinging(){
   ctPomodoroEl.classList.remove('ringing');
   clearInterval(ctState.alarmId);
   ctState.alarmId = null;
-  clearTimeout(ctState.alarmAutoStopId);
   wrCancelAlarm('ct'); // acknowledged locally — stop the server's repeat pushes
 }
 ctStopAlarmBtn.addEventListener('click', ctStopRinging);
@@ -2143,15 +1951,7 @@ function renderCt(){
 // seconds actually credited rather than being reset to `now` on every tick.
 function ctCreditElapsed(now){
   if(ctState.lastCredit != null){
-    let elapsed = Math.floor((now - ctState.lastCredit) / 1000);
-
-    // A countdown cannot accrue more focus time than its configured duration.
-    // If the browser wakes the page late, only credit time up to endAt.
-    if(ctState.mode === 'timer' && ctState.endAt){
-      const untilEnd = Math.floor((ctState.endAt - ctState.lastCredit) / 1000);
-      elapsed = Math.min(elapsed, Math.max(0, untilEnd));
-    }
-
+    const elapsed = Math.floor((now - ctState.lastCredit) / 1000);
     if(elapsed > 0){
       addFocusSeconds(elapsed);
       ctState.sessionSeconds += elapsed;
