@@ -110,6 +110,7 @@
     padding:26px 26px 24px;
   }
   .day[hidden]{ display:none; }
+  .pomodoro[hidden]{ display:none; }
 
   .day-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
   .iconbtn{
@@ -160,7 +161,27 @@
     color:var(--night); border:1px solid var(--night); border-radius:100px; padding:3px 9px;
   }
   .day-tag{ font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
-  .day-total{ font-size:12px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; margin-bottom:20px; }
+  .day-total-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+  .day-total{ font-size:12px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; }
+  .day-target-btn{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.04em;
+    padding:4px 10px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s;
+  }
+  .day-target-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .day-target-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .day-target-editor{ display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); }
+  .day-target-editor[hidden]{ display:none; }
+  .day-target-editor input{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    border-radius:6px; padding:4px 6px; font-family:'JetBrains Mono',monospace; font-size:12px; width:42px; text-align:center;
+  }
+  .day-target-save, .day-target-auto{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:100px; cursor:pointer;
+  }
+  .day-target-save:hover{ color:var(--text); border-color:var(--night); }
+  .day-target-auto:hover{ color:var(--text); border-color:#3a3f4b; }
 
   /* productivity stats */
   .stats{
@@ -481,6 +502,7 @@
     <button class="view-btn active" id="showScheduleBtn" type="button">Weekly Rhythm</button>
     <button class="view-btn" id="showMatrixBtn" type="button">Productivity Matrix</button>
     <button class="view-btn" id="showTimerBtn" type="button">Timer</button>
+    <button class="view-btn" id="showPomodoroBtn" type="button">Pomodoro</button>
   </div>
 
   <div id="viewSchedule">
@@ -551,7 +573,7 @@
         <button class="pomo-preset-btn" id="ctModeStopwatchBtn" type="button">Stopwatch</button>
       </span>
     </div>
-    <div class="ct-note">Running time here also counts toward today's productive progress, same as the pomodoro. Drag the dial to set a custom time. History resets every day — delete an entry to correct its time if you forgot to stop it.</div>
+    <div class="ct-note">Running time here also counts toward today's productive progress. Drag the dial to set a custom time. History resets every day — delete an entry to correct its time if you forgot to stop it.</div>
 
     <div class="pomodoro ct-pomodoro" id="ctPomodoro">
       <div class="ct-dial-wrap" id="ctDialWrap">
@@ -582,10 +604,38 @@
       </div>
     </div>
 
-    <div class="ct-history">
+    <div class="ct-history" id="ctHistorySection">
       <div class="ct-history-head">Today's sessions</div>
       <div class="ct-history-list" id="ctHistoryList"></div>
       <div class="ct-history-empty" id="ctHistoryEmpty">Nothing logged yet today.</div>
+    </div>
+  </div>
+
+  <div id="viewPomodoro" hidden>
+    <div class="ct-head">
+      <div class="ct-title">Pomodoro</div>
+    </div>
+    <div class="ct-note">Focus time here also counts toward today's productive progress, same as the timer. Sessions and totals reset every day.</div>
+
+    <div class="pomodoro" id="globalPomodoro">
+      <span class="pomo-mode" id="gpModeTag">Focus</span>
+      <span class="pomo-time" id="gpTimeEl">25:00</span>
+      <span class="pomo-controls">
+        <button class="pomo-btn start" id="gpStartBtn" type="button">Start</button>
+        <button class="pomo-btn reset" id="gpResetBtn" type="button">Reset</button>
+      </span>
+      <span class="pomo-presets" id="gpPresets">
+        <button class="pomo-preset-btn active" data-work="25" data-brk="5" type="button">25 / 5</button>
+        <button class="pomo-preset-btn" data-work="50" data-brk="10" type="button">50 / 10</button>
+      </span>
+      <span class="pomo-meta">
+        <span>Sessions today: <b id="gpSessions">0</b></span>
+        <span>Focus logged: <b id="gpLogged">0m</b></span>
+      </span>
+      <div class="pomo-alarm" id="gpAlarm">
+        <span class="pomo-alarm-text">⏰ Time's up — click Stop to silence</span>
+        <button class="pomo-stop-btn" id="gpStopAlarmBtn" type="button">Stop</button>
+      </div>
     </div>
   </div>
 
@@ -725,27 +775,32 @@ window.addEventListener('pageshow', resyncRunningPomos);
   }
 })();
 
-// --- view switcher: Weekly Rhythm <-> Productivity Matrix <-> Timer ---
+// --- view switcher: Weekly Rhythm <-> Productivity Matrix <-> Timer <-> Pomodoro ---
 const scheduleView = document.getElementById('viewSchedule');
 const matrixView = document.getElementById('viewMatrix');
 const timerView = document.getElementById('viewTimer');
+const pomodoroView = document.getElementById('viewPomodoro');
 const showScheduleBtn = document.getElementById('showScheduleBtn');
 const showMatrixBtn = document.getElementById('showMatrixBtn');
 const showTimerBtn = document.getElementById('showTimerBtn');
+const showPomodoroBtn = document.getElementById('showPomodoroBtn');
 
 function showView(which){
   scheduleView.hidden = which !== 'schedule';
   matrixView.hidden = which !== 'matrix';
   timerView.hidden = which !== 'timer';
+  pomodoroView.hidden = which !== 'pomodoro';
   showScheduleBtn.classList.toggle('active', which === 'schedule');
   showMatrixBtn.classList.toggle('active', which === 'matrix');
   showTimerBtn.classList.toggle('active', which === 'timer');
+  showPomodoroBtn.classList.toggle('active', which === 'pomodoro');
   if(which === 'matrix') renderMatrix();
   if(which === 'timer') renderCtHistory();
 }
 showScheduleBtn.addEventListener('click', () => showView('schedule'));
 showMatrixBtn.addEventListener('click', () => showView('matrix'));
 showTimerBtn.addEventListener('click', () => showView('timer'));
+showPomodoroBtn.addEventListener('click', () => showView('pomodoro'));
 
 // --- persistent focus log (per real calendar date, in localStorage) ---
 const FOCUS_LOG_KEY = 'wr_focus_log_v1';
@@ -772,11 +827,19 @@ function addFocusSeconds(sec){
   // while a timer or pomodoro is running in the background
   if(typeof matrixView !== 'undefined' && matrixView && !matrixView.hidden) renderMatrix();
 }
-// daily target minutes for a given date = that weekday's scheduled productive total
+// per-weekday custom productive-time targets (minutes), set by the user — overrides the
+// auto-computed total from that day's to-do blocks when present. Keyed by day.key.
+let targetOverrides = {};
+// the target actually used for a day: the user's custom minutes if they set one, otherwise
+// whatever the day's scheduled (non-rest) blocks add up to
+function getProductiveTarget(day){
+  const override = targetOverrides[day.key];
+  return (override != null && override > 0) ? override : computeProductive(day);
+}
+// daily target minutes for a given date = that weekday's custom target, or its scheduled total
 function targetMinutesFor(date){
   const idx = (date.getDay() + 6) % 7; // Mon=0 ... Sun=6
-  const day = days[idx];
-  return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
+  return getProductiveTarget(days[idx]);
 }
 function classifyDay(actualMin, targetMin, isFuture){
   if(isFuture) return 'mx-future';
@@ -800,6 +863,7 @@ function snapshotState(){
     ownerId: currentUser ? currentUser.id : null,
     focusLog: loadFocusLog(),
     schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
+    targetOverrides: {...targetOverrides},
     pomo: pomoRefs.map(r => ({
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
@@ -822,11 +886,17 @@ function persistLocal(){
 // apply a full state object (from localStorage on load, or a remote device) to the live UI
 function applyState(state, {rerenderMatrix} = {}){
   if(state.focusLog) saveFocusLog(state.focusLog);
+  if(state.targetOverrides){
+    targetOverrides = {...state.targetOverrides};
+  }
   if(state.schedule){
     dayPanels.forEach(p => {
       const sd = state.schedule[p.day.key];
-      if(sd && sd.length) { p.day.blocks = sd; applyScheduleUpdate(p); }
+      if(sd && sd.length) { p.day.blocks = sd; }
+      applyScheduleUpdate(p); // also picks up any targetOverrides change even when blocks didn't
     });
+  } else if(state.targetOverrides){
+    dayPanels.forEach(p => applyScheduleUpdate(p));
   }
   (state.pomo || []).forEach((s, i) => {
     const r = pomoRefs[i];
@@ -912,6 +982,7 @@ function subscribeRealtime(){
 // wipes the on-screen state back to the original template — used whenever we switch to an
 // account that doesn't own whatever's currently cached on this device, so it never leaks over
 function resetToDefaults(){
+  targetOverrides = {};
   dayPanels.forEach((p, i) => { p.day.blocks = DEFAULT_SCHEDULE[i].map(b => ({...b})); applyScheduleUpdate(p); });
   saveFocusLog({});
   pomoRefs.forEach(r => {
@@ -1254,6 +1325,14 @@ function parseClock(str){
 function computeProductive(day){
   return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
 }
+// keep a day panel's "Set custom target" button in sync with whether an override is set
+function refreshDayTargetUI(panel){
+  const btn = panel.el.querySelector('.day-target-btn');
+  if(!btn) return;
+  const ov = targetOverrides[panel.day.key];
+  btn.textContent = ov != null ? ('Target: ' + minsToHM(ov)) : 'Set custom target';
+  btn.classList.toggle('active', ov != null);
+}
 function renderRail(panel){
   panel.segsSlot.innerHTML = '';
   panel.day.blocks.forEach(b => {
@@ -1321,8 +1400,10 @@ function renderList(panel){
 }
 // re-render rail/list + productive-time total after an edit (or a synced remote change)
 function applyScheduleUpdate(panel){
-  panel.productiveTotal = computeProductive(panel.day);
-  panel.el.querySelector('.day-total').textContent = minsToHM(panel.productiveTotal) + ' of productive time scheduled';
+  panel.productiveTotal = getProductiveTarget(panel.day);
+  const isCustom = targetOverrides[panel.day.key] != null;
+  panel.el.querySelector('.day-total').textContent = minsToHM(panel.productiveTotal) + ' of productive time scheduled' + (isCustom ? ' (custom target)' : '');
+  refreshDayTargetUI(panel);
   renderRail(panel);
   renderList(panel);
 }
@@ -1397,7 +1478,7 @@ const daysEl = document.getElementById('days');
 const dayPanels = [];
 
 days.forEach((day, i) => {
-  const productiveTotal = day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
+  const productiveTotal = getProductiveTarget(day);
 
   // tab button
   const btn = document.createElement('button');
@@ -1421,28 +1502,19 @@ days.forEach((day, i) => {
         <button type="button" class="day-edit-btn">Edit</button>
       </div>
     </div>
-    <div class="day-total">${minsToHM(productiveTotal)} of productive time scheduled</div>
-    <div class="stats-slot"></div>
-    <div class="pomodoro">
-      <span class="pomo-mode">Focus</span>
-      <span class="pomo-time">25:00</span>
-      <span class="pomo-controls">
-        <button class="pomo-btn start">Start</button>
-        <button class="pomo-btn reset">Reset</button>
+    <div class="day-total-row">
+      <div class="day-total"></div>
+      <button type="button" class="day-target-btn"></button>
+      <span class="day-target-editor" hidden>
+        <input type="number" class="day-target-h" min="0" max="23" placeholder="h">
+        <span>h</span>
+        <input type="number" class="day-target-m" min="0" max="59" placeholder="m">
+        <span>m</span>
+        <button type="button" class="day-target-save">Save</button>
+        <button type="button" class="day-target-auto">Auto</button>
       </span>
-      <span class="pomo-presets">
-        <button class="pomo-preset-btn active" data-work="25" data-brk="5">25 / 5</button>
-        <button class="pomo-preset-btn" data-work="50" data-brk="10">50 / 10</button>
-      </span>
-      <span class="pomo-meta">
-        <span>Sessions today: <b class="pomo-sessions">0</b></span>
-        <span>Focus logged: <b class="pomo-logged">0m</b></span>
-      </span>
-      <div class="pomo-alarm">
-        <span class="pomo-alarm-text">⏰ Time's up — click Stop to silence</span>
-        <button class="pomo-stop-btn" type="button">Stop</button>
-      </div>
     </div>
+    <div class="stats-slot"></div>
     <div class="rail"><div class="track"></div><div class="segs-slot" style="position:absolute;inset:0;"></div></div>
     <div class="ticks">${tickHtml}</div>
     <div class="list"></div>
@@ -1460,231 +1532,260 @@ days.forEach((day, i) => {
     renderList(panel);
   });
 
+  // custom productive-time target: fill in the initial label, then wire the inline editor
+  const isCustomInit = targetOverrides[day.key] != null;
+  el.querySelector('.day-total').textContent = minsToHM(productiveTotal) + ' of productive time scheduled' + (isCustomInit ? ' (custom target)' : '');
+  refreshDayTargetUI(panel);
+
+  const targetBtn = el.querySelector('.day-target-btn');
+  const targetEditor = el.querySelector('.day-target-editor');
+  const targetHInput = el.querySelector('.day-target-h');
+  const targetMInput = el.querySelector('.day-target-m');
+  const targetSaveBtn = el.querySelector('.day-target-save');
+  const targetAutoBtn = el.querySelector('.day-target-auto');
+
+  targetBtn.addEventListener('click', () => {
+    const willShow = targetEditor.hidden;
+    targetEditor.hidden = !willShow;
+    if(willShow){
+      const current = targetOverrides[day.key] != null ? targetOverrides[day.key] : panel.productiveTotal;
+      targetHInput.value = Math.floor(current / 60);
+      targetMInput.value = current % 60;
+      targetHInput.focus();
+    }
+  });
+  targetSaveBtn.addEventListener('click', () => {
+    const h = Math.max(0, Math.floor(Number(targetHInput.value) || 0));
+    const m = Math.max(0, Math.min(59, Math.floor(Number(targetMInput.value) || 0)));
+    targetOverrides[day.key] = h * 60 + m;
+    targetEditor.hidden = true;
+    applyScheduleUpdate(panel);
+    if(panel === dayPanels[activeIdx]) renderStats();
+    if(!matrixView.hidden) renderMatrix();
+    persistLocal();
+  });
+  targetAutoBtn.addEventListener('click', () => {
+    delete targetOverrides[day.key];
+    targetEditor.hidden = true;
+    applyScheduleUpdate(panel);
+    if(panel === dayPanels[activeIdx]) renderStats();
+    if(!matrixView.hidden) renderMatrix();
+    persistLocal();
+  });
+
   renderRail(panel);
   renderList(panel);
 
   daysEl.appendChild(el);
 
-  // pomodoro state — independent per day, in-memory only (resets on page reload)
-  const pomo = {
-    workLen: 25*60, breakLen: 5*60,
-    mode: 'focus', remaining: 25*60,
-    running: false, timerId: null,
-    sessions: 0, focusSeconds: 0,
-    ringing: false, alarmId: null, warned30: false,
-    endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
-    lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
-  };
-
-  const pushAlarmKey = 'pomo-' + day.key; // stable id for this day's server-side scheduled alarm
-
-  const pomoEl = el.querySelector('.pomodoro');
-  const modeEl = pomoEl.querySelector('.pomo-mode');
-  const timeEl = pomoEl.querySelector('.pomo-time');
-  const startBtn = pomoEl.querySelector('.pomo-btn.start');
-  const resetBtn = pomoEl.querySelector('.pomo-btn.reset');
-  const presetBtns = pomoEl.querySelectorAll('.pomo-preset-btn');
-  const sessionsEl = pomoEl.querySelector('.pomo-sessions');
-  const loggedEl = pomoEl.querySelector('.pomo-logged');
-  const stopAlarmBtn = pomoEl.querySelector('.pomo-stop-btn');
-
-  // --- alarm sound: generated with WebAudio, no external file needed ---
-  let audioCtx = null;
-  function beep(){
-    try{
-      if(!audioCtx){
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        wrRegisterAudioCtx(() => audioCtx);
-      }
-      if(audioCtx.state === 'suspended') audioCtx.resume();
-      const now = audioCtx.currentTime;
-      // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
-      [0, 0.22].forEach(offset => {
-        [880, 1320].forEach(freq => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0.0001, now + offset);
-          gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
-          osc.connect(gain).connect(audioCtx.destination);
-          osc.start(now + offset);
-          osc.stop(now + offset + 0.24);
-        });
-      });
-    }catch(e){ /* audio unavailable — ignore */ }
-  }
-
-  function startRinging(){
-    pomo.ringing = true;
-    pomoEl.classList.add('ringing');
-    beep();
-    pomo.alarmId = setInterval(beep, 900);
-    if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
-    // Browsers often mute or suspend audio in background tabs, so the beep alone can be
-    // silent while backgrounded — a system notification is the more reliable signal there.
-    if(document.hidden){
-      wrNotify('Weekly Rhythm', pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.", 'wr-pomo');
-    }
-    // Deliberately NOT cancelling the server-side push here. We can't be sure the beep actually
-    // played or this notification actually rendered — if the tab freezes moments after this
-    // line runs, we'd never know. Leaving the scheduled push in place means the server still
-    // sends its own alert a few seconds later as a guaranteed backup; since it uses the same
-    // notification tag, it just replaces/re-buzzes the existing one instead of duplicating it.
-  }
-
-  function stopRinging(){
-    pomo.ringing = false;
-    pomoEl.classList.remove('ringing');
-    clearInterval(pomo.alarmId);
-    pomo.alarmId = null;
-    wrCancelAlarm(pushAlarmKey); // acknowledged locally — stop the server's repeat pushes
-  }
-
-  stopAlarmBtn.addEventListener('click', stopRinging);
-
-  function clockFmt(s){
-    const m = Math.floor(s/60), sec = s%60;
-    return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-  }
-
-  function renderPomo(){
-    timeEl.textContent = clockFmt(pomo.remaining);
-    modeEl.textContent = pomo.mode === 'focus' ? 'Focus' : 'Break';
-    modeEl.classList.toggle('break', pomo.mode === 'break');
-    startBtn.textContent = pomo.running ? 'Pause' : (pomo.remaining < (pomo.mode==='focus'?pomo.workLen:pomo.breakLen) ? 'Resume' : 'Start');
-    startBtn.classList.toggle('running', pomo.running);
-    sessionsEl.textContent = pomo.sessions;
-    loggedEl.textContent = minsToHM(pomo.focusSeconds/60);
-    presetBtns.forEach(b => b.disabled = pomo.running);
-  }
-
-  // Credit any focus-seconds that elapsed since the last credit, in one lump sum. This runs
-  // whether the tick fired every second (normal) or was delayed several minutes (backgrounded
-  // tab) — either way the log ends up correct instead of losing time spent in the background.
-  // IMPORTANT: lastCredit only advances by the whole seconds actually credited (not to `now`),
-  // so the sub-second remainder between 250ms ticks keeps accumulating instead of being
-  // discarded every tick — otherwise a 250ms tick interval means (now - lastCredit) never
-  // reaches a full second and nothing ever gets credited.
-  function creditElapsedFocus(now){
-    if(pomo.mode === 'focus' && pomo.lastCredit != null){
-      const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
-      if(elapsed > 0){
-        pomo.focusSeconds += elapsed;
-        addFocusSeconds(elapsed);
-        pomo.lastCredit += elapsed * 1000;
-      }
-    } else {
-      pomo.lastCredit = now;
-    }
-  }
-
-  function pomoTick(){
-    if(!pomo.running) return;
-    const now = Date.now();
-    creditElapsedFocus(now);
-    pomo.remaining = Math.max(0, Math.round((pomo.endAt - now) / 1000));
-
-    if(pomo.remaining <= 30 && pomo.remaining > 0 && !pomo.warned30){
-      pomo.warned30 = true;
-      notifyAlmostDone(pomo.mode === 'break' ? 'Break' : 'Focus session');
-    }
-
-    if(pomo.remaining <= 0){
-      clearInterval(pomo.timerId);
-      pomo.running = false;
-      pomo.warned30 = false;
-      if(pomo.mode === 'focus'){
-        pomo.sessions++;
-        pomo.mode = 'break';
-        pomo.remaining = pomo.breakLen;
-      } else {
-        pomo.mode = 'focus';
-        pomo.remaining = pomo.workLen;
-      }
-      startRinging();
-      persistLocal();
-      releaseWakeLockIfIdle();
-    }
-    renderPomo();
-    if(panel === dayPanels[activeIdx]){
-      const nowSec = Math.floor(now / 1000);
-      if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderStats(); }
-    }
-  }
-
-  function ensureNotifyPermission(){
-    if('Notification' in window && Notification.permission === 'default'){
-      Notification.requestPermission();
-    }
-  }
-
-  startBtn.addEventListener('click', () => {
-    if(pomo.ringing) stopRinging();
-    if(pomo.running){
-      // pause: lock in the precise remaining time from the deadline, not a tick count
-      pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
-      pomo.running = false;
-      clearInterval(pomo.timerId);
-      releaseWakeLockIfIdle();
-      wrCancelAlarm(pushAlarmKey);
-    } else {
-      ensureNotifyPermission();
-      // Warm up the alarm's AudioContext right on this click (a real user gesture) instead of
-      // waiting until the alarm fires — a context first created while the tab is backgrounded
-      // can be left permanently suspended by the browser, which is why the alarm sometimes
-      // never made a sound at all.
-      if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => audioCtx); }
-      if(audioCtx.state === 'suspended') audioCtx.resume();
-      pomo.running = true;
-      pomo.endAt = Date.now() + pomo.remaining * 1000;
-      pomo.lastCredit = Date.now();
-      // Tick every 250ms so the visible countdown feels smooth; when foregrounded, throttling
-      // has no effect on correctness since every tick re-derives remaining from endAt.
-      pomo.timerId = setInterval(pomoTick, 250);
-      acquireWakeLock();
-      wrScheduleAlarm(pushAlarmKey, pomo.endAt,
-        'Weekly Rhythm',
-        pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.",
-        'wr-pomo');
-    }
-    renderPomo();
-    persistLocal();
-  });
-
-  resetBtn.addEventListener('click', () => {
-    if(pomo.ringing) stopRinging();
-    pomo.running = false;
-    pomo.warned30 = false;
-    clearInterval(pomo.timerId);
-    pomo.mode = 'focus';
-    pomo.remaining = pomo.workLen;
-    renderPomo();
-    persistLocal();
-    releaseWakeLockIfIdle();
-    wrCancelAlarm(pushAlarmKey);
-  });
-
-  presetBtns.forEach(b => {
-    b.addEventListener('click', () => {
-      if(pomo.running) return;
-      pomo.workLen = Number(b.dataset.work) * 60;
-      pomo.breakLen = Number(b.dataset.brk) * 60;
-      pomo.mode = 'focus';
-      pomo.remaining = pomo.workLen;
-      presetBtns.forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      renderPomo();
-      persistLocal();
-    });
-  });
-
-  renderPomo();
-  pomoRefs.push({ pomo, render: renderPomo, tick: pomoTick });
-
   dayPanels.push(panel);
 });
+
+// ============================================================================
+// Pomodoro — single global instance, lives on the Timer page (in-memory only,
+// resets on page reload, same as it did per-day before)
+// ============================================================================
+const pomo = {
+  workLen: 25*60, breakLen: 5*60,
+  mode: 'focus', remaining: 25*60,
+  running: false, timerId: null,
+  sessions: 0, focusSeconds: 0,
+  ringing: false, alarmId: null, warned30: false,
+  endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
+  lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
+};
+
+const pomoAlarmKey = 'pomo'; // stable id for the server-side scheduled alarm
+
+const gpEl = document.getElementById('globalPomodoro');
+const gpModeTag = document.getElementById('gpModeTag');
+const gpTimeEl = document.getElementById('gpTimeEl');
+const gpStartBtn = document.getElementById('gpStartBtn');
+const gpResetBtn = document.getElementById('gpResetBtn');
+const gpPresetBtns = document.getElementById('gpPresets').querySelectorAll('.pomo-preset-btn');
+const gpSessionsEl = document.getElementById('gpSessions');
+const gpLoggedEl = document.getElementById('gpLogged');
+const gpStopAlarmBtn = document.getElementById('gpStopAlarmBtn');
+
+let pomoAudioCtx = null;
+function pomoBeep(){
+  try{
+    if(!pomoAudioCtx){
+      pomoAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      wrRegisterAudioCtx(() => pomoAudioCtx);
+    }
+    if(pomoAudioCtx.state === 'suspended') pomoAudioCtx.resume();
+    const now = pomoAudioCtx.currentTime;
+    // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
+    [0, 0.22].forEach(offset => {
+      [880, 1320].forEach(freq => {
+        const osc = pomoAudioCtx.createOscillator();
+        const gain = pomoAudioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
+        osc.connect(gain).connect(pomoAudioCtx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.24);
+      });
+    });
+  }catch(e){ /* audio unavailable — ignore */ }
+}
+
+function pomoStartRinging(){
+  pomo.ringing = true;
+  gpEl.classList.add('ringing');
+  pomoBeep();
+  pomo.alarmId = setInterval(pomoBeep, 900);
+  if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
+  // Browsers often mute or suspend audio in background tabs, so the beep alone can be
+  // silent while backgrounded — a system notification is the more reliable signal there.
+  if(document.hidden){
+    wrNotify('Weekly Rhythm', pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.", 'wr-pomo');
+  }
+  // Deliberately NOT cancelling the server-side push here — the server still sends its own
+  // alert a few seconds later as a guaranteed backup if the beep/notification above didn't land.
+}
+function pomoStopRinging(){
+  pomo.ringing = false;
+  gpEl.classList.remove('ringing');
+  clearInterval(pomo.alarmId);
+  pomo.alarmId = null;
+  wrCancelAlarm(pomoAlarmKey); // acknowledged locally — stop the server's repeat pushes
+}
+gpStopAlarmBtn.addEventListener('click', pomoStopRinging);
+
+function pomoClockFmt(s){
+  const m = Math.floor(s/60), sec = s%60;
+  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+}
+
+function renderPomo(){
+  gpTimeEl.textContent = pomoClockFmt(pomo.remaining);
+  gpModeTag.textContent = pomo.mode === 'focus' ? 'Focus' : 'Break';
+  gpModeTag.classList.toggle('break', pomo.mode === 'break');
+  gpStartBtn.textContent = pomo.running ? 'Pause' : (pomo.remaining < (pomo.mode==='focus'?pomo.workLen:pomo.breakLen) ? 'Resume' : 'Start');
+  gpStartBtn.classList.toggle('running', pomo.running);
+  gpSessionsEl.textContent = pomo.sessions;
+  gpLoggedEl.textContent = minsToHM(pomo.focusSeconds/60);
+  gpPresetBtns.forEach(b => b.disabled = pomo.running);
+}
+
+// Credit any focus-seconds that elapsed since the last credit, in one lump sum — see the
+// matching comment on ctCreditElapsed below for why lastCredit advances by whole seconds only.
+function pomoCreditElapsedFocus(now){
+  if(pomo.mode === 'focus' && pomo.lastCredit != null){
+    const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
+    if(elapsed > 0){
+      pomo.focusSeconds += elapsed;
+      addFocusSeconds(elapsed);
+      pomo.lastCredit += elapsed * 1000;
+    }
+  } else {
+    pomo.lastCredit = now;
+  }
+}
+
+function pomoTick(){
+  if(!pomo.running) return;
+  const now = Date.now();
+  pomoCreditElapsedFocus(now);
+  pomo.remaining = Math.max(0, Math.round((pomo.endAt - now) / 1000));
+
+  if(pomo.remaining <= 30 && pomo.remaining > 0 && !pomo.warned30){
+    pomo.warned30 = true;
+    notifyAlmostDone(pomo.mode === 'break' ? 'Break' : 'Focus session');
+  }
+
+  if(pomo.remaining <= 0){
+    clearInterval(pomo.timerId);
+    pomo.running = false;
+    pomo.warned30 = false;
+    if(pomo.mode === 'focus'){
+      pomo.sessions++;
+      pomo.mode = 'break';
+      pomo.remaining = pomo.breakLen;
+    } else {
+      pomo.mode = 'focus';
+      pomo.remaining = pomo.workLen;
+    }
+    pomoStartRinging();
+    persistLocal();
+    releaseWakeLockIfIdle();
+  }
+  renderPomo();
+  const nowSec = Math.floor(now / 1000);
+  if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderStats(); }
+}
+
+function ensurePomoNotifyPermission(){
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+}
+
+gpStartBtn.addEventListener('click', () => {
+  if(pomo.ringing) pomoStopRinging();
+  if(pomo.running){
+    // pause: lock in the precise remaining time from the deadline, not a tick count
+    pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
+    pomo.running = false;
+    clearInterval(pomo.timerId);
+    releaseWakeLockIfIdle();
+    wrCancelAlarm(pomoAlarmKey);
+  } else {
+    ensurePomoNotifyPermission();
+    // Warm up the alarm's AudioContext right on this click (a real user gesture) — see the
+    // matching comment on the custom timer's Start handler below for why.
+    if(!pomoAudioCtx){ pomoAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => pomoAudioCtx); }
+    if(pomoAudioCtx.state === 'suspended') pomoAudioCtx.resume();
+    pomo.running = true;
+    pomo.endAt = Date.now() + pomo.remaining * 1000;
+    pomo.lastCredit = Date.now();
+    // Tick every 250ms so the visible countdown feels smooth; when foregrounded, throttling
+    // has no effect on correctness since every tick re-derives remaining from endAt.
+    pomo.timerId = setInterval(pomoTick, 250);
+    acquireWakeLock();
+    wrScheduleAlarm(pomoAlarmKey, pomo.endAt,
+      'Weekly Rhythm',
+      pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.",
+      'wr-pomo');
+  }
+  renderPomo();
+  persistLocal();
+});
+
+gpResetBtn.addEventListener('click', () => {
+  if(pomo.ringing) pomoStopRinging();
+  pomo.running = false;
+  pomo.warned30 = false;
+  clearInterval(pomo.timerId);
+  pomo.mode = 'focus';
+  pomo.remaining = pomo.workLen;
+  renderPomo();
+  persistLocal();
+  releaseWakeLockIfIdle();
+  wrCancelAlarm(pomoAlarmKey);
+});
+
+gpPresetBtns.forEach(b => {
+  b.addEventListener('click', () => {
+    if(pomo.running) return;
+    pomo.workLen = Number(b.dataset.work) * 60;
+    pomo.breakLen = Number(b.dataset.brk) * 60;
+    pomo.mode = 'focus';
+    pomo.remaining = pomo.workLen;
+    gpPresetBtns.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    renderPomo();
+    persistLocal();
+  });
+});
+
+renderPomo();
+pomoRefs.push({ pomo, render: renderPomo, tick: pomoTick });
 
 // ============================================================================
 // Custom Timer / Stopwatch page
