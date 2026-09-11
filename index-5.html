@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Rhythm</title>
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA6klEQVR4nO2XMQ7CMAxFfyJ2xABnYOiVKvYuPQsLO+JKDD1DGRAngAEFiSiJncRJM/RPlVXpv3wlsq3g0Ha3f7vquXo9H8qu/RVKGYdAdG1z20vXNrchNPVjaamU09/Px993N07XfphPAHC7HKIBNqnGLvXDjFgQFgBlnANC3oFYcxdIMkCOORdi8VfgBZA4vVEohTYTkDy9kS+FNhNYAVaAbpzEjXx9oc0EANkUQl2x3QQAmRSomYBMIAeCM5CwJiIDwe0R4iMZFyRlKFXAMnsB8N2Q2ngFrqWxtIyntgs1zQFrOzaquZ5/AEITUjAdi+FhAAAAAElFTkSuQmCC">
+<link rel="icon" type="image/png" sizes="512x512" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFaklEQVR4nO3bPY4TWxRF4W3kvNVBMwYCpoReTsJYSMifmBIBY8CB5RH0C54MhbvKrp9b956z7/oi1C21K1hsjt3ioCCenl9eWz8D1rucT4fWzyBJzR6CgL21CrzqixJxn2rGvfsLETGG9o57tx9OyLhnr7CL/1BCxhKlw35X8ocRM5Yq3UyRvx2EjBJKrPXmhSZmlFKipU1BEzNK29rUqoknZNSw5gRZvNDEjFrWtLYoaGJGbUubmx00MaOVJe0V/RwaaG1W0KwzWpvb4MOgiRlRzGnxbtDEjGgeNckNDSuTQbPOiOpem6NBEzOim2qUkwNW3gTNOiOLsVZZaFj5K2jWGdncNstCwwpBw8rvoDk3kNWw3WPLB3Hy4+uHu9//+OXnv58+//pn6vvfv70v/kw9IugVHsW7xqfPv958jciXO0qcG4/sEfAct5ET+LSn55fXy/l0YKEntIr4nmHgxD2OoAciRjyFuMcRtHKFPOYaN2FLx17v5+wRj+l9tZ+eX167/MWKY8y3xj416UFXJ0cPIQ/1eIp0EXRvId/qKWz7k6P3mId6OENsF5qQx7mvteVCE/NjrmttFzQxz+cYtc3JQcjruJ0gFgtNzNu5rHX6oIm5HIeoUwdNzOVljzpt0MS8n8xRpwyamPeXNep0QRNzPRmjThU0MdeXLeo0QRNzO5miThM0MEeKoFnn9rKsdPigiTmODFGHDpqY44kedeiggaXCBs06xxV5pUMGTczxRY06ZNDAWuGCZp3ziLjS4YIGtggVNOucT7SVDhM0MecVKeowQQMlEDSshAiacyO/KGdHiKCBUpoHzTr7iLDSzYMGSiJoWGkaNOeGn9ZnBwsNKwQNK82C5tzw1fLsYKFhhaBhhaBhpUnQ3M/+Wt3RLDSsEDSsEDSsEDSsVA+aN4T9aPHGkIWGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGlepBf/zys/ZLopHv395Xf00WGlYIGlYIGlYIGlaaBM0bQ38t3hBKLDTMEDSsEDSsNAuaO9pXq/tZYqFhhqBhpWnQnB1+Wp4bEgsNMwQNK82D5uzw0frckAIEDZQUImhWOr8I6ywFCRoohaBhJUzQnB15RTk3pEBBS0SdUaSYpWBBA1uFC5qVziPaOksBgwa2CBk0Kx1fxHWWggYtEXVkUWOWAgcNrBE6aFY6nsjrLAUPWiLqSKLHLCUIWiLqCDLELCUJGpgrTdCsdDtZ1llKFLRE1C1killKFrRE1DVli1lKGLRE1DVkjFlKGrRE1HvKGrOUOGiJqPeQOWYpedASUZeUPWbJIGiJqEtwiFmSjq0foJRr1D++fmj8JLm4hHxlsdBDrPV8bjFLhkFLRD2HY8yS0clxixNknGvIV5YLPcRa/+Ees2S80EO9r3UPIV91EfRVb2H3FPKV/ckxpoczpMeYJel4OZ8OT88vr60fpLZh1C6L3WvEV5fz6dDVyTEl+ynSe8hDBD2QabWJeBxBT4gYNxE/dpT+vz16vKPnun0TWStwAp7vcj4dJBZ6lbFPSbZGTrxlHK5/YKGR2XWh391+Achm2G6Xv1iBL4KGlb+C5uxANrfNstCw8iZoVhpZjLXKQsPKaNCsNKKbanRyoYkaUd1rk5MDVu4GzUojmkdNPlxookYUc1qcdXIQNVqb2yA3NKzMDpqVRitL2lu00ESN2pY2t/jkIGrUsqa1TXHyv1ywhy2juelNIWuN0rY2tflTDqJGKSVaKhojJwjWKDmKRT+HZq2xVOlmdguQtcY9e43f7otK2Bja+1/xqicCcfep5ina7OYlbm+t3k+FeRNH4LlF+UDgPz1+wl5ZQNx1AAAAAElFTkSuQmCC">
+<meta name="apple-mobile-web-app-title" content="Weekly Rhythm">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0F1115">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1115;
+    --surface:#161922;
+    --surface-2:#1D212B;
+    --line:#272B35;
+    --text:#ECE9E2;
+    --text-dim:#8D919B;
+    --text-faint:#5B5F69;
+    --day-strong:#E3A23D;
+    --day-soft:#B98A52;
+    --night:#6C7BFF;
+    --night-glow:rgba(108,123,255,.30);
+    --rest-line:#3A3F4B;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:64px 24px 96px;
+  }
+  ::selection{background:var(--night-glow);}
+  a, button{ font-family:inherit; }
+  :focus-visible{ outline:2px solid var(--night); outline-offset:3px; border-radius:4px; }
+
+  .wrap{ max-width:860px; margin:0 auto; }
+
+  header.hero{ margin-bottom:44px; margin-top:40px; }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{ content:""; width:16px; height:1px; background:var(--rest-line); display:inline-block; }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(34px,5vw,52px);
+    line-height:1.08;
+    margin:0 0 18px;
+    letter-spacing:-.01em;
+  }
+  h1 em{
+    font-style:italic; font-weight:400;
+    background:linear-gradient(90deg,var(--day-strong),var(--night));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{ color:var(--text-dim); font-size:15.5px; line-height:1.65; max-width:56ch; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:22px; margin-top:26px; padding-top:22px; border-top:1px solid var(--line); }
+  .legend-item{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
+  .swatch{ width:11px; height:11px; border-radius:3px; flex:none; }
+  .swatch.strong{ background:var(--day-strong); }
+  .swatch.soft{ background:var(--day-soft); }
+  .swatch.night{ background:var(--night); box-shadow:0 0 10px var(--night-glow); }
+  .swatch.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
+
+  .foundation{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:20px 24px; margin-bottom:32px; display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;
+  }
+  .foundation .ftitle{ font-family:'Fraunces',serif; font-size:17px; font-weight:500; white-space:nowrap; padding-top:1px; }
+  .foundation .fitems{ display:flex; flex-direction:column; gap:6px; flex:1; min-width:220px; }
+  .frow{ display:flex; gap:14px; font-size:13.5px; color:var(--text-dim); }
+  .frow .t{ font-family:'JetBrains Mono',monospace; color:var(--text); flex:none; width:120px; }
+  .fnote{ font-size:12px; color:var(--text-faint); width:100%; margin-top:2px; }
+
+  /* day tabs */
+  .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+  .tab-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
+    padding:9px 15px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+    display:flex; align-items:center; gap:7px;
+  }
+  .tab-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .tab-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .tab-dot{ width:6px; height:6px; border-radius:50%; background:var(--night); display:none; }
+  .tab-btn.is-today .tab-dot{ display:inline-block; }
+
+  /* day panel */
+  .day{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:26px 26px 24px;
+  }
+  .day[hidden]{ display:none; }
+  .pomodoro[hidden]{ display:none; }
+
+  .day-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
+  .iconbtn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:28px; flex:none; border-radius:8px; padding:0;
+    background:transparent; border:1px solid var(--line); color:var(--text-faint);
+    cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+  }
+  .iconbtn:hover{ color:var(--text); border-color:#3a3f4b; background:var(--surface); }
+  .iconbtn svg{ width:14px; height:14px; }
+  .iconbtn.enabled{ color:var(--night); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .name-chip{
+    display:inline-flex; align-items:center; gap:7px;
+    background:none; border:1px solid transparent; color:var(--text-dim);
+    font:inherit; padding:5px 8px; border-radius:8px; cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .name-chip:hover{ color:var(--text); border-color:var(--line); background:var(--surface); }
+  .day-head-right{ display:flex; align-items:center; gap:10px; }
+  .day-edit-btn{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.04em;
+    padding:5px 11px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s;
+  }
+  .day-edit-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .day-edit-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .row.editing{ align-items:center; flex-wrap:wrap; gap:8px; }
+  .edit-time, .edit-label, .edit-type{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    border-radius:6px; padding:5px 8px; font-family:'JetBrains Mono',monospace; font-size:12px;
+  }
+  .edit-time{ width:76px; }
+  .edit-label{ flex:1; min-width:140px; font-family:'Inter',sans-serif; }
+  .edit-del{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    border-radius:6px; width:26px; height:26px; cursor:pointer; flex:none;
+  }
+  .edit-del:hover{ color:#d16b63; border-color:#d16b63; }
+  .add-block-btn{
+    background:none; border:1px dashed var(--rest-line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:8px 12px;
+    border-radius:8px; cursor:pointer; margin-top:2px; align-self:flex-start;
+  }
+  .add-block-btn:hover{ color:var(--text); border-color:var(--text-faint); }
+  .day-name{ font-family:'Fraunces',serif; font-size:24px; font-weight:500; display:flex; align-items:baseline; gap:10px; }
+  .today-pill{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--night); border:1px solid var(--night); border-radius:100px; padding:3px 9px;
+  }
+  .day-tag{ font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
+  .day-total-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+  .day-total{ font-size:12px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; }
+  .day-target-btn{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.04em;
+    padding:4px 10px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s;
+  }
+  .day-target-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .day-target-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .day-target-editor{ display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); }
+  .day-target-editor[hidden]{ display:none; }
+  .day-target-editor input{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    border-radius:6px; padding:4px 6px; font-family:'JetBrains Mono',monospace; font-size:12px; width:42px; text-align:center;
+  }
+  .day-target-save, .day-target-auto{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:100px; cursor:pointer;
+  }
+  .day-target-save:hover{ color:var(--text); border-color:var(--night); }
+  .day-target-auto:hover{ color:var(--text); border-color:#3a3f4b; }
+
+  /* productivity stats */
+  .stats{
+    display:flex; gap:30px; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    padding:16px 20px; margin-bottom:22px;
+  }
+  .stat{ display:flex; flex-direction:column; gap:4px; min-width:110px; }
+  .stat .lbl{ font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; font-family:'JetBrains Mono',monospace; }
+  .stat .val{ font-family:'JetBrains Mono',monospace; font-size:21px; color:var(--text); }
+  .stat.left .val{ color:var(--night); }
+  .pbar{ flex:1; min-width:160px; align-self:center; height:6px; border-radius:3px; background:var(--line); overflow:hidden; }
+  .pbar-fill{ height:100%; background:var(--night); border-radius:3px; transition:width .3s ease; }
+
+  /* timeline */
+  .rail{ position:relative; height:34px; margin-bottom:10px; }
+  .track{ position:absolute; inset:0; border-radius:8px;
+    background:linear-gradient(90deg,var(--day-strong),var(--day-soft) 32%,#3d3f6a 68%,var(--night)); opacity:.12; }
+  .seg{ position:absolute; top:0; bottom:0; border-radius:7px; }
+  .seg.day-strong{ background:var(--day-strong); }
+  .seg.day-soft{ background:var(--day-soft); }
+  .seg.night{ background:var(--night); box-shadow:0 0 16px var(--night-glow); }
+  .seg.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
+  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:#fff; box-shadow:0 0 8px rgba(255,255,255,.8); }
+  .now-label{
+    position:absolute; top:-22px; transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:#fff; white-space:nowrap;
+  }
+
+  .ticks{ position:relative; height:16px; margin-bottom:20px; }
+  .tick{ position:absolute; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-faint); }
+
+  .list{ display:flex; flex-direction:column; gap:16px; }
+  .row{ display:flex; gap:16px; align-items:baseline; font-size:13.5px; }
+  .row .time{ font-family:'JetBrains Mono',monospace; color:var(--text-dim); flex:none; min-width:118px; white-space:nowrap; }
+  .row .label{ color:var(--text); line-height:1.5; }
+  .row.rest .label, .row.rest .time{ color:var(--text-faint); }
+  .row.done .label{ text-decoration:line-through; text-decoration-color:var(--text-faint); text-decoration-thickness:1px; opacity:.55; }
+  .dot{ display:inline-block; width:7px; height:7px; border-radius:2px; margin-right:10px; position:relative; top:-1px; }
+  .dot.day-strong{ background:var(--day-strong); }
+  .dot.day-soft{ background:var(--day-soft); }
+  .dot.night{ background:var(--night); }
+  .dot.rest{ background:transparent; border:1.2px dashed var(--rest-line); }
+
+  .why{ margin-top:48px; border-top:1px solid var(--line); padding-top:34px; }
+  .why h2{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; margin:0 0 22px; }
+  .why-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media (max-width:720px){
+    .why-grid{ grid-template-columns:1fr; }
+    .foundation{ flex-direction:column; gap:12px; }
+    .row:not(.editing){ flex-direction:column; gap:4px; }
+    .row .time{ min-width:0; }
+    .stats{ gap:20px; }
+    .pbar{ order:99; width:100%; }
+  }
+  .why-item .num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--night); letter-spacing:.1em; }
+  .why-item h3{ font-family:'Fraunces',serif; font-weight:500; font-size:15.5px; margin:8px 0 8px; }
+  .why-item p{ font-size:13px; color:var(--text-dim); line-height:1.6; margin:0; }
+
+  footer{ margin-top:48px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); letter-spacing:.05em; }
+
+  /* pomodoro */
+  .pomodoro{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; margin-bottom:22px;
+    display:flex; align-items:center; gap:22px; flex-wrap:wrap;
+  }
+  .pomo-mode{
+    font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em;
+    padding:4px 10px; border-radius:100px; border:1px solid var(--night); color:var(--night);
+  }
+  .pomo-mode.break{ border-color:var(--day-soft); color:var(--day-soft); }
+  .pomo-time{ font-family:'JetBrains Mono',monospace; font-size:34px; letter-spacing:.02em; min-width:110px; }
+  .pomo-controls{ display:flex; gap:8px; }
+  .pomo-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
+    padding:9px 16px; border-radius:8px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .pomo-btn:hover{ border-color:#3a3f4b; }
+  .pomo-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .pomo-btn.start{ background:var(--night); border-color:var(--night); color:#0F1115; font-weight:600; }
+  .pomo-btn.start.running{ background:var(--surface); color:var(--text); border-color:var(--day-soft); }
+  .pomo-presets{ display:flex; gap:6px; margin-left:auto; }
+  .pomo-preset-btn{
+    background:transparent; border:1px solid var(--line); color:var(--text-faint);
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 10px; border-radius:100px; cursor:pointer;
+  }
+  .pomo-preset-btn.active{ border-color:var(--night); color:var(--text); }
+  .pomo-preset-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .pomo-meta{
+    width:100%; display:flex; gap:22px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+  }
+  .pomo-meta b{ color:var(--text); font-weight:500; }
+  @media (max-width:560px){
+    .pomo-presets{ margin-left:0; width:100%; }
+  }
+
+  /* pomodoro alarm */
+  .pomodoro.ringing{
+    border-color:var(--day-strong);
+    animation: pomo-flash 1s ease-in-out infinite;
+  }
+  @keyframes pomo-flash{
+    0%, 100%{ box-shadow:0 0 0 0 rgba(227,162,61,0); }
+    50%{ box-shadow:0 0 0 3px rgba(227,162,61,.35); }
+  }
+  .pomo-alarm{
+    display:none;
+    width:100%; align-items:center; gap:14px;
+    background:rgba(227,162,61,.12); border:1px solid var(--day-strong);
+    border-radius:8px; padding:10px 14px;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--day-strong);
+  }
+  .pomodoro.ringing .pomo-alarm{ display:flex; }
+  .pomo-alarm-text{ flex:1; }
+  .pomo-stop-btn{
+    background:var(--day-strong); border:1px solid var(--day-strong); color:#0F1115;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; letter-spacing:.04em;
+    padding:8px 16px; border-radius:8px; cursor:pointer;
+  }
+  .pomo-stop-btn:hover{ opacity:.9; }
+
+  /* "time almost up" toast */
+  .wr-toast-wrap{
+    position:fixed; top:18px; right:18px; z-index:9999;
+    display:flex; flex-direction:column; gap:10px; align-items:flex-end;
+    pointer-events:none;
+  }
+  .wr-toast{
+    pointer-events:auto;
+    display:flex; align-items:center; gap:10px;
+    background:var(--surface-2); border:1px solid var(--night); border-radius:10px;
+    padding:12px 16px; max-width:320px;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text); line-height:1.5;
+    box-shadow:0 8px 24px rgba(0,0,0,.35), 0 0 0 1px var(--night-glow);
+    animation: wr-toast-in .22s ease-out;
+  }
+  .wr-toast b{ color:var(--night); }
+  @keyframes wr-toast-in{
+    from{ opacity:0; transform:translateY(-8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @media (max-width:560px){
+    .wr-toast-wrap{ left:14px; right:14px; top:14px; align-items:stretch; }
+    .wr-toast{ max-width:none; }
+  }
+
+  /* custom timer / stopwatch page */
+  .ct-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .ct-title{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; }
+  .ct-note{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); line-height:1.6; margin-bottom:18px; }
+
+  /* draggable custom-time dial */
+  .ct-pomodoro{ flex-direction:column; align-items:center; }
+  .ct-pomodoro .pomo-controls{ justify-content:center; }
+  .ct-pomodoro .pomo-presets{ margin-left:0; width:100%; justify-content:center; }
+  .ct-pomodoro .pomo-alarm{ margin-top:6px; }
+  .ct-dial-wrap{ position:relative; width:220px; height:220px; max-width:70vw; max-height:70vw; margin:2px auto 8px; touch-action:none; }
+  .ct-dial{ width:100%; height:100%; display:block; }
+  .ct-dial-wrap:not(.locked) .ct-dial{ cursor:pointer; }
+  .ct-dial-wrap.locked .ct-dial{ cursor:default; }
+  .ct-dial-track{ fill:none; stroke:var(--line); stroke-width:10; }
+  .ct-dial-arc{ fill:none; stroke:var(--night); stroke-width:10; stroke-linecap:round; }
+  .ct-dial.stopwatch-mode .ct-dial-arc{ stroke:var(--day-soft); }
+  .ct-dial-handle{ fill:var(--bg); stroke:var(--night); stroke-width:3; }
+  .ct-dial-wrap.locked .ct-dial-handle{ display:none; }
+  .ct-dial-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    pointer-events:none;
+  }
+  .ct-dial-hint{
+    font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.06em; color:var(--text-faint);
+    text-transform:uppercase; opacity:0; transition:opacity .15s;
+  }
+  .ct-dial-wrap:not(.locked) .ct-dial-hint{ opacity:1; }
+
+  .ct-history{ margin-top:28px; }
+  .ct-history-head{ font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:12px; }
+  .ct-history-list{ display:flex; flex-direction:column; gap:8px; }
+  .ct-history-empty{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-faint); }
+  .ct-row{
+    display:flex; align-items:center; gap:14px;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:10px 14px;
+  }
+  .ct-row-type{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--text-faint); border:1px solid var(--line); border-radius:100px; padding:3px 9px; flex:none;
+  }
+  .ct-row-dur{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim); flex:none; margin-left:auto; }
+  .ct-row-del{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    border-radius:6px; width:24px; height:24px; cursor:pointer; flex:none; font-size:12px; line-height:1;
+  }
+  .ct-row-del:hover{ color:#d16b63; border-color:#d16b63; }
+
+  /* view switcher */
+  .view-switch{ display:flex; gap:8px; margin-bottom:36px; }
+  .view-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
+    padding:9px 16px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+  }
+  .view-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .view-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+
+  /* productivity matrix */
+  .matrix-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:26px; }
+  .matrix-title{ font-family:'Fraunces',serif; font-weight:500; font-size:21px; letter-spacing:-.01em; }
+  .matrix-controls{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .mx-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.03em;
+    padding:8px 13px; border-radius:8px; cursor:pointer; transition:border-color .15s, color .15s;
+  }
+  .mx-btn:hover{ color:var(--text); border-color:#3a3f4b; }
+  .mx-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
+  .mx-period{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); font-weight:500; min-width:56px; text-align:center; }
+
+  .mx-note{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); margin:-14px 0 22px; }
+
+  .mx-legend{ display:flex; flex-wrap:wrap; gap:18px; margin:0 0 26px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-dim); }
+  .mx-legend-item{ display:flex; align-items:center; gap:7px; }
+  .mx-swatch{ width:10px; height:10px; border-radius:2px; flex:none; }
+
+  /* dense matrix — flat grid, column count computed to keep a ~4:3 shape.
+     Cells fill the container width fluidly (grid + aspect-ratio), so resizing
+     the page just reflows/rescales the dots instead of causing horizontal scroll. */
+  .mx-matrix-wrap{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:22px;
+  }
+  .mx-matrix{
+    display:grid;
+    grid-template-columns:repeat(var(--mx-cols, 20), 1fr);
+    gap:6px;
+    width:100%;
+  }
+  .mx-cell{ width:100%; aspect-ratio:1/1; border-radius:3px; border:1px solid var(--line); }
+  .mx-cell.mx-pretrack{ background:transparent; border:1px dashed rgba(91,95,105,.35); }
+  .mx-cell.mx-future{ background:transparent; border-color:var(--line); }
+  .mx-cell.mx-off{ background:rgba(180,72,66,.32); border-color:rgba(180,72,66,.5); }
+  .mx-cell.mx-d2{ background:rgba(90,120,100,.38); border-color:rgba(90,120,100,.5); }
+  .mx-cell.mx-d1{ background:rgba(70,150,105,.55); border-color:rgba(70,150,105,.65); }
+  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; box-shadow:0 0 6px rgba(47,191,110,.5); }
+  .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--night); }
+
+  @media (max-width:560px){
+    .mx-matrix{ gap:4px; }
+    .sync-dot{ right:14px; }
+  }
+
+  /* account-bar sync indicator */
+  .sync-dot{
+    position:absolute; right:24px; top:50%; transform:translateY(-50%);
+    width:8px; height:8px; border-radius:50%;
+    background:var(--text-faint); opacity:0;
+    transition:background .2s, opacity .2s;
+  }
+  .sync-dot.syncing{ background:#2fbf6e; opacity:1; animation: sync-pulse 1s ease-in-out infinite; }
+  .sync-dot.synced{ background:#2fbf6e; opacity:1; }
+  .sync-dot.error{ background:var(--text-faint); opacity:.55; }
+  @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+</style>
+</head>
+<body>
+<div class="wr-toast-wrap" id="wrToastWrap"></div>
+
+<div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
+  <div style="max-width:360px;width:100%;text-align:center;">
+    <div class="eyebrow" style="justify-content:center;">Weekly Rhythm</div>
+    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;background:linear-gradient(90deg,var(--day-strong),var(--night));-webkit-background-clip:text;background-clip:text;color:transparent;">held together.</em></h1>
+    <p class="sub" style="margin:0 auto 28px;">Sign in to sync your schedule and progress across every device.</p>
+    <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
+      <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
+      <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
+      <button id="signInBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
+      <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:'JetBrains Mono',monospace;font-size:12px;padding-top:4px;">Create account</button>
+    </div>
+    <div id="authMsg" style="color:var(--text-faint);font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:14px;min-height:16px;"></div>
+  </div>
+</div>
+
+<div id="authBar" style="position:fixed;top:0;left:0;right:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
+  <button id="editNameBtn" type="button" class="name-chip" title="Set a display name">
+    <span id="userLabel"></span>
+  </button>
+  <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
+    <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
+    <button id="saveNameBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
+  </span>
+  <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+  </button>
+  <button id="enableAlarmsBtn" type="button" class="iconbtn" title="Enable alarms even when the screen is off">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+  </button>
+  <span id="syncStatus" class="sync-dot" title=""></span>
+</div>
+
+<div class="wrap" id="appWrap" hidden>
+
+  <header class="hero" style="text-align:center;">
+    <div class="eyebrow" style="justify-content:center;">Weekly Schedule</div>
+    <h1>Scheduled by <em>Hilla</em>,<br>build for <em>productivity</em>.</h1>
+    <p class="sub" style="margin-left:auto;margin-right:auto;">be wealth, be rich, be smart, top of the mountain. For indeed, with hardship comes ease.</p>
+
+    <div class="legend" style="justify-content:center;">
+      <div class="legend-item"><span class="swatch strong"></span>Corporate (day job)</div>
+      <div class="legend-item"><span class="swatch soft"></span>Content &amp; admin</div>
+      <div class="legend-item"><span class="swatch night"></span>Deep work (night)</div>
+      <div class="legend-item"><span class="swatch rest"></span>Rest / free</div>
+    </div>
+  </header>
+
+  <div class="view-switch">
+    <button class="view-btn active" id="showScheduleBtn" type="button">Weekly Rhythm</button>
+    <button class="view-btn" id="showMatrixBtn" type="button">Productivity Matrix</button>
+    <button class="view-btn" id="showTimerBtn" type="button">Timer</button>
+    <button class="view-btn" id="showPomodoroBtn" type="button">Pomodoro</button>
+  </div>
+
+  <div id="viewSchedule">
+  <div class="foundation">
+    <div class="ftitle">Daily<br>Foundation</div>
+    <div class="fitems">
+      <div class="frow"><span class="t">7:30 – 10:00</span> Corporate Work</div>
+      <div class="frow"><span class="t">10:00 – 11:00</span> Content uploading, distribution &amp; community engagement</div>
+      <div class="fnote">Applies Monday through Friday, before each day's own track begins.</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="days"></div>
+
+  <div class="why">
+    <h2>Why the shape holds up</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="num">01</div>
+        <h3>Office nights stay protected</h3>
+        <p>Tuesday and Wednesday carry zero extra tasks, so the in-office days never bleed into a mid-week crash.</p>
+      </div>
+      <div class="why-item">
+        <div class="num">02</div>
+        <h3>Quiet hours, real focus</h3>
+        <p>Late night removes notifications and noise — the two conditions filming and editing actually need.</p>
+      </div>
+      <div class="why-item">
+        <div class="num">03</div>
+        <h3>One brand, one block</h3>
+        <p>A single five-hour night is given to one brand at a time, so a full flow state produces a week's worth of assets.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Rendered from your weekly plan</footer>
+  </div>
+
+  <div id="viewMatrix" hidden>
+    <div class="matrix-head">
+      <div class="matrix-title" id="matrixTitle">Productivity Matrix</div>
+      <div class="matrix-controls">
+        <button class="mx-btn" id="mxPrev" type="button">←</button>
+        <span class="mx-period" id="mxPeriodLabel"></span>
+        <button class="mx-btn" id="mxNext" type="button">→</button>
+        <button class="mx-btn" id="mxToday" type="button">Today</button>
+      </div>
+    </div>
+    <div class="mx-note">Tracking began July 31, 2026 — every cell is one day, left to right, top to bottom.</div>
+    <div class="mx-legend">
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:#2fbf6e;"></span>On target or above</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:rgba(70,150,105,.55);"></span>Below target</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:rgba(90,120,100,.38);"></span>Well below target</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="background:rgba(180,72,66,.32);"></span>Off / under 30m</div>
+      <div class="mx-legend-item"><span class="mx-swatch" style="border:1px dashed rgba(91,95,105,.5);"></span>Not tracked yet</div>
+    </div>
+    <div class="mx-matrix-wrap">
+      <div class="mx-matrix" id="mxMatrix"></div>
+    </div>
+  </div>
+
+  <div id="viewTimer" hidden>
+    <div class="ct-head">
+      <div class="ct-title">Timer</div>
+      <span class="pomo-presets" id="ctModeSwitch">
+        <button class="pomo-preset-btn active" id="ctModeTimerBtn" type="button">Timer</button>
+        <button class="pomo-preset-btn" id="ctModeStopwatchBtn" type="button">Stopwatch</button>
+      </span>
+    </div>
+    <div class="ct-note">Running time here also counts toward today's productive progress. Drag the dial to set a custom time. History resets every day — delete an entry to correct its time if you forgot to stop it.</div>
+
+    <div class="pomodoro ct-pomodoro" id="ctPomodoro">
+      <div class="ct-dial-wrap" id="ctDialWrap">
+        <svg class="ct-dial" id="ctDial" viewBox="0 0 220 220">
+          <circle class="ct-dial-track" cx="110" cy="110" r="96"></circle>
+          <path class="ct-dial-arc" id="ctDialArc" d=""></path>
+          <circle class="ct-dial-handle" id="ctDialHandle" cx="110" cy="14" r="9"></circle>
+        </svg>
+        <div class="ct-dial-center">
+          <div class="pomo-mode" id="ctModeTag">Timer</div>
+          <div class="pomo-time" id="ctTimeEl">25:00</div>
+          <div class="ct-dial-hint">Drag to set time</div>
+        </div>
+      </div>
+      <div class="pomo-controls">
+        <button class="pomo-btn start" id="ctStartBtn" type="button">Start</button>
+        <button class="pomo-btn reset" id="ctResetBtn" type="button">Stop</button>
+      </div>
+      <span class="pomo-presets" id="ctDurationPresets">
+        <button class="pomo-preset-btn active" data-min="15" type="button">15m</button>
+        <button class="pomo-preset-btn" data-min="25" type="button">25m</button>
+        <button class="pomo-preset-btn" data-min="45" type="button">45m</button>
+        <button class="pomo-preset-btn" data-min="60" type="button">60m</button>
+      </span>
+      <div class="pomo-alarm" id="ctAlarm">
+        <span class="pomo-alarm-text">⏰ Time's up — click Stop to silence</span>
+        <button class="pomo-stop-btn" id="ctStopAlarmBtn" type="button">Stop</button>
+      </div>
+    </div>
+
+    <div class="ct-history" id="ctHistorySection">
+      <div class="ct-history-head">Today's sessions</div>
+      <div class="ct-history-list" id="ctHistoryList"></div>
+      <div class="ct-history-empty" id="ctHistoryEmpty">Nothing logged yet today.</div>
+    </div>
+  </div>
+
+  <div id="viewPomodoro" hidden>
+    <div class="ct-head">
+      <div class="ct-title">Pomodoro</div>
+    </div>
+    <div class="ct-note">Focus time here also counts toward today's productive progress, same as the timer. Sessions and totals reset every day.</div>
+
+    <div class="pomodoro" id="globalPomodoro">
+      <span class="pomo-mode" id="gpModeTag">Focus</span>
+      <span class="pomo-time" id="gpTimeEl">25:00</span>
+      <span class="pomo-controls">
+        <button class="pomo-btn start" id="gpStartBtn" type="button">Start</button>
+        <button class="pomo-btn reset" id="gpResetBtn" type="button">Reset</button>
+      </span>
+      <span class="pomo-presets" id="gpPresets">
+        <button class="pomo-preset-btn active" data-work="25" data-brk="5" type="button">25 / 5</button>
+        <button class="pomo-preset-btn" data-work="50" data-brk="10" type="button">50 / 10</button>
+      </span>
+      <span class="pomo-meta">
+        <span>Sessions today: <b id="gpSessions">0</b></span>
+        <span>Focus logged: <b id="gpLogged">0m</b></span>
+      </span>
+      <div class="pomo-alarm" id="gpAlarm">
+        <span class="pomo-alarm-text">⏰ Time's up — click Stop to silence</span>
+        <button class="pomo-stop-btn" id="gpStopAlarmBtn" type="button">Stop</button>
+      </div>
+    </div>
+  </div>
+
+<!--
+  CROSS-DEVICE SYNC: create an account (email + password, top of page) to save progress to
+  Supabase and sync it live across devices. Signed out, everything still saves locally.
+-->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb = supabase.createClient(
+  'https://filciqqqqwpplhnpdeko.supabase.co',
+  'sb_publishable_O9BWULqG4SPvF-d6Y2npcg_XQGJjaLg'
+);
+let currentUser = null;
+</script>
+<script>
+const SCALE_START = 450;   // 7:30
+const SCALE_END   = 1500;  // 25:00 (1:00 AM)
+const SCALE_RANGE = SCALE_END - SCALE_START;
+
+// --- keep the screen awake while a pomodoro is running, so mobile auto-lock doesn't suspend
+// the tab mid-session. This only prevents the OS's idle-timeout sleep — it can't override a
+// manual power-button lock, and no website API can. The countdown is still safe either way:
+// it's driven off a fixed end-timestamp (see pomoTick below), so even if the tab does get
+// suspended, it snaps back to the correct remaining time the moment it's foregrounded again
+// instead of losing or "pausing" time.
+let wakeLock = null;
+let ctState = null; // forward declaration — the custom timer/stopwatch, built further below
+async function acquireWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  }catch(e){ /* unavailable or denied — the endAt-based resync below still keeps time correct */ }
+}
+function releaseWakeLockIfIdle(){
+  if(wakeLock && !pomoRefs.some(r => r.pomo.running) && !(ctState && ctState.running)){
+    wakeLock.release().catch(() => {});
+    wakeLock = null;
+  }
+}
+// --- shared audio-context registry: a WebAudio context can be left "suspended" by the browser
+// unless it was created/resumed off a very recent user gesture. Every place that creates an
+// alarm AudioContext registers a getter here so it can be nudged back to running the moment the
+// tab is foregrounded again (see resyncRunningPomos below), instead of possibly staying silent.
+const wrAudioResumers = [];
+function wrRegisterAudioCtx(getCtx){ wrAudioResumers.push(getCtx); }
+function wrResumeAudioContexts(){
+  wrAudioResumers.forEach(getCtx => {
+    const ctx = getCtx();
+    if(ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+  });
+}
+
+// --- service worker registration, purely so notifications can be shown on Android ---
+// Android refuses `new Notification()` called from the page itself (throws "Illegal
+// constructor") — it only allows notifications shown via a registered service worker's
+// ServiceWorkerRegistration.showNotification(). Desktop browsers support both, so routing
+// everything through the service worker keeps behavior consistent everywhere. This requires
+// sw.js to be hosted next to this file on a real https:// (or http://localhost) origin — it
+// silently no-ops on file:// or if sw.js isn't reachable, and the code below falls back to
+// `new Notification()` in that case (which still works on desktop).
+let wrSwReg = null;
+if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => { wrSwReg = reg; })
+    .catch(() => { /* no sw.js at this origin yet, or registration failed — notifications will fall back below */ });
+}
+
+// --- shared notification helper used by every alarm on the page ---
+// Always prefer showing it through the service worker (required on Android; also more
+// reliable on desktop). Falls back to the plain constructor only when no service worker
+// registration is available (e.g. desktop before sw.js is deployed, or file:// during testing).
+function wrNotify(title, body, tag){
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  const options = { body, tag, vibrate: [200,100,200], renotify: true, requireInteraction: false };
+  if(wrSwReg){
+    wrSwReg.showNotification(title, options).catch(() => {});
+    return;
+  }
+  if(navigator.serviceWorker && navigator.serviceWorker.ready){
+    navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => {
+      try{ new Notification(title, options); }catch(e){ /* Android will throw here — no-op */ }
+    });
+    return;
+  }
+  try{ new Notification(title, options); }catch(e){ /* Android: Notification() itself is illegal — nothing more we can do without sw.js */ }
+}
+
+// --- "time almost up" toast + system notification, shared by every timer on the page ---
+const wrToastWrap = document.getElementById('wrToastWrap');
+function showToast(message, ms = 6000){
+  const t = document.createElement('div');
+  t.className = 'wr-toast';
+  t.innerHTML = `<span>⏳ <b>${message}</b></span>`;
+  wrToastWrap.appendChild(t);
+  setTimeout(() => t.remove(), ms);
+}
+function notifyAlmostDone(label){
+  showToast(`${label} — 30 seconds left`);
+  if(document.hidden) wrNotify('Weekly Rhythm', `${label} — 30 seconds left`, 'wr-almost-done');
+  if('vibrate' in navigator){ try{ navigator.vibrate(150); }catch(e){} }
+}
+
+// Tick every currently-running timer once. Shared by the visibility resync below and by the
+// background heartbeat further down, so both paths stay in sync instead of duplicating the loop.
+function tickAllRunning(){
+  pomoRefs.forEach(r => { if(r.pomo.running) r.tick(); });
+  if(ctState && ctState.running) ctTick();
+}
+
+// Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
+// visible/focused again — covers cases where the interval was throttled or fully suspended.
+function resyncRunningPomos(){
+  tickAllRunning();
+  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) acquireWakeLock();
+  wrResumeAudioContexts();
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) resyncRunningPomos(); });
+window.addEventListener('focus', resyncRunningPomos);
+window.addEventListener('pageshow', resyncRunningPomos);
+
+// --- background heartbeat: hidden/minimized tabs get their setInterval throttled (sometimes to
+// once a minute, or fully paused), which is why the alarm could fire late or silently miss
+// entirely. A dedicated Worker's timers are not clamped the same way the main thread's are, so
+// this drives an extra always-on tick from a worker as a backup to the normal per-timer
+// intervals below — tickAllRunning() is a no-op unless something is actually running, so this
+// stays cheap to leave on permanently.
+(function startBackgroundHeartbeat(){
+  try{
+    const src = "let id=null; onmessage=(e)=>{ if(e.data==='start' && !id) id=setInterval(()=>postMessage(1),250); };";
+    const worker = new Worker(URL.createObjectURL(new Blob([src], {type:'application/javascript'})));
+    worker.onmessage = tickAllRunning;
+    worker.postMessage('start');
+  }catch(e){
+    setInterval(tickAllRunning, 250); // Workers unavailable — fall back to a plain interval
+  }
+})();
+
+// --- view switcher: Weekly Rhythm <-> Productivity Matrix <-> Timer <-> Pomodoro ---
+const scheduleView = document.getElementById('viewSchedule');
+const matrixView = document.getElementById('viewMatrix');
+const timerView = document.getElementById('viewTimer');
+const pomodoroView = document.getElementById('viewPomodoro');
+const showScheduleBtn = document.getElementById('showScheduleBtn');
+const showMatrixBtn = document.getElementById('showMatrixBtn');
+const showTimerBtn = document.getElementById('showTimerBtn');
+const showPomodoroBtn = document.getElementById('showPomodoroBtn');
+
+function showView(which){
+  scheduleView.hidden = which !== 'schedule';
+  matrixView.hidden = which !== 'matrix';
+  timerView.hidden = which !== 'timer';
+  pomodoroView.hidden = which !== 'pomodoro';
+  showScheduleBtn.classList.toggle('active', which === 'schedule');
+  showMatrixBtn.classList.toggle('active', which === 'matrix');
+  showTimerBtn.classList.toggle('active', which === 'timer');
+  showPomodoroBtn.classList.toggle('active', which === 'pomodoro');
+  if(which === 'matrix') renderMatrix();
+  if(which === 'timer') renderCtHistory();
+}
+showScheduleBtn.addEventListener('click', () => showView('schedule'));
+showMatrixBtn.addEventListener('click', () => showView('matrix'));
+showTimerBtn.addEventListener('click', () => showView('timer'));
+showPomodoroBtn.addEventListener('click', () => showView('pomodoro'));
+
+// --- persistent focus log (per real calendar date, in localStorage) ---
+const FOCUS_LOG_KEY = 'wr_focus_log_v1';
+
+function loadFocusLog(){
+  try{ return JSON.parse(localStorage.getItem(FOCUS_LOG_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function saveFocusLog(log){
+  try{ localStorage.setItem(FOCUS_LOG_KEY, JSON.stringify(log)); }
+  catch(e){ /* storage unavailable — ignore */ }
+}
+function dateKey(d){
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function addFocusSeconds(sec){
+  const log = loadFocusLog();
+  const k = dateKey(new Date());
+  log[k] = (log[k] || 0) + sec;
+  saveFocusLog(log);
+  queueCloudPush();
+  // keep the productivity matrix's reached/not-reached status live if it happens to be open
+  // while a timer or pomodoro is running in the background
+  if(typeof matrixView !== 'undefined' && matrixView && !matrixView.hidden) renderMatrix();
+}
+// per-weekday custom productive-time targets (minutes), set by the user — overrides the
+// auto-computed total from that day's to-do blocks when present. Keyed by day.key.
+let targetOverrides = {};
+// the target actually used for a day: the user's custom minutes if they set one, otherwise
+// whatever the day's scheduled (non-rest) blocks add up to
+function getProductiveTarget(day){
+  const override = targetOverrides[day.key];
+  return (override != null && override > 0) ? override : computeProductive(day);
+}
+// daily target minutes for a given date = that weekday's custom target, or its scheduled total
+function targetMinutesFor(date){
+  const idx = (date.getDay() + 6) % 7; // Mon=0 ... Sun=6
+  return getProductiveTarget(days[idx]);
+}
+function classifyDay(actualMin, targetMin, isFuture){
+  if(isFuture) return 'mx-future';
+  if(actualMin < 30) return 'mx-off';
+  if(actualMin >= targetMin) return 'mx-bright';
+  const ratio = targetMin > 0 ? actualMin / targetMin : 1;
+  return ratio >= 0.5 ? 'mx-d1' : 'mx-d2';
+}
+
+// --- unified state persistence (per-day pomodoro state) + optional cross-device sync ---
+const POMO_KEY = 'wr_pomo_state_v1';
+const pomoRefs = []; // {pomo, render} for each day, filled in as day panels are built
+
+function loadPomoState(){
+  try{ return JSON.parse(localStorage.getItem(POMO_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function snapshotState(){
+  return {
+    updatedAt: Date.now(),
+    ownerId: currentUser ? currentUser.id : null,
+    focusLog: loadFocusLog(),
+    schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
+    targetOverrides: {...targetOverrides},
+    pomo: pomoRefs.map(r => ({
+      workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
+      remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
+      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds
+    })),
+    customTimer: ctState ? {
+      mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
+      targetSeconds:ctState.targetSeconds, remaining:ctState.remaining, elapsedStopwatch:ctState.elapsedStopwatch,
+      endAt:ctState.endAt, runStartedAt:ctState.runStartedAt, sessionStartedAt:ctState.sessionStartedAt,
+      sessionSeconds:ctState.sessionSeconds
+    } : null,
+    // history resets every day, so this never accumulates more than one day's worth of entries
+    timerHistory: pruneTimerHistoryToToday()
+  };
+}
+function persistLocal(){
+  try{ localStorage.setItem(POMO_KEY, JSON.stringify(snapshotState())); }catch(e){}
+  queueCloudPush();
+}
+// apply a full state object (from localStorage on load, or a remote device) to the live UI
+function applyState(state, {rerenderMatrix} = {}){
+  if(state.focusLog) saveFocusLog(state.focusLog);
+  if(state.targetOverrides){
+    targetOverrides = {...state.targetOverrides};
+  }
+  if(state.schedule){
+    dayPanels.forEach(p => {
+      const sd = state.schedule[p.day.key];
+      if(sd && sd.length) { p.day.blocks = sd; }
+      applyScheduleUpdate(p); // also picks up any targetOverrides change even when blocks didn't
+    });
+  } else if(state.targetOverrides){
+    dayPanels.forEach(p => applyScheduleUpdate(p));
+  }
+  (state.pomo || []).forEach((s, i) => {
+    const r = pomoRefs[i];
+    if(!r) return;
+    if(r.pomo.running) { clearInterval(r.pomo.timerId); }
+    Object.assign(r.pomo, s);
+    if(r.pomo.running && r.pomo.endAt){
+      const left = Math.round((r.pomo.endAt - Date.now())/1000);
+      if(left <= 0){ r.pomo.running = false; r.pomo.remaining = 0; }
+      else { r.pomo.remaining = left; r.pomo.lastCredit = Date.now(); r.pomo.timerId = setInterval(r.tick, 250); acquireWakeLock(); }
+    }
+    r.render();
+  });
+  if(state.timerHistory){
+    timerHistory = (state.timerHistory.date === dateKey(new Date())) ? state.timerHistory : { date: dateKey(new Date()), entries: [] };
+    saveTimerHistoryLocal();
+    renderCtHistory();
+  }
+  if(state.customTimer && ctState){
+    if(ctState.running) clearInterval(ctState.timerId);
+    Object.assign(ctState, state.customTimer);
+    if(ctState.running){
+      const now = Date.now();
+      if(ctState.mode === 'timer' && ctState.endAt){
+        const left = Math.round((ctState.endAt - now)/1000);
+        if(left <= 0){ ctState.running = false; ctState.remaining = 0; }
+        else { ctState.remaining = left; ctState.lastCredit = now; ctState.timerId = setInterval(ctTick, 250); acquireWakeLock(); }
+      } else if(ctState.mode === 'stopwatch'){
+        ctState.lastCredit = now;
+        ctState.timerId = setInterval(ctTick, 250);
+        acquireWakeLock();
+      }
+    }
+    renderCt();
+  }
+  renderStats();
+  if(rerenderMatrix && !matrixView.hidden) renderMatrix();
+}
+
+// --- cloud sync (Supabase) — active once signed in; local-only otherwise ---
+let lastPushedAt = 0, pushTimer = null, realtimeChannel = null;
+const syncStatusEl = document.getElementById('syncStatus');
+
+// Drives the small corner dot: green (pulsing) while a save is in flight, solid green once
+// synced, faded gray on failure, and invisible (no dot) when there's nothing to report.
+function setSyncStatus(state){
+  if(!syncStatusEl) return;
+  syncStatusEl.classList.remove('syncing', 'synced', 'error');
+  if(state) syncStatusEl.classList.add(state);
+  syncStatusEl.title = state === 'syncing' ? 'Syncing…' : state === 'synced' ? 'Synced' : state === 'error' ? 'Sync failed' : '';
+}
+
+function queueCloudPush(){
+  if(!currentUser) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(async () => {
+    const state = snapshotState();
+    lastPushedAt = state.updatedAt;
+    setSyncStatus('syncing');
+    const { error } = await sb.from('progress_states').upsert({
+      user_id: currentUser.id, state, updated_at: new Date(state.updatedAt).toISOString()
+    });
+    if(syncStatusEl) setSyncStatus(error ? 'error' : 'synced');
+  }, 900);
+}
+
+async function pullCloudState(){
+  const { data } = await sb.from('progress_states').select('state').eq('user_id', currentUser.id).maybeSingle();
+  return data ? data.state : null;
+}
+
+function subscribeRealtime(){
+  if(realtimeChannel) sb.removeChannel(realtimeChannel);
+  realtimeChannel = sb.channel('progress_' + currentUser.id)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'progress_states', filter: `user_id=eq.${currentUser.id}` }, payload => {
+      const remote = payload.new && payload.new.state;
+      if(!remote || remote.updatedAt === lastPushedAt) return; // ignore our own echo
+      applyState(remote, {rerenderMatrix:true});
+    })
+    .subscribe();
+}
+
+// wipes the on-screen state back to the original template — used whenever we switch to an
+// account that doesn't own whatever's currently cached on this device, so it never leaks over
+function resetToDefaults(){
+  targetOverrides = {};
+  dayPanels.forEach((p, i) => { p.day.blocks = DEFAULT_SCHEDULE[i].map(b => ({...b})); applyScheduleUpdate(p); });
+  saveFocusLog({});
+  pomoRefs.forEach(r => {
+    clearInterval(r.pomo.timerId);
+    Object.assign(r.pomo, {
+      workLen:25*60, breakLen:5*60, mode:'focus', remaining:25*60,
+      running:false, sessions:0, focusSeconds:0, ringing:false, endAt:null
+    });
+    r.render();
+  });
+  if(ctState){
+    clearInterval(ctState.timerId);
+    Object.assign(ctState, {
+      running:false, sessionActive:false, remaining:ctState.targetSeconds, elapsedStopwatch:0,
+      endAt:null, runStartedAt:null, sessionStartedAt:null, sessionSeconds:0, lastCredit:null
+    });
+    renderCt();
+  }
+  timerHistory = { date: dateKey(new Date()), entries: [] };
+  saveTimerHistoryLocal();
+  renderCtHistory();
+  renderStats();
+}
+
+function displayNameFor(user){
+  return (user.user_metadata && user.user_metadata.display_name) || user.email || 'signed in';
+}
+
+const userLabelEl = document.getElementById('userLabel');
+const editNameBtn = document.getElementById('editNameBtn');
+const nameEditor = document.getElementById('nameEditor');
+const nameInput = document.getElementById('nameInput');
+const saveNameBtn = document.getElementById('saveNameBtn');
+
+function showNameEditor(){
+  nameInput.value = (currentUser.user_metadata && currentUser.user_metadata.display_name) || '';
+  editNameBtn.style.display = 'none';
+  nameEditor.style.display = 'inline-flex';
+  nameInput.focus();
+}
+function hideNameEditor(){
+  editNameBtn.style.display = '';
+  nameEditor.style.display = 'none';
+}
+async function saveDisplayName(){
+  const name = nameInput.value.trim();
+  saveNameBtn.disabled = true;
+  const { data, error } = await sb.auth.updateUser({ data: { display_name: name || null } });
+  saveNameBtn.disabled = false;
+  if(!error && data && data.user){
+    currentUser = data.user;
+    userLabelEl.textContent = displayNameFor(currentUser);
+  }
+  hideNameEditor();
+}
+editNameBtn.addEventListener('click', showNameEditor);
+saveNameBtn.addEventListener('click', saveDisplayName);
+nameInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter') saveDisplayName();
+  if(e.key === 'Escape') hideNameEditor();
+});
+
+async function onSignedIn(user){
+  currentUser = user;
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('authBar').style.display = 'flex';
+  document.getElementById('appWrap').hidden = false;
+  hideNameEditor();
+  userLabelEl.textContent = displayNameFor(user);
+
+  try{
+    const remote = await pullCloudState();
+    if(remote){
+      applyState(remote, {rerenderMatrix:true});
+    } else {
+      const local = loadPomoState();
+      if(local && local.ownerId === user.id && local.updatedAt){
+        applyState(local, {rerenderMatrix:true}); // this device's own cache, confirmed to belong to this account
+      } else {
+        resetToDefaults(); // nothing in the cloud yet, and whatever's cached here isn't this account's
+      }
+      queueCloudPush();
+    }
+    subscribeRealtime();
+  } catch(e){
+    console.error('cloud sync failed', e);
+    if(syncStatusEl) setSyncStatus('error');
+  }
+  refreshPushButtonState();
+}
+
+function onSignedOut(){
+  currentUser = null;
+  if(realtimeChannel){ sb.removeChannel(realtimeChannel); realtimeChannel = null; }
+  document.getElementById('authGate').style.display = 'flex';
+  document.getElementById('authBar').style.display = 'none';
+  document.getElementById('appWrap').hidden = true;
+  if(syncStatusEl) setSyncStatus(null);
+  hideNameEditor();
+  resetToDefaults(); // clear the screen so the next sign-in on this device starts clean
+  pushSubscribed = false;
+  if(enableAlarmsBtn) enableAlarmsBtn.classList.remove('enabled');
+}
+
+const authMsgEl = document.getElementById('authMsg');
+document.getElementById('signInBtn').addEventListener('click', async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPass').value;
+  authMsgEl.textContent = 'signing in…';
+  try{
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){ authMsgEl.textContent = error.message; return; }
+    authMsgEl.textContent = '';
+    if(data && data.user) onSignedIn(data.user);
+  } catch(e){
+    console.error('sign in failed', e);
+    authMsgEl.textContent = 'sign in failed — check console';
+  }
+});
+document.getElementById('signUpBtn').addEventListener('click', async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPass').value;
+  if(password.length < 6){ authMsgEl.textContent = 'password needs 6+ characters'; return; }
+  authMsgEl.textContent = 'creating account…';
+  const { error } = await sb.auth.signUp({ email, password });
+  authMsgEl.textContent = error ? error.message : 'check your email to confirm, then sign in';
+});
+document.getElementById('logoutBtn').addEventListener('click', () => sb.auth.signOut());
+
+sb.auth.onAuthStateChange((event, session) => {
+  if(session && session.user) onSignedIn(session.user);
+  else onSignedOut();
+});
+
+function initSync(){
+  const local = loadPomoState();
+  if(local && local.pomo) applyState(local); // restore this device's own last state first
+  sb.auth.getSession().then(({data}) => {
+    if(data.session && data.session.user) onSignedIn(data.session.user);
+  });
+}
+
+// --- screen-off alarms: real Web Push, sent from the server (see
+// supabase/functions/send-due-alarms) ---
+// Everything earlier in this file only works while the tab is at least a little bit alive.
+// This section additionally asks the server to push a system notification at the moment each
+// running alarm is due, which rings even with the screen fully locked, because it's delivered
+// by the OS's own push service rather than by this (possibly frozen) page. Tied to the signed-
+// in account; one-time opt-in via the bell button in the top bar. See SETUP.md.
+const VAPID_PUBLIC_KEY = 'BFqUJ0VAFZ9eCYPT5oGJPz5qpvkB1RNsiHhKVkjL23Y9RiDh5aZpbl-dzFI3NJrU2MeUYQwzkdxrTt6mtJBPkbU';
+function urlBase64ToUint8Array(base64String){
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+const enableAlarmsBtn = document.getElementById('enableAlarmsBtn');
+let pushSubscribed = false;
+
+async function refreshPushButtonState(){
+  if(!currentUser || !('serviceWorker' in navigator) || !('PushManager' in window)){
+    pushSubscribed = false;
+    enableAlarmsBtn.classList.remove('enabled');
+    return;
+  }
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    pushSubscribed = !!sub;
+    enableAlarmsBtn.classList.toggle('enabled', pushSubscribed);
+  }catch(e){ /* ignore — button just stays off */ }
+}
+
+async function enablePushAlarms(){
+  if(!currentUser){ alert('Sign in first — screen-off alarms are tied to your account.'); return; }
+  if(!('serviceWorker' in navigator) || !('PushManager' in window)){
+    alert("This browser doesn't support push notifications, so alarms can't ring with the screen off here — the sound/vibration alarm while the tab is open still works.");
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if(perm !== 'granted'){ alert("Notification permission wasn't granted, so screen-off alarms can't be enabled."); return; }
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if(!sub){
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+    const json = sub.toJSON();
+    const { error } = await sb.from('push_subscriptions').upsert({
+      user_id: currentUser.id,
+      endpoint: json.endpoint,
+      p256dh: json.keys.p256dh,
+      auth: json.keys.auth
+    });
+    if(error) throw error;
+    pushSubscribed = true;
+    enableAlarmsBtn.classList.add('enabled');
+  }catch(e){
+    console.error('push subscribe failed', e);
+    alert('Could not enable screen-off alarms — see console for details.');
+  }
+}
+
+async function disablePushAlarms(){
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if(sub){
+      await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+      await sub.unsubscribe();
+    }
+  }catch(e){ console.error('push unsubscribe failed', e); }
+  pushSubscribed = false;
+  enableAlarmsBtn.classList.remove('enabled');
+}
+
+enableAlarmsBtn.addEventListener('click', () => {
+  if(pushSubscribed) disablePushAlarms(); else enablePushAlarms();
+});
+
+// Upsert (or move) the server-side alarm for one timer instance. Safe to call on every
+// pause/resume — it just replaces fire_at for that same client_key instead of piling up rows.
+function wrScheduleAlarm(key, fireAtMs, title, body, tag){
+  if(!currentUser || !pushSubscribed) return;
+  sb.from('scheduled_alarms').upsert({
+    user_id: currentUser.id, client_key: key,
+    fire_at: new Date(fireAtMs).toISOString(),
+    title, body, tag, sent: false, repeat_count: 0,
+    // Explicit, not left to the column default — otherwise an *existing* row (re-scheduled on
+    // every restart of the same timer) keeps whatever interval it was first created with,
+    // even after the table's default gets tuned faster later.
+    repeat_every_seconds: 5, max_repeats: 18
+  }, { onConflict: 'user_id,client_key' }).then(({error}) => {
+    if(error) console.error('schedule alarm failed', error);
+  });
+}
+// Cancel a previously-scheduled server-side alarm — on pause, reset, or right when it's already
+// rung locally (tab was in the foreground), so the cron job doesn't also push a redundant one.
+function wrCancelAlarm(key){
+  if(!currentUser) return;
+  sb.from('scheduled_alarms').delete().eq('user_id', currentUser.id).eq('client_key', key)
+    .then(({error}) => { if(error) console.error('cancel alarm failed', error); });
+}
+
+const TRACK_START = new Date(2026, 6, 31); // matrix tracking begins July 31, 2026 — the day this tracker was created
+TRACK_START.setHours(0,0,0,0);
+
+let mxYear = TRACK_START.getFullYear();
+
+const mxPrevBtn = document.getElementById('mxPrev');
+const mxNextBtn = document.getElementById('mxNext');
+const mxTodayBtn = document.getElementById('mxToday');
+const mxPeriodLabel = document.getElementById('mxPeriodLabel');
+const mxMatrixEl = document.getElementById('mxMatrix');
+
+mxPrevBtn.addEventListener('click', () => { mxYear -= 1; renderMatrix(); });
+mxNextBtn.addEventListener('click', () => { mxYear += 1; renderMatrix(); });
+mxTodayBtn.addEventListener('click', () => { mxYear = new Date().getFullYear(); renderMatrix(); });
+
+function renderMatrix(){
+  mxPeriodLabel.textContent = String(mxYear);
+  mxMatrixEl.innerHTML = '';
+
+  const log = loadFocusLog();
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // 2026 is the year tracking began (July 31, 2026) — start that year's grid at August 1
+  // so months before tracking never render as "not tracked" cells. Other years show Jan-Dec.
+  const gridStart = (mxYear === TRACK_START.getFullYear())
+    ? new Date(mxYear, 7, 1)
+    : new Date(mxYear, 0, 1);
+  const yearEnd = new Date(mxYear, 11, 31);
+  const totalDays = Math.round((yearEnd - gridStart) / 86400000) + 1;
+
+  // Pick a column count that keeps the whole grid close to a 4:3 shape (not a wide landscape strip).
+  // Cells are laid out with CSS grid using 1fr + aspect-ratio, so they scale fluidly with the
+  // container on resize — no horizontal scrollbar, the matrix just reflows/rescales in place.
+  const cols = Math.max(7, Math.round(Math.sqrt(totalDays * (4 / 3))));
+  mxMatrixEl.style.setProperty('--mx-cols', cols);
+
+  let cursor = new Date(gridStart);
+  while(cursor.getFullYear() === mxYear){
+    const cell = document.createElement('div');
+    const key = dateKey(cursor);
+
+    if(cursor < TRACK_START){
+      cell.className = 'mx-cell mx-pretrack';
+      cell.title = `${key} — before tracking started`;
+    } else {
+      const isFuture = cursor > today;
+      const actualMin = (log[key] || 0) / 60;
+      const targetMin = targetMinutesFor(cursor);
+      const cls = classifyDay(actualMin, targetMin, isFuture);
+      cell.className = 'mx-cell ' + cls;
+      if(cursor.getTime() === today.getTime()) cell.classList.add('mx-today');
+      cell.title = `${key} — ${isFuture ? 'upcoming' : Math.round(actualMin) + 'm logged / ' + targetMin + 'm target'}`;
+    }
+
+    mxMatrixEl.appendChild(cell);
+    cursor.setDate(cursor.getDate() + 1);
+  }
+}
+
+
+function fmt(min){
+  let h = Math.floor(min/60) % 24;
+  const m = min % 60;
+  const ampm = (h < 12 || h === 24) ? 'AM' : 'PM';
+  let h12 = h % 12; if(h12 === 0) h12 = 12;
+  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+}
+function tickLabel(min){
+  const t = min >= 1440 ? min - 1440 : min;
+  let h = Math.floor(t/60) % 24;
+  const ampm = (h < 12 || h === 24) ? 'a' : 'p';
+  let h12 = h % 12; if(h12 === 0) h12 = 12;
+  return h12 + ampm;
+}
+function minsToHM(mins){
+  mins = Math.max(0, Math.round(mins));
+  const h = Math.floor(mins/60), m = mins%60;
+  if(h === 0) return m + 'm';
+  if(m === 0) return h + 'h';
+  return h + 'h ' + m + 'm';
+}
+
+function parseClock(str){
+  const m = String(str).trim().match(/^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/);
+  if(!m) return null;
+  let h = parseInt(m[1],10) % 12, min = parseInt(m[2],10);
+  if(m[3].toLowerCase() === 'pm') h += 12;
+  let total = h*60 + min;
+  if(total < SCALE_START) total += 1440;
+  return Math.min(SCALE_END, Math.max(SCALE_START, total));
+}
+function computeProductive(day){
+  return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
+}
+// keep a day panel's "Set custom target" button in sync with whether an override is set
+function refreshDayTargetUI(panel){
+  const btn = panel.el.querySelector('.day-target-btn');
+  if(!btn) return;
+  const ov = targetOverrides[panel.day.key];
+  btn.textContent = ov != null ? ('Target: ' + minsToHM(ov)) : 'Set custom target';
+  btn.classList.toggle('active', ov != null);
+}
+function renderRail(panel){
+  panel.segsSlot.innerHTML = '';
+  panel.day.blocks.forEach(b => {
+    const seg = document.createElement('div');
+    seg.className = 'seg ' + b.type;
+    seg.style.left = (((b.s - SCALE_START)/SCALE_RANGE)*100) + '%';
+    seg.style.width = (((b.e - b.s)/SCALE_RANGE)*100) + '%';
+    seg.title = b.label;
+    panel.segsSlot.appendChild(seg);
+  });
+}
+function renderList(panel){
+  const listEl = panel.listEl;
+  listEl.innerHTML = '';
+  panel.day.blocks.forEach((b, idx) => {
+    const row = document.createElement('div');
+    row.dataset.s = b.s; row.dataset.e = b.e;
+    if(panel.editing){
+      row.className = 'row editing';
+      row.innerHTML = `
+        <input class="edit-time edit-s" value="${fmt(b.s)}">
+        <input class="edit-time edit-e" value="${fmt(b.e)}">
+        <input class="edit-label">
+        <select class="edit-type">
+          <option value="day-strong">Corporate</option>
+          <option value="day-soft">Content/admin</option>
+          <option value="night">Deep work</option>
+          <option value="rest">Rest</option>
+        </select>
+        <button type="button" class="edit-del" title="Remove block">✕</button>`;
+      row.querySelector('.edit-label').value = b.label;
+      row.querySelector('.edit-type').value = b.type;
+      const commit = () => {
+        const ns = parseClock(row.querySelector('.edit-s').value);
+        const ne = parseClock(row.querySelector('.edit-e').value);
+        if(ns != null) b.s = ns;
+        if(ne != null) b.e = ne;
+        b.label = row.querySelector('.edit-label').value.trim() || b.label;
+        b.type = row.querySelector('.edit-type').value;
+        updateDay(panel);
+      };
+      row.querySelectorAll('.edit-s,.edit-e,.edit-label,.edit-type').forEach(inp => inp.addEventListener('change', commit));
+      row.querySelector('.edit-del').addEventListener('click', () => {
+        panel.day.blocks.splice(idx,1);
+        updateDay(panel);
+      });
+    } else {
+      row.className = 'row' + (b.type === 'rest' ? ' rest' : '');
+      row.innerHTML = `<span class="time"><span class="dot ${b.type}"></span>${fmt(b.s)} – ${fmt(b.e)}</span><span class="label"></span>`;
+      row.querySelector('.label').textContent = b.label;
+    }
+    listEl.appendChild(row);
+  });
+  if(panel.editing){
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button'; addBtn.className = 'add-block-btn'; addBtn.textContent = '+ Add block';
+    addBtn.addEventListener('click', () => {
+      const last = panel.day.blocks[panel.day.blocks.length - 1];
+      const s = last ? last.e : SCALE_START;
+      panel.day.blocks.push({ s, e: Math.min(s + 60, SCALE_END), label:'New block', type:'day-soft' });
+      updateDay(panel);
+    });
+    listEl.appendChild(addBtn);
+  }
+}
+// re-render rail/list + productive-time total after an edit (or a synced remote change)
+function applyScheduleUpdate(panel){
+  panel.productiveTotal = getProductiveTarget(panel.day);
+  const isCustom = targetOverrides[panel.day.key] != null;
+  panel.el.querySelector('.day-total').textContent = minsToHM(panel.productiveTotal) + ' of productive time scheduled' + (isCustom ? ' (custom target)' : '');
+  refreshDayTargetUI(panel);
+  renderRail(panel);
+  renderList(panel);
+}
+function updateDay(panel){
+  panel.day.blocks.sort((a,b) => a.s - b.s);
+  applyScheduleUpdate(panel);
+  persistLocal();
+  if(panel === dayPanels[activeIdx]) renderStats();
+  if(!matrixView.hidden) renderMatrix();
+}
+
+const days = [
+  { key:'Monday', tag:'Affiliate & System Setup', blocks:[
+    {s:450,e:600,label:'Corporate Work',type:'day-strong'},
+    {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
+    {s:660,e:840,label:'Affiliate Content & Link Setup — Hilla.space & Hillafuku',type:'day-soft'},
+    {s:840,e:900,label:'Sowhtvr Affiliate & Admin',type:'day-soft'},
+    {s:900,e:960,label:'Study & Skill Acquisition',type:'day-soft'},
+    {s:960,e:1500,label:'Rest / Casual Research',type:'rest'},
+  ]},
+  { key:'Tuesday', tag:'WFO Day — Strict Off', blocks:[
+    {s:450,e:600,label:'Corporate Work (In Office)',type:'day-strong'},
+    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
+  ]},
+  { key:'Wednesday', tag:'WFO Day — Strict Off', blocks:[
+    {s:450,e:600,label:'Corporate Work (In Office)',type:'day-strong'},
+    {s:600,e:1500,label:'Full Rest — zero extra tasks',type:'rest'},
+  ]},
+  { key:'Thursday', tag:'Night-Owl YouTube Creation', blocks:[
+    {s:450,e:600,label:'Corporate Work',type:'day-strong'},
+    {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
+    {s:660,e:720,label:'Study / Trend Analysis',type:'day-soft'},
+    {s:720,e:1170,label:'Free Time / Errands / Rest',type:'rest'},
+    {s:1170,e:1470,label:'Hillabits Deep Work — Scripting, Recording, Editing',type:'night'},
+  ]},
+  { key:'Friday', tag:'Night-Owl Brand Content Creation', blocks:[
+    {s:450,e:600,label:'Corporate Work',type:'day-strong'},
+    {s:600,e:660,label:'Content Uploading, Distribution & Community Engagement',type:'day-soft'},
+    {s:660,e:720,label:'Study / Creative Direction',type:'day-soft'},
+    {s:720,e:1170,label:'Free Time / Rest',type:'rest'},
+    {s:1170,e:1470,label:'Akutafh Deep Work — Batch Recording & Editing',type:'night'},
+  ]},
+  { key:'Saturday', tag:'Review & Strategy Day', blocks:[
+    {s:780,e:900,label:'Performance Review & Analytics Check',type:'day-soft'},
+    {s:900,e:1020,label:'Next Week Planning & Content Calendar Setup',type:'day-soft'},
+    {s:1140,e:1500,label:'Free / Social / Unwind',type:'rest'},
+  ]},
+  { key:'Sunday', tag:'Deep Writing & Reset', blocks:[
+    {s:780,e:900,label:'Writing — Scripts, Long-form Posts, Ideation',type:'day-soft'},
+    {s:1140,e:1500,label:'Rest / System Reset for the coming week',type:'rest'},
+  ]},
+];
+
+const DEFAULT_SCHEDULE = days.map(d => d.blocks.map(b => ({...b})));
+
+const ticks = [450,600,780,960,1140,1320,1500];
+
+// --- figure out "logical" schedule day: rolls over at real midnight, same as the calendar date.
+function getLogicalNow(){
+  const now = new Date();
+  const idx = (now.getDay() + 6) % 7; // Mon=0 ... Sun=6
+  const min = now.getHours()*60 + now.getMinutes();
+  return { idx, min };
+}
+
+const logical = getLogicalNow();
+let activeIdx = logical.idx;
+let followingToday = true; // false once the user manually taps a different day tab
+
+const tabsEl = document.getElementById('tabs');
+const daysEl = document.getElementById('days');
+const dayPanels = [];
+
+days.forEach((day, i) => {
+  const productiveTotal = getProductiveTarget(day);
+
+  // tab button
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (i === logical.idx ? ' is-today' : '');
+  btn.innerHTML = day.key.slice(0,3) + '<span class="tab-dot"></span>';
+  btn.addEventListener('click', () => { followingToday = false; selectDay(i); });
+  tabsEl.appendChild(btn);
+
+  // panel
+  const el = document.createElement('div');
+  el.className = 'day';
+  el.hidden = true;
+
+  const tickHtml = ticks.map(t => `<span class="tick" style="left:${((t-SCALE_START)/SCALE_RANGE)*100}%">${tickLabel(t)}</span>`).join('');
+
+  el.innerHTML = `
+    <div class="day-head">
+      <div class="day-name">${day.key}${i === logical.idx ? '<span class="today-pill">Today</span>' : ''}</div>
+      <div class="day-head-right">
+        <div class="day-tag">${day.tag}</div>
+        <button type="button" class="day-edit-btn">Edit</button>
+      </div>
+    </div>
+    <div class="day-total-row">
+      <div class="day-total"></div>
+      <button type="button" class="day-target-btn"></button>
+      <span class="day-target-editor" hidden>
+        <input type="number" class="day-target-h" min="0" max="23" placeholder="h">
+        <span>h</span>
+        <input type="number" class="day-target-m" min="0" max="59" placeholder="m">
+        <span>m</span>
+        <button type="button" class="day-target-save">Save</button>
+        <button type="button" class="day-target-auto">Auto</button>
+      </span>
+    </div>
+    <div class="stats-slot"></div>
+    <div class="rail"><div class="track"></div><div class="segs-slot" style="position:absolute;inset:0;"></div></div>
+    <div class="ticks">${tickHtml}</div>
+    <div class="list"></div>
+  `;
+
+  const segsSlot = el.querySelector('.segs-slot');
+  const listEl = el.querySelector('.list');
+  const editBtn = el.querySelector('.day-edit-btn');
+  const panel = { el, btn, day, productiveTotal, segsSlot, listEl, editing:false };
+
+  editBtn.addEventListener('click', () => {
+    panel.editing = !panel.editing;
+    editBtn.textContent = panel.editing ? 'Done' : 'Edit';
+    editBtn.classList.toggle('active', panel.editing);
+    renderList(panel);
+  });
+
+  // custom productive-time target: fill in the initial label, then wire the inline editor
+  const isCustomInit = targetOverrides[day.key] != null;
+  el.querySelector('.day-total').textContent = minsToHM(productiveTotal) + ' of productive time scheduled' + (isCustomInit ? ' (custom target)' : '');
+  refreshDayTargetUI(panel);
+
+  const targetBtn = el.querySelector('.day-target-btn');
+  const targetEditor = el.querySelector('.day-target-editor');
+  const targetHInput = el.querySelector('.day-target-h');
+  const targetMInput = el.querySelector('.day-target-m');
+  const targetSaveBtn = el.querySelector('.day-target-save');
+  const targetAutoBtn = el.querySelector('.day-target-auto');
+
+  targetBtn.addEventListener('click', () => {
+    const willShow = targetEditor.hidden;
+    targetEditor.hidden = !willShow;
+    if(willShow){
+      const current = targetOverrides[day.key] != null ? targetOverrides[day.key] : panel.productiveTotal;
+      targetHInput.value = Math.floor(current / 60);
+      targetMInput.value = current % 60;
+      targetHInput.focus();
+    }
+  });
+  targetSaveBtn.addEventListener('click', () => {
+    const h = Math.max(0, Math.floor(Number(targetHInput.value) || 0));
+    const m = Math.max(0, Math.min(59, Math.floor(Number(targetMInput.value) || 0)));
+    targetOverrides[day.key] = h * 60 + m;
+    targetEditor.hidden = true;
+    applyScheduleUpdate(panel);
+    if(panel === dayPanels[activeIdx]) renderStats();
+    if(!matrixView.hidden) renderMatrix();
+    persistLocal();
+  });
+  targetAutoBtn.addEventListener('click', () => {
+    delete targetOverrides[day.key];
+    targetEditor.hidden = true;
+    applyScheduleUpdate(panel);
+    if(panel === dayPanels[activeIdx]) renderStats();
+    if(!matrixView.hidden) renderMatrix();
+    persistLocal();
+  });
+
+  renderRail(panel);
+  renderList(panel);
+
+  daysEl.appendChild(el);
+
+  dayPanels.push(panel);
+});
+
+// ============================================================================
+// Pomodoro — single global instance, lives on the Timer page (in-memory only,
+// resets on page reload, same as it did per-day before)
+// ============================================================================
+const pomo = {
+  workLen: 25*60, breakLen: 5*60,
+  mode: 'focus', remaining: 25*60,
+  running: false, timerId: null,
+  sessions: 0, focusSeconds: 0,
+  ringing: false, alarmId: null, warned30: false,
+  endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
+  lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
+};
+
+const pomoAlarmKey = 'pomo'; // stable id for the server-side scheduled alarm
+
+const gpEl = document.getElementById('globalPomodoro');
+const gpModeTag = document.getElementById('gpModeTag');
+const gpTimeEl = document.getElementById('gpTimeEl');
+const gpStartBtn = document.getElementById('gpStartBtn');
+const gpResetBtn = document.getElementById('gpResetBtn');
+const gpPresetBtns = document.getElementById('gpPresets').querySelectorAll('.pomo-preset-btn');
+const gpSessionsEl = document.getElementById('gpSessions');
+const gpLoggedEl = document.getElementById('gpLogged');
+const gpStopAlarmBtn = document.getElementById('gpStopAlarmBtn');
+
+let pomoAudioCtx = null;
+function pomoBeep(){
+  try{
+    if(!pomoAudioCtx){
+      pomoAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      wrRegisterAudioCtx(() => pomoAudioCtx);
+    }
+    if(pomoAudioCtx.state === 'suspended') pomoAudioCtx.resume();
+    const now = pomoAudioCtx.currentTime;
+    // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
+    [0, 0.22].forEach(offset => {
+      [880, 1320].forEach(freq => {
+        const osc = pomoAudioCtx.createOscillator();
+        const gain = pomoAudioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
+        osc.connect(gain).connect(pomoAudioCtx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.24);
+      });
+    });
+  }catch(e){ /* audio unavailable — ignore */ }
+}
+
+function pomoStartRinging(){
+  pomo.ringing = true;
+  gpEl.classList.add('ringing');
+  pomoBeep();
+  pomo.alarmId = setInterval(pomoBeep, 900);
+  if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
+  // Browsers often mute or suspend audio in background tabs, so the beep alone can be
+  // silent while backgrounded — a system notification is the more reliable signal there.
+  if(document.hidden){
+    wrNotify('Weekly Rhythm', pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.", 'wr-pomo');
+  }
+  // Deliberately NOT cancelling the server-side push here — the server still sends its own
+  // alert a few seconds later as a guaranteed backup if the beep/notification above didn't land.
+}
+function pomoStopRinging(){
+  pomo.ringing = false;
+  gpEl.classList.remove('ringing');
+  clearInterval(pomo.alarmId);
+  pomo.alarmId = null;
+  wrCancelAlarm(pomoAlarmKey); // acknowledged locally — stop the server's repeat pushes
+}
+gpStopAlarmBtn.addEventListener('click', pomoStopRinging);
+
+function pomoClockFmt(s){
+  const m = Math.floor(s/60), sec = s%60;
+  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+}
+
+function renderPomo(){
+  gpTimeEl.textContent = pomoClockFmt(pomo.remaining);
+  gpModeTag.textContent = pomo.mode === 'focus' ? 'Focus' : 'Break';
+  gpModeTag.classList.toggle('break', pomo.mode === 'break');
+  gpStartBtn.textContent = pomo.running ? 'Pause' : (pomo.remaining < (pomo.mode==='focus'?pomo.workLen:pomo.breakLen) ? 'Resume' : 'Start');
+  gpStartBtn.classList.toggle('running', pomo.running);
+  gpSessionsEl.textContent = pomo.sessions;
+  gpLoggedEl.textContent = minsToHM(pomo.focusSeconds/60);
+  gpPresetBtns.forEach(b => b.disabled = pomo.running);
+}
+
+// Credit any focus-seconds that elapsed since the last credit, in one lump sum — see the
+// matching comment on ctCreditElapsed below for why lastCredit advances by whole seconds only.
+function pomoCreditElapsedFocus(now){
+  if(pomo.mode === 'focus' && pomo.lastCredit != null){
+    const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
+    if(elapsed > 0){
+      pomo.focusSeconds += elapsed;
+      addFocusSeconds(elapsed);
+      pomo.lastCredit += elapsed * 1000;
+    }
+  } else {
+    pomo.lastCredit = now;
+  }
+}
+
+function pomoTick(){
+  if(!pomo.running) return;
+  const now = Date.now();
+  pomoCreditElapsedFocus(now);
+  pomo.remaining = Math.max(0, Math.round((pomo.endAt - now) / 1000));
+
+  if(pomo.remaining <= 30 && pomo.remaining > 0 && !pomo.warned30){
+    pomo.warned30 = true;
+    notifyAlmostDone(pomo.mode === 'break' ? 'Break' : 'Focus session');
+  }
+
+  if(pomo.remaining <= 0){
+    clearInterval(pomo.timerId);
+    pomo.running = false;
+    pomo.warned30 = false;
+    if(pomo.mode === 'focus'){
+      pomo.sessions++;
+      pomo.mode = 'break';
+      pomo.remaining = pomo.breakLen;
+    } else {
+      pomo.mode = 'focus';
+      pomo.remaining = pomo.workLen;
+    }
+    pomoStartRinging();
+    persistLocal();
+    releaseWakeLockIfIdle();
+  }
+  renderPomo();
+  const nowSec = Math.floor(now / 1000);
+  if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderStats(); }
+}
+
+function ensurePomoNotifyPermission(){
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+}
+
+gpStartBtn.addEventListener('click', () => {
+  if(pomo.ringing) pomoStopRinging();
+  if(pomo.running){
+    // pause: lock in the precise remaining time from the deadline, not a tick count
+    pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
+    pomo.running = false;
+    clearInterval(pomo.timerId);
+    releaseWakeLockIfIdle();
+    wrCancelAlarm(pomoAlarmKey);
+  } else {
+    ensurePomoNotifyPermission();
+    // Warm up the alarm's AudioContext right on this click (a real user gesture) — see the
+    // matching comment on the custom timer's Start handler below for why.
+    if(!pomoAudioCtx){ pomoAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => pomoAudioCtx); }
+    if(pomoAudioCtx.state === 'suspended') pomoAudioCtx.resume();
+    pomo.running = true;
+    pomo.endAt = Date.now() + pomo.remaining * 1000;
+    pomo.lastCredit = Date.now();
+    // Tick every 250ms so the visible countdown feels smooth; when foregrounded, throttling
+    // has no effect on correctness since every tick re-derives remaining from endAt.
+    pomo.timerId = setInterval(pomoTick, 250);
+    acquireWakeLock();
+    wrScheduleAlarm(pomoAlarmKey, pomo.endAt,
+      'Weekly Rhythm',
+      pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.",
+      'wr-pomo');
+  }
+  renderPomo();
+  persistLocal();
+});
+
+gpResetBtn.addEventListener('click', () => {
+  if(pomo.ringing) pomoStopRinging();
+  pomo.running = false;
+  pomo.warned30 = false;
+  clearInterval(pomo.timerId);
+  pomo.mode = 'focus';
+  pomo.remaining = pomo.workLen;
+  renderPomo();
+  persistLocal();
+  releaseWakeLockIfIdle();
+  wrCancelAlarm(pomoAlarmKey);
+});
+
+gpPresetBtns.forEach(b => {
+  b.addEventListener('click', () => {
+    if(pomo.running) return;
+    pomo.workLen = Number(b.dataset.work) * 60;
+    pomo.breakLen = Number(b.dataset.brk) * 60;
+    pomo.mode = 'focus';
+    pomo.remaining = pomo.workLen;
+    gpPresetBtns.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    renderPomo();
+    persistLocal();
+  });
+});
+
+renderPomo();
+pomoRefs.push({ pomo, render: renderPomo, tick: pomoTick });
+
+// ============================================================================
+// Custom Timer / Stopwatch page
+// ============================================================================
+
+// --- today's session history — always reset on a new day, so it never grows the saved blob ---
+const TIMER_HISTORY_KEY = 'wr_timer_history_v1';
+let timerHistory = { date: dateKey(new Date()), entries: [] };
+function loadTimerHistoryLocal(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(TIMER_HISTORY_KEY) || 'null');
+    if(raw && raw.date === dateKey(new Date())) return raw;
+  }catch(e){}
+  return { date: dateKey(new Date()), entries: [] };
+}
+function saveTimerHistoryLocal(){
+  try{ localStorage.setItem(TIMER_HISTORY_KEY, JSON.stringify(timerHistory)); }catch(e){}
+}
+// called whenever the state is about to be saved/synced — drops yesterday's entries first
+function pruneTimerHistoryToToday(){
+  const today = dateKey(new Date());
+  if(timerHistory.date !== today){ timerHistory = { date: today, entries: [] }; saveTimerHistoryLocal(); }
+  return timerHistory;
+}
+timerHistory = loadTimerHistoryLocal();
+
+function addTimerHistoryEntry(entry){
+  pruneTimerHistoryToToday();
+  timerHistory.entries.unshift(entry);
+  saveTimerHistoryLocal();
+  renderCtHistory();
+}
+// removing an entry also un-credits the seconds it added to today's productive total — this is
+// the fix for "forgot to stop it": delete the mistaken entry and the progress bar corrects itself
+function deleteTimerHistoryEntry(id){
+  const idx = timerHistory.entries.findIndex(e => e.id === id);
+  if(idx === -1) return;
+  const entry = timerHistory.entries[idx];
+  timerHistory.entries.splice(idx, 1);
+  saveTimerHistoryLocal();
+  const log = loadFocusLog();
+  const k = dateKey(new Date());
+  log[k] = Math.max(0, (log[k] || 0) - entry.seconds);
+  saveFocusLog(log);
+  renderCtHistory();
+  renderStats();
+  persistLocal();
+}
+// unlike minsToHM (used for the daily productive-time totals), session history always shows
+// seconds too, since individual sessions can be as short as a few seconds or a minute
+function ctDurationFmt(totalSeconds){
+  const s = Math.max(0, Math.round(totalSeconds));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  const parts = [];
+  if(h > 0) parts.push(h + 'h');
+  if(h > 0 || m > 0) parts.push(m + 'm');
+  parts.push(sec + 's');
+  return parts.join(' ');
+}
+function renderCtHistory(){
+  pruneTimerHistoryToToday();
+  const list = document.getElementById('ctHistoryList');
+  const empty = document.getElementById('ctHistoryEmpty');
+  list.innerHTML = '';
+  empty.style.display = timerHistory.entries.length ? 'none' : 'block';
+  timerHistory.entries.forEach(entry => {
+    const dur = ctDurationFmt(entry.seconds);
+    const row = document.createElement('div');
+    row.className = 'ct-row';
+    row.innerHTML = `
+      <span class="ct-row-type">${entry.type === 'timer' ? 'Timer' : 'Stopwatch'}</span>
+      <span class="ct-row-dur">${dur}</span>
+      <button type="button" class="ct-row-del" title="Remove and un-credit this time">✕</button>`;
+    row.querySelector('.ct-row-del').addEventListener('click', () => deleteTimerHistoryEntry(entry.id));
+    list.appendChild(row);
+  });
+}
+
+// --- the timer/stopwatch engine itself — same endAt-based, background-safe pattern as the pomodoro ---
+ctState = {
+  mode: 'timer', running: false, sessionActive: false,
+  targetSeconds: 15*60, remaining: 15*60, elapsedStopwatch: 0,
+  endAt: null, runStartedAt: null, sessionStartedAt: null, sessionSeconds: 0,
+  lastCredit: null, timerId: null,
+  ringing: false, alarmId: null, warned30: false, _statsSec: null
+};
+
+const ctModeTimerBtn = document.getElementById('ctModeTimerBtn');
+const ctModeStopwatchBtn = document.getElementById('ctModeStopwatchBtn');
+const ctModeTag = document.getElementById('ctModeTag');
+const ctTimeEl = document.getElementById('ctTimeEl');
+const ctStartBtn = document.getElementById('ctStartBtn');
+const ctResetBtn = document.getElementById('ctResetBtn');
+const ctDurationPresets = document.getElementById('ctDurationPresets');
+const ctPresetBtns = ctDurationPresets.querySelectorAll('.pomo-preset-btn');
+const ctPomodoroEl = document.getElementById('ctPomodoro');
+const ctAlarmEl = document.getElementById('ctAlarm');
+const ctStopAlarmBtn = document.getElementById('ctStopAlarmBtn');
+const ctDialWrap = document.getElementById('ctDialWrap');
+const ctDialSvg = document.getElementById('ctDial');
+const ctDialArc = document.getElementById('ctDialArc');
+const ctDialHandle = document.getElementById('ctDialHandle');
+const CT_DIAL_MAX_MIN = 180; // custom dial supports up to 3 laps (3 hours)
+let ctDialDragging = false;
+let ctDialLaps = 0;
+let ctDialLastFrac = 0;
+
+let ctAudioCtx = null;
+function ctBeep(){
+  try{
+    if(!ctAudioCtx){
+      ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      wrRegisterAudioCtx(() => ctAudioCtx);
+    }
+    if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume();
+    const now = ctAudioCtx.currentTime;
+    // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
+    [0, 0.22].forEach(offset => {
+      [880, 1320].forEach(freq => {
+        const osc = ctAudioCtx.createOscillator();
+        const gain = ctAudioCtx.createGain();
+        osc.type = 'triangle'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
+        osc.connect(gain).connect(ctAudioCtx.destination);
+        osc.start(now + offset); osc.stop(now + offset + 0.24);
+      });
+    });
+  }catch(e){ /* audio unavailable — ignore */ }
+}
+function ctStartRinging(){
+  ctState.ringing = true;
+  ctPomodoroEl.classList.add('ringing');
+  ctBeep();
+  ctState.alarmId = setInterval(ctBeep, 900);
+  if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
+  if(document.hidden) wrNotify('Weekly Rhythm', "Timer's up.", 'wr-timer');
+  // Deliberately NOT cancelling the server-side push here — see the matching comment in the
+  // pomodoro's finish handler. The server-side alert is the guaranteed backup for exactly the
+  // case where this line never got the chance to run reliably.
+}
+function ctStopRinging(){
+  ctState.ringing = false;
+  ctPomodoroEl.classList.remove('ringing');
+  clearInterval(ctState.alarmId);
+  ctState.alarmId = null;
+  wrCancelAlarm('ct'); // acknowledged locally — stop the server's repeat pushes
+}
+ctStopAlarmBtn.addEventListener('click', ctStopRinging);
+
+function ctClockFmt(s){
+  s = Math.max(0, Math.round(s));
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  const mm = String(m).padStart(2,'0'), ss = String(sec).padStart(2,'0');
+  return h > 0 ? h + ':' + mm + ':' + ss : mm + ':' + ss;
+}
+function ctStopwatchElapsed(){
+  return ctState.elapsedStopwatch + (ctState.running && ctState.runStartedAt ? (Date.now() - ctState.runStartedAt)/1000 : 0);
+}
+
+// --- custom-time dial: drag directly on the clock face to set a duration, instead of typing a number ---
+function ctDialEnabled(){
+  return ctState.mode === 'timer' && !ctState.sessionActive;
+}
+function ctDialPoint(fraction){
+  const r = 96, cx = 110, cy = 110;
+  const angle = Math.min(Math.max(fraction, 0), 0.9999) * 2 * Math.PI;
+  return { x: cx + r * Math.sin(angle), y: cy - r * Math.cos(angle) };
+}
+function ctDialArcPath(fraction){
+  if(fraction <= 0) return '';
+  const r = 96, cx = 110, cy = 110;
+  const p = ctDialPoint(fraction);
+  const angle = Math.min(fraction, 0.9999) * 2 * Math.PI;
+  const largeArc = angle > Math.PI ? 1 : 0;
+  return `M ${cx} ${cy - r} A ${r} ${r} 0 ${largeArc} 1 ${p.x} ${p.y}`;
+}
+function ctFracForSeconds(sec){
+  if(sec <= 0) return 0;
+  const m = sec % 3600;
+  return m === 0 ? 1 : m / 3600;
+}
+function renderCtDial(){
+  const isTimer = ctState.mode === 'timer';
+  ctDialSvg.classList.toggle('stopwatch-mode', !isTimer);
+  ctDialWrap.classList.toggle('locked', !ctDialEnabled());
+  let frac;
+  if(isTimer){
+    frac = ctState.sessionActive ? ctFracForSeconds(ctState.remaining) : ctFracForSeconds(ctState.targetSeconds);
+  } else {
+    frac = ctFracForSeconds(Math.round(ctStopwatchElapsed()));
+  }
+  ctDialArc.setAttribute('d', ctDialArcPath(frac));
+  const p = ctDialPoint(frac);
+  ctDialHandle.setAttribute('cx', p.x);
+  ctDialHandle.setAttribute('cy', p.y);
+}
+function ctDialAngleFraction(evt){
+  const rect = ctDialSvg.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+  const dx = evt.clientX - cx, dy = evt.clientY - cy;
+  let angle = Math.atan2(dx, -dy);
+  if(angle < 0) angle += Math.PI * 2;
+  return angle / (Math.PI * 2);
+}
+function ctDialApplyMinutes(minutes){
+  minutes = Math.max(1, Math.min(CT_DIAL_MAX_MIN, minutes));
+  ctPresetBtns.forEach(b => b.classList.remove('active'));
+  ctState.targetSeconds = minutes * 60;
+  ctState.remaining = ctState.targetSeconds;
+  renderCt();
+}
+function ctDialPointerDown(evt){
+  if(!ctDialEnabled()) return;
+  evt.preventDefault();
+  ctDialDragging = true;
+  try{ ctDialSvg.setPointerCapture(evt.pointerId); }catch(e){}
+  const curMin = Math.max(1, Math.round(ctState.targetSeconds / 60));
+  ctDialLaps = Math.floor((curMin - 1) / 60);
+  const frac = ctDialAngleFraction(evt);
+  ctDialLastFrac = frac;
+  ctDialApplyMinutes(ctDialLaps * 60 + Math.round(frac * 60));
+}
+function ctDialPointerMove(evt){
+  if(!ctDialDragging) return;
+  const frac = ctDialAngleFraction(evt);
+  const diff = frac - ctDialLastFrac;
+  if(diff < -0.5) ctDialLaps++;
+  else if(diff > 0.5) ctDialLaps--;
+  ctDialLastFrac = frac;
+  ctDialApplyMinutes(ctDialLaps * 60 + Math.round(frac * 60));
+}
+function ctDialPointerUp(evt){
+  if(!ctDialDragging) return;
+  ctDialDragging = false;
+  try{ ctDialSvg.releasePointerCapture(evt.pointerId); }catch(e){}
+  persistLocal();
+}
+ctDialSvg.addEventListener('pointerdown', ctDialPointerDown);
+ctDialSvg.addEventListener('pointermove', ctDialPointerMove);
+ctDialSvg.addEventListener('pointerup', ctDialPointerUp);
+ctDialSvg.addEventListener('pointercancel', ctDialPointerUp);
+
+function renderCt(){
+  const isTimer = ctState.mode === 'timer';
+  ctModeTag.textContent = isTimer ? 'Timer' : 'Stopwatch';
+  ctModeTag.classList.toggle('break', !isTimer);
+  ctTimeEl.textContent = isTimer ? ctClockFmt(ctState.remaining) : ctClockFmt(ctStopwatchElapsed());
+  ctStartBtn.textContent = ctState.running ? 'Pause' : (ctState.sessionActive ? 'Resume' : 'Start');
+  ctStartBtn.classList.toggle('running', ctState.running);
+  ctResetBtn.textContent = 'Stop';
+  ctResetBtn.disabled = !ctState.sessionActive && !ctState.running;
+  ctDurationPresets.style.display = isTimer ? 'flex' : 'none';
+  ctPresetBtns.forEach(b => b.disabled = ctState.sessionActive);
+  ctModeTimerBtn.disabled = ctState.sessionActive;
+  ctModeStopwatchBtn.disabled = ctState.sessionActive;
+  ctModeTimerBtn.classList.toggle('active', isTimer);
+  ctModeStopwatchBtn.classList.toggle('active', !isTimer);
+  renderCtDial();
+}
+
+// See the note above creditElapsedFocus for why lastCredit must advance by the whole
+// seconds actually credited rather than being reset to `now` on every tick.
+function ctCreditElapsed(now){
+  if(ctState.lastCredit != null){
+    const elapsed = Math.floor((now - ctState.lastCredit) / 1000);
+    if(elapsed > 0){
+      addFocusSeconds(elapsed);
+      ctState.sessionSeconds += elapsed;
+      ctState.lastCredit += elapsed * 1000;
+    }
+  } else {
+    ctState.lastCredit = now;
+  }
+}
+function ctFinishSession(ring){
+  clearInterval(ctState.timerId);
+  ctState.running = false;
+  if(ctState.sessionActive && ctState.sessionSeconds > 0){
+    addTimerHistoryEntry({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      type: ctState.mode,
+      seconds: ctState.sessionSeconds, startedAt: ctState.sessionStartedAt, endedAt: Date.now()
+    });
+  }
+  ctState.sessionActive = false;
+  ctState.sessionSeconds = 0;
+  ctState.lastCredit = null;
+  ctState.endAt = null;
+  ctState.runStartedAt = null;
+  ctState.sessionStartedAt = null;
+  ctState.remaining = ctState.targetSeconds;
+  ctState.elapsedStopwatch = 0;
+  ctState.warned30 = false;
+  if(ring) ctStartRinging();
+  releaseWakeLockIfIdle();
+  renderCt();
+  renderStats();
+  persistLocal();
+}
+function ctTick(){
+  if(!ctState.running) return;
+  const now = Date.now();
+  ctCreditElapsed(now);
+  if(ctState.mode === 'timer'){
+    ctState.remaining = Math.max(0, Math.round((ctState.endAt - now)/1000));
+    if(ctState.remaining <= 30 && ctState.remaining > 0 && !ctState.warned30){
+      ctState.warned30 = true;
+      notifyAlmostDone('Timer');
+    }
+    if(ctState.remaining <= 0){ ctFinishSession(true); return; }
+  }
+  renderCt();
+  const nowSec = Math.floor(now/1000);
+  if(nowSec !== ctState._statsSec){ ctState._statsSec = nowSec; renderStats(); }
+}
+
+ctModeTimerBtn.addEventListener('click', () => {
+  if(ctState.sessionActive) return;
+  ctState.mode = 'timer'; ctState.remaining = ctState.targetSeconds;
+  renderCt();
+});
+ctModeStopwatchBtn.addEventListener('click', () => {
+  if(ctState.sessionActive) return;
+  ctState.mode = 'stopwatch';
+  renderCt();
+});
+ctPresetBtns.forEach(b => {
+  b.addEventListener('click', () => {
+    if(ctState.sessionActive) return;
+    ctPresetBtns.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    ctState.targetSeconds = Number(b.dataset.min) * 60;
+    ctState.remaining = ctState.targetSeconds;
+    renderCt();
+  });
+});
+
+ctStartBtn.addEventListener('click', () => {
+  if(ctState.ringing) ctStopRinging();
+  if(ctState.running){
+    // pause — credit what's elapsed so far, freeze the clock, keep the session open for Resume
+    ctCreditElapsed(Date.now());
+    if(ctState.mode === 'timer') ctState.remaining = Math.max(0, Math.round((ctState.endAt - Date.now())/1000));
+    else ctState.elapsedStopwatch = ctStopwatchElapsed();
+    ctState.running = false;
+    clearInterval(ctState.timerId);
+    releaseWakeLockIfIdle();
+    wrCancelAlarm('ct');
+  } else {
+    if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+    // Warm up the alarm's AudioContext right on this click (a real user gesture) instead of
+    // waiting until the alarm fires — a context first created while the tab is backgrounded
+    // can be left permanently suspended by the browser, which is why the alarm sometimes
+    // never made a sound at all.
+    if(!ctAudioCtx){ ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => ctAudioCtx); }
+    if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume();
+    if(!ctState.sessionActive){
+      ctState.sessionActive = true;
+      ctState.sessionSeconds = 0;
+      ctState.sessionStartedAt = Date.now();
+    }
+    ctState.running = true;
+    ctState.lastCredit = Date.now();
+    if(ctState.mode === 'timer'){
+      ctState.endAt = Date.now() + ctState.remaining * 1000;
+      wrScheduleAlarm('ct', ctState.endAt, 'Weekly Rhythm', "Timer's up.", 'wr-timer');
+    } else {
+      ctState.runStartedAt = Date.now(); // stopwatch mode never rings, so nothing to schedule
+    }
+    ctState.timerId = setInterval(ctTick, 250);
+    acquireWakeLock();
+  }
+  renderCt();
+  persistLocal();
+});
+ctResetBtn.addEventListener('click', () => {
+  if(ctState.ringing) ctStopRinging();
+  ctFinishSession(false); // logs whatever was accumulated (even partial) so it stays correctable
+  wrCancelAlarm('ct');
+});
+
+renderCt();
+renderCtHistory();
+
+initSync();
+
+function selectDay(i){
+  activeIdx = i;
+  dayPanels.forEach((p, idx) => {
+    p.el.hidden = idx !== i;
+    p.btn.classList.toggle('active', idx === i);
+  });
+  renderStats();
+}
+
+function renderStats(){
+  const p = dayPanels[activeIdx];
+  const isLogicalToday = activeIdx === logical.idx;
+  const slot = p.el.querySelector('.stats-slot');
+
+  // clear existing now-marker
+  const oldMarker = p.el.querySelector('.now-marker');
+  if(oldMarker) oldMarker.remove();
+  const oldLabel = p.el.querySelector('.now-label');
+  if(oldLabel) oldLabel.remove();
+
+  if(!isLogicalToday){
+    slot.innerHTML = '';
+    p.el.querySelectorAll('.row').forEach(r => r.classList.remove('done'));
+    return;
+  }
+
+  const now = getLogicalNow().min;
+  const nowClamped = Math.min(Math.max(now, SCALE_START), SCALE_END);
+
+  const focusLog = loadFocusLog();
+  const doneSeconds = focusLog[dateKey(new Date())] || 0;
+  const done = Math.min(p.productiveTotal, doneSeconds / 60);
+  const remaining = Math.max(0, p.productiveTotal - done);
+  const pct = p.productiveTotal ? Math.min(100, (done / p.productiveTotal) * 100) : 0;
+
+  slot.innerHTML = `
+    <div class="stats">
+      <div class="stat">
+        <div class="lbl">Productive — done</div>
+        <div class="val">${minsToHM(done)}</div>
+      </div>
+      <div class="pbar"><div class="pbar-fill" style="width:${pct}%"></div></div>
+      <div class="stat left">
+        <div class="lbl">Productive — left</div>
+        <div class="val">${minsToHM(remaining)}</div>
+      </div>
+    </div>
+  `;
+
+  // now-marker on rail
+  const left = ((nowClamped - SCALE_START) / SCALE_RANGE) * 100;
+  const marker = document.createElement('div');
+  marker.className = 'now-marker';
+  marker.style.left = left + '%';
+  p.segsSlot.appendChild(marker);
+  const label = document.createElement('div');
+  label.className = 'now-label';
+  label.style.left = left + '%';
+  label.textContent = 'now';
+  p.segsSlot.appendChild(label);
+
+  // strike through finished rows
+  p.el.querySelectorAll('.row').forEach(r => {
+    const e = Number(r.dataset.e);
+    r.classList.toggle('done', e <= now);
+  });
+}
+
+selectDay(logical.idx);
+setInterval(() => { if(activeIdx === logical.idx) renderStats(); }, 30000);
+
+// The tab stays open for hours (that's the whole point of the alarms) — so the "today" the app
+// booted with can go stale if midnight passes while it's open. Check for that periodically and
+// refresh which tab is marked Today, following along automatically unless the user has
+// manually picked a different day to look at.
+setInterval(() => {
+  const fresh = getLogicalNow();
+  if(fresh.idx === logical.idx) return; // still the same day — nothing to do
+  const wasFollowing = followingToday;
+  const oldIdx = logical.idx;
+  logical.idx = fresh.idx;
+  logical.min = fresh.min;
+  dayPanels.forEach((p, idx) => {
+    p.btn.classList.toggle('is-today', idx === fresh.idx);
+    const pill = p.el.querySelector('.today-pill');
+    if(pill && idx === oldIdx) pill.remove();
+    if(idx === fresh.idx && !pill){
+      const nameEl = p.el.querySelector('.day-name');
+      if(nameEl && !nameEl.querySelector('.today-pill')){
+        nameEl.insertAdjacentHTML('beforeend', '<span class="today-pill">Today</span>');
+      }
+    }
+  });
+  if(wasFollowing) selectDay(fresh.idx);
+  else renderStats(); // still refresh the now-marker/stats even on a day the user pinned
+}, 30000);
+</script>
+</div>
+</body>
+</html>
