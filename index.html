@@ -204,7 +204,7 @@
   .iconbtn-label{ display:none; }
 
   @media (max-width:720px){
-    #authBar.topnav{ position:relative; padding:14px 18px; }
+    #authBar.topnav{ padding:14px 18px; }
     .mobile-menu-btn{ display:inline-flex; margin-left:auto; }
     .topnav-collapsible{
       display:none;
@@ -313,13 +313,6 @@
   }
   .day-head-right{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
   .day-tag{ font-size:13px; color:var(--text-dim); font-family:'Inter',sans-serif; }
-  .day-edit-btn{
-    background:var(--surface); border:1px solid var(--line); color:var(--text);
-    font-family:'Inter',sans-serif; font-size:12.5px; font-weight:500;
-    padding:7px 16px; border-radius:100px; cursor:pointer; transition:border-color .15s, background .15s;
-  }
-  .day-edit-btn:hover{ background:var(--surface-2); border-color:var(--line-strong); }
-  .day-edit-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
 
   .day-target-save, .day-target-auto{
     background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
@@ -420,6 +413,7 @@
     padding:7px 15px; border-radius:100px; cursor:pointer; transition:border-color .15s, background .15s;
   }
   .add-task-btn:hover{ background:var(--surface-2); border-color:var(--line-strong); }
+  .add-task-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
 
   .list{ display:flex; flex-direction:column; gap:2px; }
   .row{ display:flex; gap:14px; align-items:center; font-size:14px; padding:13px 6px; border-bottom:1px solid var(--line); }
@@ -2280,7 +2274,7 @@ function renderList(panel){
         updateDay(panel);
       };
       row.querySelectorAll('.edit-duration,.edit-label,.edit-type').forEach(inp => inp.addEventListener('change', commit));
-      row.querySelector('.edit-del').addEventListener('click', () => { panel.day.blocks.splice(idx,1); updateDay(panel); });
+      row.querySelector('.edit-del').addEventListener('click', () => { removeTaskBlock(panel, idx); });
     } else {
       const key = panel.day.key + ':' + idx;
       const running = blockTimerState.running && blockTimerState.blockKey === key;
@@ -2328,12 +2322,39 @@ function renderList(panel){
     const addBtn = document.createElement('button');
     addBtn.type = 'button'; addBtn.className = 'add-block-btn'; addBtn.textContent = '+ Add block';
     addBtn.addEventListener('click', () => {
-      const defaultType = categories[0] ? categories[0].id : 'rest';
-      panel.day.blocks.push({duration:60,s:0,e:60,label:'New block',type:defaultType});
-      updateDay(panel);
+      addTaskBlock(panel, {label:'New block'});
     });
     listEl.appendChild(addBtn);
   }
+}
+// Symmetric to addTaskBlock: removing a task gives its duration back if it was added on top
+// of a custom target. (Never dips the target below 0, in case the block outlived a target
+// that's since been lowered by hand.)
+function removeTaskBlock(panel, idx){
+  const b = panel.day.blocks[idx];
+  const duration = Math.max(1, Math.round((b.duration != null ? b.duration : (b.e-b.s)) || 1));
+  panel.day.blocks.splice(idx,1);
+  const key = panel.day.key;
+  if(targetOverrides[key] != null){
+    targetOverrides[key] = Math.max(0, targetOverrides[key] - duration);
+  }
+  updateDay(panel);
+}
+// Adding a brand-new task is meant to add on top of the day's target, not get silently
+// absorbed into it — this matters when a custom target is set (targetOverrides), since
+// getProductiveTarget() otherwise ignores the blocks entirely and just returns that fixed
+// number. So a freshly-added block's duration is added straight onto the custom target too.
+// (Resizing/editing an *existing* block doesn't do this — only the act of adding a new one.)
+function addTaskBlock(panel, opts){
+  const duration = (opts && opts.duration) || 60;
+  const label = (opts && opts.label) || 'New task';
+  const defaultType = categories[0] ? categories[0].id : 'rest';
+  panel.day.blocks.push({duration, s:0, e:duration, label, type:defaultType});
+  const key = panel.day.key;
+  if(targetOverrides[key] != null){
+    targetOverrides[key] = targetOverrides[key] + duration;
+  }
+  updateDay(panel);
 }
 // re-render rail/list + productive-time total after an edit (or a synced remote change)
 function applyScheduleUpdate(panel){
@@ -2457,7 +2478,6 @@ days.forEach((day, i) => {
       </div>
       <div class="day-head-right">
         <div class="day-tag">${day.tag}</div>
-        <button type="button" class="day-edit-btn">Edit</button>
       </div>
     </div>
     <div class="list-header">
@@ -2468,25 +2488,24 @@ days.forEach((day, i) => {
   `;
 
   const listEl = el.querySelector('.list');
-  const editBtn = el.querySelector('.day-edit-btn');
-  const panel = { el, btn, day, productiveTotal, listEl, editing:false, dayIdx:i, editBtn };
+  const addTaskBtn = el.querySelector('.add-task-btn');
+  const panel = { el, btn, day, productiveTotal, listEl, editing:false, dayIdx:i };
 
-  el.querySelector('.add-task-btn').addEventListener('click', () => {
-    if(!panel.editing){
-      panel.editing = true;
-      editBtn.textContent = 'Done';
-      editBtn.classList.add('active');
+  // Single button does double duty: while browsing, it adds a new task and
+  // drops the day into edit mode; while already editing, it just closes edit
+  // mode again (no separate Edit/Done button needed).
+  addTaskBtn.addEventListener('click', () => {
+    if(panel.editing){
+      panel.editing = false;
+      addTaskBtn.textContent = '+ Add Task';
+      addTaskBtn.classList.remove('active');
+      renderList(panel);
+      return;
     }
-    const defaultType = categories[0] ? categories[0].id : 'rest';
-    panel.day.blocks.push({duration:60,s:0,e:60,label:'New task',type:defaultType});
-    updateDay(panel);
-  });
-
-  editBtn.addEventListener('click', () => {
-    panel.editing = !panel.editing;
-    editBtn.textContent = panel.editing ? 'Done' : 'Edit';
-    editBtn.classList.toggle('active', panel.editing);
-    renderList(panel);
+    panel.editing = true;
+    addTaskBtn.textContent = 'Done';
+    addTaskBtn.classList.add('active');
+    addTaskBlock(panel);
   });
 
   // day-total chip: informational only now — the editable target control lives in the
