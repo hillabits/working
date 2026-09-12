@@ -3,30 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weekly Rhythm</title>
+<title>Bitrhythm</title>
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA6klEQVR4nO2XMQ7CMAxFfyJ2xABnYOiVKvYuPQsLO+JKDD1DGRAngAEFiSiJncRJM/RPlVXpv3wlsq3g0Ha3f7vquXo9H8qu/RVKGYdAdG1z20vXNrchNPVjaamU09/Px993N07XfphPAHC7HKIBNqnGLvXDjFgQFgBlnANC3oFYcxdIMkCOORdi8VfgBZA4vVEohTYTkDy9kS+FNhNYAVaAbpzEjXx9oc0EANkUQl2x3QQAmRSomYBMIAeCM5CwJiIDwe0R4iMZFyRlKFXAMnsB8N2Q2ngFrqWxtIyntgs1zQFrOzaquZ5/AEITUjAdi+FhAAAAAElFTkSuQmCC">
 <link rel="icon" type="image/png" sizes="512x512" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAARYUlEQVR4nO3cPXJcWxmF4eNbzl0OzBgImBJFTsJYSMgppkTAGHDg8ghMYHTdlrtb/bN/vr3X84S3oEpqB+s935H07qCkDx8/fZv9NQC08PXL53ezvwZ+5R9lEgMP8J1AmMOHPoCxB7iPKOjPB9yBwQdoSxC05wNtwOADjCUInucDfJDRB6hBDDzGh3YHow9Qmxi4nQ/qDUYfYE1i4DofzgWGH2APQuA8H8oJow+wNzHwgw/iMPwAaYRAeAAYfoBsySEQ+Y0bfgBOJYZA1Dds+AG4JikEIr5Rww/APRJC4LfZX0Bvxh+AeyVsx7aFk/CPB0B/u14DtvumDD8APewWAlu9AjD+APSy28ZsUTO7/aMAUNsO14DlLwDGH4DRdtiepQNgh38AANa0+gYtecJY/UMHYC8rvhJY7gJg/AGoZsVtWioAVvyAAciw2kYtcbJY7UMFINsKrwTKXwCMPwCrWWG7SgfACh8gAJxTfcPKBkD1Dw4A3lJ5y0oGQOUPDADuUXXTygVA1Q8KAB5VcdtKBUDFDwgAWqi2cWUCoNoHAwCtVdq6EgFQ6QMBgJ6qbN70AKjyQQDAKBW2b2oAVPgAAGCG2Rs4LQBmf+MAMNvMLZwSAMYfAL6btYnDA8D4A8DPZmzj0AAw/gBw3uiNHBYAxh8Arhu5lUMCwPgDwG1Gbeb0vwMAAIzXPQA8/QPAfUZsZ9cAMP4A8JjeG9otAIw/ADyn55b6GQAACNQlADz9A0AbvTa1eQAYfwBoq8e2Ng0A4w8AfbTeWD8DAACBmgWAp38A6Kvl1jYJAOMPAGO02lyvAAAg0NMB4OkfAMZqsb0uAAAQ6KkA8PQPAHM8u8EPB4DxB4C5ntlirwAAINBDAeDpHwBqeHSTXQAAINDdAeDpHwBqeWSbXQAAINBdAeDpHwBqunejXQAAINDNAeDpHwBqu2erXQAAINBNAeDpHwDWcOtmuwAAQCABAACB3gwA538AWMst2+0CAACBrgaAp38AWNNbG+4CAACBBAAABLoYAM7/ALC2a1vuAgAAgQQAAAQ6GwDO/wCwh0ub7gIAAIEEAAAEevf6Pzj/w5r+/fc/3vy//dPf/vPP1//tz3/9719u+f/+6x9/uOOrAqr4+uXzT5v/ftYXAtzmnmEf4c9//e9N/zuhALUJACii2tA/61IoCAOoQQDAYLsN/b2EAdTwUwB4/w/tpQ/+rV6HgSCAtj58/PTt9OcAXACgMYPfhiCAvgQAPMngjyEIoC0BAHcy+DUIAnjO7wHg/T9cZvTrOw0CMQDnnf4cgAsAXGD01yUG4G0CAE4Y/f2IAThPAMBh+FO8xIAQAAFAMKOfy1UA/h8AfgCQJIafU64CpHn5QUAXACIYfd7iKkAaAcDWDD+PcBUggQBgS4afFoQAOxMAbMXw04MQYEcCgC0YfkYQAuxEALA0w88MQoAdCACWZPipQAiwsvf+BgArMfxUJARYzYePn765ALAEw88KhAAr+W32FwBvMf6s5vSPCkFVLgCUZfhZmWsA1QkAyjH87EQIUJVXAJRi/NmV1wJU4wJACYafBK4BVCIAmMrwk0gIUIFXAExj/EnntQAzuQAwnOGHH1wDmMUFgKGMP5znGsBoAoBhjD9cJwIYySsAujP8cDuvBBjFBYCujD88xjWA3gQA3Rh/eI4IoCevAGjO8EM7XgnQiwsATRl/6MM1gNYEAM0Yf+hLBNCSVwA8zfDDOF4J0IoLAE8x/jCHawDPEgA8zPjDXCKAZwgAHmL8oQYRwKMEAHcz/lCLCOARAoC7GH+oSQRwL78FwE0MP9TnNwS4hwsAbzL+sBbXAG4hALjK+MOaRABvEQBcZPxhbSKAawQAZxl/2IMI4BIBwC+MP+xFBHCOAOAnxh/2JAJ4TQDwO+MPexMBnBIAHMdh/CGFCOCFAMD4QxgRwHEIgHjGHzKJAARAMOMP2URANgEQyvgDxyECkgkAAAgkAAJ5+gdOuQJkEgBhjD9wjgjIIwCCGH/gGhGQRQCEMP7ALURADgEQwPgD9xABGQTA5ow/8AgRsD8BAACBBMDGPP0Dz3AF2JsA2JTxB1oQAfsSABsy/kBLImBPAgAAAgmAzXj6B3pwBdiPANiI8Qd6EgF7EQCbMP7ACCJgHwIAAAIJgA14+gdGcgXYgwBYnPEHZhAB6xMACzP+wEwiYG0CAAACCYBFefoHKnAFWJcAWJDxByoRAWsSAAAQSAAsxtM/UJErwHoEAAAEEgAL8fQPVOYKsBYBsAjjD6xABKxDAABAIAGwAE//wEpcAdYgAAAgkAAoztM/sCJXgPoEQGHGH1iZCKhNAABAIAFQlKd/YAeuAHUJAAAIJAAK8vQP7MQVoCYBAACBBEAxnv6BHbkC1CMAACCQACjE0z+wM1eAWgQAAAQSAEV4+gcSuALUIQAAIJAAKMDTP5DEFaAGAQAAgQTAZJ7+gUSuAPMJAAAIJAAm8vQPJHMFmEsAAEAgAQAAgQTAJM7/AF4DzCQAACCQAJjA0z/AD64AcwgAAAgkAAAgkAAYzPkf4FdeA4wnAAAgkAAYyNM/wGWuAGMJAAAIJAAAIJAAGMT5H+BtXgOMIwAAIJAAAIBAAmAA53+A23kNMIYAAIBAAgAAAgmAzpz/Ae7nNUB/AgAAAgkAAAgkAAAgkADoyPt/gMf5OYC+BAAABBIAABBIAABAIAHQiff/AM/zcwD9CAAACCQAACCQAACAQAKgA+//AdrxcwB9CAAACCQAACCQAACAQAKgMe//AdrzcwDtCQAACCQAACCQAACAQAIAAAIJAAAIJAAa8hsAAP34TYC2BAAABBIAABBIAABAIAEAAIEEAAAEEgCN+A0AgP78JkA7AgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJgAb8FUCAcfw1wDYEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAN/Olv/5n9JQDE+Nc//jD7S9iCAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACoBF/DRCgP38FsB0BAACBBAAABBIAABBIAABAIAEAAIEEQEN+EwCgH78B0JYAAIBAAgAAAgkAAAgkAAAgkAAAgEACoDG/CQDQnt8AaE8AAEAgAQAAgQQAAAQSAB34OQCAdrz/70MAAEAgAQAAgQQAAAQSAJ34OQCA53n/348AAIBAAgAAAgkAAAgkADrycwAAj/P+vy8BAACBBAAABBIAABBIAHTm5wAA7uf9f38CAAACCQAACCQABvAaAOB2zv9jCAAACCQAACCQABjEawCAtzn/jyMAACCQAACAQAJgIK8BAC5z/h9LAABAIAEwmCsAwK88/Y8nAAAgkAAAgEACYAKvAQB+cP6fQwAAQCABMIkrAICn/5kEAAAEEgAAEEgATOQ1AJDM+X8uAQAAgQTAZK4AQCJP//MJAAAIJAAKcAUAknj6r0EAAEAgAVCEKwCQwNN/HQIAAAIJgEJcAYCdefqvRQAAQCABUIwrALAjT//1CAAACCQACnIFAHbi6b8mAQAAgQRAUa4AwA48/dclAAAgkAAozBUAWJmn/9oEQHEiAFiR8a9PAABAIAGwAFcAYCWe/tcgAAAgkABYhCsAsAJP/+sQAAsRAUBlxn8tAgAAAgmAxbgCABV5+l+PAACAQAJgQa4AQCWe/tckABYlAoAKjP+6BAAABBIAC3MFAGby9L82AbA4EQDMYPzXJwA2IAKAkYz/HgQAAAQSAJtwBQBG8PS/DwGwEREA9GT89yIANiMCgB6M/34EAAAEEgAbcgUAWvL0vycBsCkRALRg/PclADYmAoBnGP+9CQAACCQANucKADzC0//+BEAAEQDcw/hnEAAhRABwC+OfQwAEEQHANcY/iwAIIwKAc4x/HgEQSAQAp4x/JgEAAIEEQChXAOA4PP0nEwDBRABkM/7ZBEA4EQCZjD8CABEAYYw/xyEA+D8RABmMPy8EAL8TAbA3488pAcBPRADsyfjzmgDgFyIA9mL8OUcAcJYIgD0Yfy4RAFwkAmBtxp9rBABXiQBYk/HnLQKAN4kAWIvx5xbvZ38BrOElAv799z9O/kqASww/93AB4C6uAVCT8edeAoC7iQCoxfjzCAHAQ0QA1GD8eZQA4GEiAOYy/jxDAPAUEQBzGH+e5bcAeJrfEIBxDD+tuADQjGsA9GX8aUkA0JQIgD6MP615BUBzXglAO4afXlwA6MY1AJ5j/OlJANCVCIDHGH968wqA7rwSgNsZfkZxAWAY1wC4zvgzkgBgKBEA5xl/RvMKgOG8EoAfDD+zuAAwjWsA6Yw/M7kAMJVrAIkMPxUIAEoQAiQw/FTiFQCleC3Arow/1bgAUI5rADsx/FQlAChLCLAyw091XgFQntcCrMb4swIXAJbgGsAKDD8ref/1y+d3Hz5++jb7C4FbCAEqMvys5uuXz+9cAFiSEKACw8/KBABLEwLMYPjZgQBgC0KAEQw/OxEAbEUI0IPhZ0cCgC0JAVow/OxMALA1IcAjDD8JBAARTv+YkBjgHKNPmvfH8f33Af0tAFK4CnDK8JPm65fP747DBYBgrgK5jD4IADiOw1UgheGHHwQAnHAV2I/Rh/MEAFwgBtZl9OFtvweAHwSEy8RAfUYf3vbyA4DH4QIAdzuNgeMQBLMYfHiOAIAnCYIxDD60JQCgMUHQhsGHvn4KAD8HAO0JgtsYfOjr9P3/cbgAwHCvg+BFShgYeqhBAEARu4WBoYfaBAAUdykMXhsVCoYd9vDu3H/0cwAAsI/X7/+P4zh+m/GFAABzCQAACHQ2AM6dCgCA9VzadBcAAAgkAAAg0MUA8BoAANZ2bctdAAAgkAAAgEBXA8BrAABY01sb7gIAAIHeDABXAABYyy3b7QIAAIEEAAAEuikAvAYAgDXcutkuAAAQ6OYAcAUAgNru2WoXAAAIdFcAuAIAQE33brQLAAAEujsAXAEAoJZHttkFAAACPRQArgAAUMOjm+wCAACBHg4AVwAAmOuZLX7qAiACAGCOZzfYKwAACPR0ALgCAMBYLbbXBQAAAjUJAFcAABij1eY2uwCIAADoq+XWegUAAIGaBoArAAD00Xpjm18ARAAAtNVjW7u8AhABANBGr031MwAAEKhbALgCAMBzem5p1wuACACAx/Te0O6vAEQAANxnxHb6GQAACDQkAFwBAOA2ozZz2AVABADAdSO3cugrABEAAOeN3sjhPwMgAgDgZzO2ccoPAYoAAPhu1iZO+y0AEQBAuplbOPXXAEUAAKlmb+D0vwMw+wMAgNEqbN/0ADiOGh8EAIxQZfNKBMBx1PlAAKCXSltXJgCOo9YHAwAtVdu4UgFwHPU+IAB4VsVtKxcAx1HzgwKAR1TdtJIBcBx1PzAAuFXlLSsbAMdR+4MDgGuqb1jpADiO+h8gALy2wnaV/wJPffj46dvsrwEALllh+F+UvwCcWumDBSDLahu1VAAcx3ofMAD7W3GblvuCT3klAMBMKw7/i+UuAKdW/uABWNvqG7R0ABzH+v8AAKxnh+1Z/hs45ZUAAD3tMPwvlr8AnNrpHwaAWnbbmK2+mVOuAQC0sNvwv9jymzolBAB4xK7D/2KrVwDn7P4PCEB7Cdux/Td4yjUAgGsShv9FzDd6SggAcCpp+F/EfcOnhABAtsThfxH7jZ8SAgBZkof/RfwHcEoIAOzN8P/gg7hADADsweif50N5gxAAWJPhv86HcwcxAFCb0b+dD+pBYgCgBqP/GB9aA2IAYCyj/zwfYAeCAKAtg9+eD3QAQQBwH4Pfnw94ElEA8J2xn8OHXpRAAHZh4Gv6H+QU6WgF2dHgAAAAAElFTkSuQmCC">
 <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFaklEQVR4nO3bPY4TWxRF4W3kvNVBMwYCpoReTsJYSMifmBIBY8CB5RH0C54MhbvKrp9b956z7/oi1C21K1hsjt3ioCCenl9eWz8D1rucT4fWzyBJzR6CgL21CrzqixJxn2rGvfsLETGG9o57tx9OyLhnr7CL/1BCxhKlw35X8ocRM5Yq3UyRvx2EjBJKrPXmhSZmlFKipU1BEzNK29rUqoknZNSw5gRZvNDEjFrWtLYoaGJGbUubmx00MaOVJe0V/RwaaG1W0KwzWpvb4MOgiRlRzGnxbtDEjGgeNckNDSuTQbPOiOpem6NBEzOim2qUkwNW3gTNOiOLsVZZaFj5K2jWGdncNstCwwpBw8rvoDk3kNWw3WPLB3Hy4+uHu9//+OXnv58+//pn6vvfv70v/kw9IugVHsW7xqfPv958jciXO0qcG4/sEfAct5ET+LSn55fXy/l0YKEntIr4nmHgxD2OoAciRjyFuMcRtHKFPOYaN2FLx17v5+wRj+l9tZ+eX167/MWKY8y3xj416UFXJ0cPIQ/1eIp0EXRvId/qKWz7k6P3mId6OENsF5qQx7mvteVCE/NjrmttFzQxz+cYtc3JQcjruJ0gFgtNzNu5rHX6oIm5HIeoUwdNzOVljzpt0MS8n8xRpwyamPeXNep0QRNzPRmjThU0MdeXLeo0QRNzO5miThM0MEeKoFnn9rKsdPigiTmODFGHDpqY44kedeiggaXCBs06xxV5pUMGTczxRY06ZNDAWuGCZp3ziLjS4YIGtggVNOucT7SVDhM0MecVKeowQQMlEDSshAiacyO/KGdHiKCBUpoHzTr7iLDSzYMGSiJoWGkaNOeGn9ZnBwsNKwQNK82C5tzw1fLsYKFhhaBhhaBhpUnQ3M/+Wt3RLDSsEDSsEDSsEDSsVA+aN4T9aPHGkIWGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGFYKGlepBf/zys/ZLopHv395Xf00WGlYIGlYIGlYIGlaaBM0bQ38t3hBKLDTMEDSsEDSsNAuaO9pXq/tZYqFhhqBhpWnQnB1+Wp4bEgsNMwQNK82D5uzw0frckAIEDZQUImhWOr8I6ywFCRoohaBhJUzQnB15RTk3pEBBS0SdUaSYpWBBA1uFC5qVziPaOksBgwa2CBk0Kx1fxHWWggYtEXVkUWOWAgcNrBE6aFY6nsjrLAUPWiLqSKLHLCUIWiLqCDLELCUJGpgrTdCsdDtZ1llKFLRE1C1killKFrRE1DVli1lKGLRE1DVkjFlKGrRE1HvKGrOUOGiJqPeQOWYpedASUZeUPWbJIGiJqEtwiFmSjq0foJRr1D++fmj8JLm4hHxlsdBDrPV8bjFLhkFLRD2HY8yS0clxixNknGvIV5YLPcRa/+Ees2S80EO9r3UPIV91EfRVb2H3FPKV/ckxpoczpMeYJel4OZ8OT88vr60fpLZh1C6L3WvEV5fz6dDVyTEl+ynSe8hDBD2QabWJeBxBT4gYNxE/dpT+vz16vKPnun0TWStwAp7vcj4dJBZ6lbFPSbZGTrxlHK5/YKGR2XWh391+Achm2G6Xv1iBL4KGlb+C5uxANrfNstCw8iZoVhpZjLXKQsPKaNCsNKKbanRyoYkaUd1rk5MDVu4GzUojmkdNPlxookYUc1qcdXIQNVqb2yA3NKzMDpqVRitL2lu00ESN2pY2t/jkIGrUsqa1TXHyv1ywhy2juelNIWuN0rY2tflTDqJGKSVaKhojJwjWKDmKRT+HZq2xVOlmdguQtcY9e43f7otK2Bja+1/xqicCcfep5ina7OYlbm+t3k+FeRNH4LlF+UDgPz1+wl5ZQNx1AAAAAElFTkSuQmCC">
 <meta name="apple-mobile-web-app-title" content="Weekly Rhythm">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0F1115">
+<meta name="theme-color" content="#F7F7F5" id="themeColorMeta">
+<script>
+  // Applied as early as possible (before first paint) so switching pages/reloading
+  // in dark mode never flashes the light theme first.
+  (function(){
+    try{
+      if(localStorage.getItem('wr_theme') === 'dark'){
+        document.documentElement.setAttribute('data-theme','dark');
+      }
+    }catch(e){}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0F1115;
-    --surface:#161922;
-    --surface-2:#1D212B;
-    --line:#272B35;
-    --text:#ECE9E2;
-    --text-dim:#8D919B;
-    --text-faint:#5B5F69;
-    --day-strong:#E3A23D;
-    --day-soft:#B98A52;
-    --night:#6C7BFF;
-    --night-glow:rgba(108,123,255,.30);
-    --rest-line:#3A3F4B;
+    --bg:#F7F7F5;
+    --surface:#FFFFFF;
+    --surface-2:#F4F4F2;
+    --surface-3:#EEEEEC;
+    --line:#E8E8E5;
+    --line-strong:#D8D8D4;
+    --text:#15171C;
+    --text-dim:#6C7078;
+    --text-faint:#9DA1A8;
+    --day-strong:#4C7DF0;
+    --day-soft:#8B6BE0;
+    --night:#2FBF7A;
+    --night-glow:rgba(47,191,122,.22);
+    --rest-line:#D3D3CF;
+    --accent:#2E3038;
+    --health:#E3A23D;
+    --personal:#9DA1A8;
+    --radius-lg:18px;
+    --radius-md:12px;
+    --radius-sm:8px;
+    --shadow-card:0 1px 2px rgba(20,20,20,.04), 0 10px 30px -18px rgba(20,20,20,.10);
+    --on-night:#ffffff;
+    --topnav-bg:rgba(247,247,245,.86);
+    --tint-active:rgba(76,125,240,.12);
+    --tint-upcoming:rgba(139,107,224,.12);
+    --tint-paused:rgba(227,162,61,.14);
+    --tint-ring:rgba(227,162,61,.2);
+    --tint-ring-weak:rgba(227,162,61,.10);
+    --tint-ring-glow-0:rgba(227,162,61,0);
+    --tint-ring-glow-1:rgba(227,162,61,.28);
+    --tint-break:rgba(139,107,224,.14);
+    --pending-text:#8a5f1f;
+    --danger:#D9738C;
+    --danger-2:#d16b63;
+  }
+
+  /* ---------------- dark mode ----------------
+     Everything routes through the variables above, so flipping them here is
+     enough to make the whole UI monochrome. The three things that are meant
+     to stay colored — category swatches/rows, the running-timer indicator
+     bar (tracker-seg colors are set inline from the category's own color),
+     and the productivity matrix cells/legend — are styled with literal
+     hex/rgba values or inline styles rather than these variables, so they
+     are untouched by this block on purpose. */
+  html[data-theme="dark"]{
+    --bg:#141416;
+    --surface:#1C1C1F;
+    --surface-2:#232327;
+    --surface-3:#2A2A2F;
+    --line:#333338;
+    --line-strong:#45454C;
+    --text:#EDEDEF;
+    --text-dim:#A6A6AD;
+    --text-faint:#75757D;
+    --day-strong:#9C9CA4;
+    --day-soft:#87878F;
+    --night:#D7D8DC;
+    --night-glow:rgba(255,255,255,.14);
+    --rest-line:#48484F;
+    --accent:#46474E;
+    --health:#7B7B83;
+    --personal:#75757D;
+    --shadow-card:0 1px 2px rgba(0,0,0,.35), 0 10px 30px -18px rgba(0,0,0,.6);
+    --on-night:#101113;
+    --topnav-bg:rgba(20,20,22,.82);
+    --tint-active:rgba(255,255,255,.08);
+    --tint-upcoming:rgba(255,255,255,.06);
+    --tint-paused:rgba(255,255,255,.10);
+    --tint-ring:rgba(255,255,255,.16);
+    --tint-ring-weak:rgba(255,255,255,.08);
+    --tint-ring-glow-0:rgba(255,255,255,0);
+    --tint-ring-glow-1:rgba(255,255,255,.24);
+    --tint-break:rgba(255,255,255,.08);
+    --pending-text:#C7C7CC;
+    --danger:#D5D5D9;
+    --danger-2:#D5D5D9;
   }
 
   *{box-sizing:border-box;}
@@ -37,202 +112,290 @@
     color:var(--text);
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
-    padding:64px 24px 96px;
+    padding:0 0 80px;
   }
   ::selection{background:var(--night-glow);}
   a, button{ font-family:inherit; }
-  :focus-visible{ outline:2px solid var(--night); outline-offset:3px; border-radius:4px; }
+  :focus-visible{ outline:2px solid var(--night); outline-offset:2px; border-radius:4px; }
 
-  .wrap{ max-width:860px; margin:0 auto; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:28px 28px 0; }
 
-  header.hero{ margin-bottom:44px; margin-top:40px; }
+  /* ---------------- view transitions (Weekly Rhythm / Matrix / Timer / Pomodoro / Log) ----------------
+     Each top-level view cross-fades with a subtle scale+shift "morph" instead of snapping via
+     [hidden]. JS (showView) toggles these classes; see initThemeToggle's neighbor below. */
+  #viewSchedule, #viewMatrix, #viewTimer, #viewPomodoro, #viewLog{
+    transition:opacity .2s ease, transform .28s cubic-bezier(.22,.61,.36,1);
+    transform-origin:top center;
+  }
+  #viewSchedule.view-leave, #viewMatrix.view-leave, #viewTimer.view-leave, #viewPomodoro.view-leave, #viewLog.view-leave{
+    opacity:0; transform:scale(.985) translateY(8px);
+  }
+  #viewSchedule.view-enter, #viewMatrix.view-enter, #viewTimer.view-enter, #viewPomodoro.view-enter, #viewLog.view-enter{
+    opacity:0; transform:scale(.985) translateY(-8px);
+  }
+  @media (prefers-reduced-motion: reduce){
+    #viewSchedule, #viewMatrix, #viewTimer, #viewPomodoro, #viewLog{ transition:none; }
+  }
+
+  /* ---------------- top nav ---------------- */
+  #authBar.topnav{
+    position:sticky; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; gap:22px; flex-wrap:wrap;
+    padding:14px 28px; background:var(--topnav-bg); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topnav-brand{
+    display:flex; align-items:center; gap:8px; flex:none;
+    font-family:'Fraunces',serif; font-weight:600; font-size:16px; color:var(--text);
+  }
+  .brand-dot{ width:9px; height:9px; border-radius:50%; background:var(--accent); display:inline-block; }
+  .brand-dot-2{ background:var(--text-faint); margin-left:-3px; }
+  /* the 2nd dot doubles as the dark/light toggle — kept visually identical to the
+     first dot, just a real <button> underneath so it's actually clickable/focusable */
+  button.brand-dot-2{
+    padding:0; border:none; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  button.brand-dot-2:focus-visible{ outline:2px solid var(--night); outline-offset:3px; }
+  .topnav-links{ display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
+  .topnav-actions{ display:flex; align-items:center; gap:6px; margin-left:auto; position:relative; }
+
+  .view-btn{
+    background:transparent; border:1px solid transparent; color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-weight:500; font-size:13.5px;
+    padding:8px 14px; border-radius:100px; cursor:pointer; transition:background .15s, color .15s;
+    display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+  }
+  .view-btn:hover{ color:var(--text); background:var(--surface-3); }
+  .view-btn.active{ background:var(--accent); color:#fff; }
+
+  .name-chip{
+    display:inline-flex; align-items:center; gap:7px;
+    background:none; border:1px solid transparent; color:var(--text-dim);
+    font:inherit; font-size:12.5px; padding:6px 10px; border-radius:8px; cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .name-chip:hover{ color:var(--text); border-color:var(--line); background:var(--surface-2); }
+  .iconbtn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:32px; height:32px; flex:none; border-radius:50%; padding:0;
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+  }
+  .iconbtn:hover{ color:var(--text); border-color:var(--line-strong); background:var(--surface-2); }
+  .iconbtn svg{ width:15px; height:15px; }
+  .iconbtn.enabled{ color:var(--night); border-color:var(--night); }
+  .sync-dot{
+    width:7px; height:7px; border-radius:50%; margin-left:2px;
+    background:var(--text-faint); opacity:0; transition:background .2s, opacity .2s;
+  }
+  .sync-dot.syncing{ background:var(--night); opacity:1; animation: sync-pulse 1s ease-in-out infinite; }
+  .sync-dot.synced{ background:var(--night); opacity:1; }
+  .sync-dot.error{ background:var(--text-faint); opacity:.55; }
+  @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+
+  /* ---------------- hero ---------------- */
+  header.hero{
+    display:flex; align-items:center; justify-content:space-between; gap:24px;
+    margin:40px 0 36px; flex-wrap:wrap;
+  }
   .eyebrow{
     font-family:'JetBrains Mono',monospace;
-    font-size:12px;
-    letter-spacing:.14em;
+    font-size:11.5px;
+    letter-spacing:.16em;
     text-transform:uppercase;
     color:var(--text-faint);
     display:flex;
     align-items:center;
     gap:10px;
-    margin-bottom:18px;
+    margin-bottom:14px;
   }
-  .eyebrow::before{ content:""; width:16px; height:1px; background:var(--rest-line); display:inline-block; }
+  .eyebrow::before{ content:""; width:16px; height:1px; background:var(--line-strong); display:inline-block; }
   h1{
     font-family:'Fraunces',serif;
-    font-weight:500;
-    font-size:clamp(34px,5vw,52px);
-    line-height:1.08;
-    margin:0 0 18px;
-    letter-spacing:-.01em;
+    font-weight:600;
+    font-size:clamp(38px,6vw,58px);
+    line-height:1;
+    margin:0 0 14px;
+    letter-spacing:-.02em;
+    color:var(--text);
   }
-  h1 em{
-    font-style:italic; font-weight:400;
-    background:linear-gradient(90deg,var(--day-strong),var(--night));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
+  .sub{ color:var(--text-dim); font-size:15px; line-height:1.6; max-width:46ch; margin:0; }
+  .hero-right{
+    display:flex; align-items:center; gap:18px; flex:none;
   }
-  .sub{ color:var(--text-dim); font-size:15.5px; line-height:1.65; max-width:56ch; }
-
-  .legend{ display:flex; flex-wrap:wrap; gap:22px; margin-top:26px; padding-top:22px; border-top:1px solid var(--line); }
-  .legend-item{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
-  .swatch{ width:11px; height:11px; border-radius:3px; flex:none; }
-  .swatch.strong{ background:var(--day-strong); }
-  .swatch.soft{ background:var(--day-soft); }
-  .swatch.night{ background:var(--night); box-shadow:0 0 10px var(--night-glow); }
-  .swatch.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
-
-  .foundation{
-    background:var(--surface); border:1px solid var(--line); border-radius:14px;
-    padding:20px 24px; margin-bottom:32px; display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;
+  .hero-right-text{
+    font-family:'Fraunces',serif; font-style:italic; font-weight:500; font-size:15px;
+    color:var(--text-dim); line-height:1.45; text-align:right; max-width:180px;
   }
-  .foundation .ftitle{ font-family:'Fraunces',serif; font-size:17px; font-weight:500; white-space:nowrap; padding-top:1px; }
-  .foundation .fitems{ display:flex; flex-direction:column; gap:6px; flex:1; min-width:220px; }
-  .frow{ display:flex; gap:14px; font-size:13.5px; color:var(--text-dim); }
-  .frow .t{ font-family:'JetBrains Mono',monospace; color:var(--text); flex:none; width:120px; }
-  .fnote{ font-size:12px; color:var(--text-faint); width:100%; margin-top:2px; }
+  .hero-right-text .rule{ display:block; margin-top:10px; color:var(--line-strong); font-style:italic; font-size:12px; }
 
-  /* day tabs */
-  .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+  /* ---------------- day tabs row ---------------- */
+  .tabs-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:22px; }
+  .tabs{ display:flex; gap:8px; flex-wrap:wrap; }
   .tab-btn{
     background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
-    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
-    padding:9px 15px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+    font-family:'Inter',sans-serif; font-size:13.5px; font-weight:500;
+    padding:9px 18px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
     display:flex; align-items:center; gap:7px;
   }
-  .tab-btn:hover{ color:var(--text); border-color:#3a3f4b; }
-  .tab-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
-  .tab-dot{ width:6px; height:6px; border-radius:50%; background:var(--night); display:none; }
+  .tab-btn:hover{ color:var(--text); border-color:var(--line-strong); }
+  .tab-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .tab-dot{ width:5px; height:5px; border-radius:50%; background:var(--night); display:none; }
   .tab-btn.is-today .tab-dot{ display:inline-block; }
+  .tab-btn.active .tab-dot{ background:#fff; }
 
-  /* day panel */
+  .date-display{
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--line); border-radius:100px;
+    padding:9px 16px; font-size:13px; color:var(--text); font-weight:500;
+    white-space:nowrap;
+  }
+  .date-display svg{ width:14px; height:14px; color:var(--text-faint); flex:none; }
+
+  /* ---------------- dashboard grid ---------------- */
+  .dashboard-grid{ display:grid; grid-template-columns:minmax(0,2.15fr) minmax(240px,1fr); gap:22px; align-items:start; }
+  @media (max-width:920px){ .dashboard-grid{ grid-template-columns:1fr; } }
+
+  /* day card */
   .day{
-    background:var(--surface); border:1px solid var(--line); border-radius:14px;
-    padding:26px 26px 24px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:26px 28px 28px; box-shadow:var(--shadow-card);
   }
   .day[hidden]{ display:none; }
-  .pomodoro[hidden]{ display:none; }
 
-  .day-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
-  .iconbtn{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:28px; height:28px; flex:none; border-radius:8px; padding:0;
-    background:transparent; border:1px solid var(--line); color:var(--text-faint);
-    cursor:pointer; transition:border-color .15s, color .15s, background .15s;
+  .day-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:4px; flex-wrap:wrap; }
+  .day-head-left{ display:flex; flex-direction:column; gap:6px; }
+  .day-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-faint);
   }
-  .iconbtn:hover{ color:var(--text); border-color:#3a3f4b; background:var(--surface); }
-  .iconbtn svg{ width:14px; height:14px; }
-  .iconbtn.enabled{ color:var(--night); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
-  .name-chip{
-    display:inline-flex; align-items:center; gap:7px;
-    background:none; border:1px solid transparent; color:var(--text-dim);
-    font:inherit; padding:5px 8px; border-radius:8px; cursor:pointer;
-    transition:border-color .15s, color .15s, background .15s;
-  }
-  .name-chip:hover{ color:var(--text); border-color:var(--line); background:var(--surface); }
-  .day-head-right{ display:flex; align-items:center; gap:10px; }
-  .day-edit-btn{
-    background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
-    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.04em;
-    padding:5px 11px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s;
-  }
-  .day-edit-btn:hover{ color:var(--text); border-color:#3a3f4b; }
-  .day-edit-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
-  .row.editing{ align-items:center; flex-wrap:wrap; gap:8px; }
-  .edit-time, .edit-label, .edit-type{
-    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
-    border-radius:6px; padding:5px 8px; font-family:'JetBrains Mono',monospace; font-size:12px;
-  }
-  .edit-time{ width:76px; }
-  .edit-label{ flex:1; min-width:140px; font-family:'Inter',sans-serif; }
-  .edit-del{
-    background:none; border:1px solid var(--line); color:var(--text-faint);
-    border-radius:6px; width:26px; height:26px; cursor:pointer; flex:none;
-  }
-  .edit-del:hover{ color:#d16b63; border-color:#d16b63; }
-  .add-block-btn{
-    background:none; border:1px dashed var(--rest-line); color:var(--text-dim);
-    font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:8px 12px;
-    border-radius:8px; cursor:pointer; margin-top:2px; align-self:flex-start;
-  }
-  .add-block-btn:hover{ color:var(--text); border-color:var(--text-faint); }
-  .day-name{ font-family:'Fraunces',serif; font-size:24px; font-weight:500; display:flex; align-items:baseline; gap:10px; }
+  .day-heading-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .day-name{ font-family:'Fraunces',serif; font-size:32px; font-weight:600; display:flex; align-items:center; gap:10px; letter-spacing:-.01em; }
   .today-pill{
-    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--night); border:1px solid var(--night); border-radius:100px; padding:3px 9px;
+    font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:.02em;
+    color:var(--night); background:var(--night-glow); border-radius:100px; padding:4px 11px;
   }
-  .day-tag{ font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
-  .day-total-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
-  .day-total{ font-size:12px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; }
-  .day-target-btn{
-    background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim);
-    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.04em;
-    padding:4px 10px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s;
+  .day-total{
+    font-size:12px; color:var(--text-dim); font-family:'Inter',sans-serif; font-weight:500;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:100px; padding:5px 13px;
   }
-  .day-target-btn:hover{ color:var(--text); border-color:#3a3f4b; }
-  .day-target-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
-  .day-target-editor{ display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); }
-  .day-target-editor[hidden]{ display:none; }
-  .day-target-editor input{
-    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
-    border-radius:6px; padding:4px 6px; font-family:'JetBrains Mono',monospace; font-size:12px; width:42px; text-align:center;
+  .day-head-right{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .day-tag{ font-size:13px; color:var(--text-dim); font-family:'Inter',sans-serif; }
+  .day-edit-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text);
+    font-family:'Inter',sans-serif; font-size:12.5px; font-weight:500;
+    padding:7px 16px; border-radius:100px; cursor:pointer; transition:border-color .15s, background .15s;
   }
+  .day-edit-btn:hover{ background:var(--surface-2); border-color:var(--line-strong); }
+  .day-edit-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+
   .day-target-save, .day-target-auto{
-    background:none; border:1px solid var(--line); color:var(--text-faint);
-    font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:100px; cursor:pointer;
+    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-size:11.5px; padding:5px 11px; border-radius:100px; cursor:pointer;
   }
   .day-target-save:hover{ color:var(--text); border-color:var(--night); }
-  .day-target-auto:hover{ color:var(--text); border-color:#3a3f4b; }
+  .day-target-auto:hover{ color:var(--text); border-color:var(--line-strong); }
 
-  /* productivity stats */
+  /* ---------------- minimalist edit-target icon + popover, anchored to the stats card ---------------- */
+  #globalTrackerBlock{ position:relative; }
+  .stats-edit-btn{
+    position:absolute; top:14px; right:14px; z-index:2;
+    width:26px; height:26px; border-radius:50%; padding:0;
+    display:inline-flex; align-items:center; justify-content:center;
+    background:transparent; border:1px solid transparent; color:var(--text-faint);
+    cursor:pointer; opacity:.5;
+    transition:opacity .15s, border-color .15s, color .15s, background .15s;
+  }
+  .stats-edit-btn svg{ width:13px; height:13px; }
+  .stats-edit-btn:hover{ opacity:1; color:var(--text-dim); border-color:var(--line); background:var(--surface-3); }
+  .stats-edit-btn.active{ opacity:.7; }
+  .stats-edit-btn.active::after{
+    content:""; position:absolute; top:2px; right:2px;
+    width:6px; height:6px; border-radius:50%; background:var(--night); border:1.5px solid var(--surface-2);
+  }
+  .stats-edit-popover{
+    position:absolute; top:52px; right:14px; z-index:3;
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:10px 12px; box-shadow:var(--shadow-card);
+  }
+  .stats-edit-popover[hidden]{ display:none; }
+  .stats-edit-popover span{ font-family:'Inter',sans-serif; font-size:12px; color:var(--text-dim); }
+  .stats-edit-popover input{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    border-radius:6px; padding:5px 7px; font-family:'Inter',sans-serif; font-size:12.5px; width:46px; text-align:center;
+  }
+
+  /* ---------------- productivity ring + stats ---------------- */
+  .tracker-block[hidden]{ display:none; }
   .stats{
-    display:flex; gap:30px; flex-wrap:wrap;
-    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
-    padding:16px 20px; margin-bottom:22px;
+    display:flex; align-items:center; gap:26px; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:20px 24px; margin-bottom:24px;
   }
-  .stat{ display:flex; flex-direction:column; gap:4px; min-width:110px; }
-  .stat .lbl{ font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; font-family:'JetBrains Mono',monospace; }
-  .stat .val{ font-family:'JetBrains Mono',monospace; font-size:21px; color:var(--text); }
-  .stat.left .val{ color:var(--night); }
-  .pbar{ flex:1; min-width:160px; align-self:center; height:6px; border-radius:3px; background:var(--line); overflow:hidden; }
-  .pbar-fill{ height:100%; background:var(--night); border-radius:3px; transition:width .3s ease; }
-
-  /* timeline */
-  .rail{ position:relative; height:34px; margin-bottom:10px; }
-  .track{ position:absolute; inset:0; border-radius:8px;
-    background:linear-gradient(90deg,var(--day-strong),var(--day-soft) 32%,#3d3f6a 68%,var(--night)); opacity:.12; }
-  .seg{ position:absolute; top:0; bottom:0; border-radius:7px; }
-  .seg.day-strong{ background:var(--day-strong); }
-  .seg.day-soft{ background:var(--day-soft); }
-  .seg.night{ background:var(--night); box-shadow:0 0 16px var(--night-glow); }
-  .seg.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
-  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:#fff; box-shadow:0 0 8px rgba(255,255,255,.8); }
-  .now-label{
-    position:absolute; top:-22px; transform:translateX(-50%);
-    font-family:'JetBrains Mono',monospace; font-size:10px; color:#fff; white-space:nowrap;
+  .ring-wrap{ position:relative; width:104px; height:104px; flex:none; }
+  .ring-svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .ring-track{ fill:none; stroke:var(--line); stroke-width:9; }
+  .ring-fill{ fill:none; stroke:var(--night); stroke-width:9; stroke-linecap:round; transition:stroke-dashoffset .4s ease; }
+  .ring-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
   }
+  .ring-time{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; color:var(--text); line-height:1.1; }
+  .ring-sub{ font-family:'Inter',sans-serif; font-size:10.5px; color:var(--text-faint); }
+  .stats-mid{ flex:1; min-width:180px; display:flex; flex-direction:column; gap:8px; }
+  .stats-heading{ font-family:'Inter',sans-serif; font-weight:600; font-size:15px; color:var(--text); }
+  .stats-caption{ font-family:'Inter',sans-serif; font-size:12.5px; color:var(--text-dim); }
+  .pbar{ width:100%; height:7px; border-radius:4px; background:var(--line); overflow:hidden; margin-top:2px; }
+  .pbar-fill{ height:100%; background:var(--night); border-radius:4px; transition:width .3s ease; }
+  .stats-right{ display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex:none; text-align:right; }
+  .stats-right-label{ font-family:'Inter',sans-serif; font-size:11.5px; color:var(--text-faint); }
+  .stats-right-frac{ font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color:var(--text); }
+  .stats-right-pct{ font-family:'Inter',sans-serif; font-size:11.5px; color:var(--text-dim); }
+  @media (max-width:640px){ .stats-right{ align-items:flex-start; text-align:left; } }
 
-  .ticks{ position:relative; height:16px; margin-bottom:20px; }
-  .tick{ position:absolute; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-faint); }
+  /* ---------------- task list ---------------- */
+  .list-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+  .list-header-title{ display:flex; align-items:center; gap:9px; font-family:'Inter',sans-serif; font-weight:600; font-size:15px; color:var(--text); }
+  .list-header-icon{ color:var(--text-faint); font-size:15px; }
+  .add-task-btn{
+    background:var(--surface); border:1px solid var(--line); color:var(--text);
+    font-family:'Inter',sans-serif; font-size:12.5px; font-weight:500;
+    padding:7px 15px; border-radius:100px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .add-task-btn:hover{ background:var(--surface-2); border-color:var(--line-strong); }
 
-  .list{ display:flex; flex-direction:column; gap:16px; }
-  .row{ display:flex; gap:16px; align-items:baseline; font-size:13.5px; }
-  .row .time{ font-family:'JetBrains Mono',monospace; color:var(--text-dim); flex:none; min-width:118px; white-space:nowrap; }
-  .row .label{ color:var(--text); line-height:1.5; flex:1; }
-  .task-duration{font-family:'JetBrains Mono',monospace;color:var(--text-dim);font-size:11.5px;min-width:55px;}
-  .task-remaining{font-family:'JetBrains Mono',monospace;color:var(--night);font-size:11.5px;min-width:70px;font-weight:600;white-space:nowrap;}
+  .list{ display:flex; flex-direction:column; gap:2px; }
+  .row{ display:flex; gap:14px; align-items:center; font-size:14px; padding:13px 6px; border-bottom:1px solid var(--line); }
+  .list > .row:last-child{ border-bottom:none; }
+  .row .label-wrap{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .row .label{ color:var(--text); line-height:1.35; font-weight:500; }
+  .task-sub{ font-family:'Inter',sans-serif; font-size:11.5px; color:var(--text-faint); }
+  .row .time{ font-family:'Inter',sans-serif; color:var(--text-dim); flex:none; min-width:70px; white-space:nowrap; font-size:12.5px; }
+  .task-duration{font-family:'Inter',sans-serif;color:var(--text-dim);font-size:12px;min-width:48px;flex:none;}
+  .task-remaining{font-family:'Inter',sans-serif;color:var(--night);font-size:12px;min-width:64px;font-weight:600;white-space:nowrap;flex:none;}
+  .status-pill{
+    font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.02em;
+    padding:4px 10px; border-radius:100px; flex:none; white-space:nowrap;
+    background:var(--surface-3); color:var(--text-dim);
+  }
+  .status-pill::before{ content:"•"; margin-right:5px; }
+  .status-pill.st-active{ background:var(--tint-active); color:var(--day-strong); }
+  .status-pill.st-upcoming{ background:var(--tint-upcoming); color:var(--day-soft); }
+  .status-pill.st-paused{ background:var(--tint-paused); color:var(--health); }
+  .status-pill.st-done{ background:var(--surface-3); color:var(--text-faint); }
+  .status-pill.st-ring{ background:var(--tint-ring); color:var(--health); }
+
   .task-start{
-    background:linear-gradient(180deg,#7885ff,var(--night));
-    border:1px solid var(--night); color:#fff; font-family:'JetBrains Mono',monospace;
-    font-size:11px; font-weight:700; letter-spacing:.03em; padding:7px 15px; border-radius:100px;
-    cursor:pointer; white-space:nowrap; box-shadow:0 3px 12px -3px var(--night-glow);
-    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
+    background:var(--accent); color:#fff;
+    border:1px solid var(--accent); font-family:'Inter',sans-serif;
+    font-size:11.5px; font-weight:600; letter-spacing:.01em; padding:8px 16px; border-radius:100px;
+    cursor:pointer; white-space:nowrap; flex:none;
+    transition:transform .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
   }
-  .task-start:hover{ transform:translateY(-1px); box-shadow:0 5px 18px -3px var(--night-glow); }
-  .task-start:active{ transform:translateY(0); box-shadow:0 2px 8px -3px var(--night-glow); }
-  .task-start.running{ background:var(--surface-2); border-color:var(--day-soft); color:var(--day-soft); box-shadow:none; }
-  .task-start.running:hover{ transform:none; box-shadow:none; }
-  .task-start.ringing{background:var(--day-strong);border-color:var(--day-strong);color:#0F1115;font-weight:700; box-shadow:0 0 0 4px rgba(227,162,61,.18);}
-  .task-start:disabled{opacity:.45;cursor:not-allowed; box-shadow:none; transform:none;}
+  .task-start:hover{ transform:translateY(-1px); }
+  .task-start:active{ transform:translateY(0); }
+  .task-start.running{ background:var(--surface-2); border-color:var(--line-strong); color:var(--text); }
+  .task-start.ringing{background:var(--health);border-color:var(--health);color:#fff;font-weight:700;}
+  .task-start:disabled{opacity:.4;cursor:not-allowed; transform:none;}
   .task-reset{
     background:none; border:1px solid var(--line); color:var(--text-faint);
     border-radius:7px; width:28px; height:28px; cursor:pointer; flex:none; font-size:14px; line-height:1;
@@ -243,115 +406,151 @@
   .row.block-ringing{ animation:block-ring-flash 1s ease-in-out infinite; border-radius:8px; }
   @keyframes block-ring-flash{
     0%,100%{ background:transparent; }
-    50%{ background:rgba(227,162,61,.14); }
+    50%{ background:var(--tint-ring-weak); }
   }
-  .tracker-empty{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-faint);display:flex;align-items:center;justify-content:center;height:100%;}
-  .tracker-seg{position:absolute;top:0;bottom:0;border-radius:8px;min-width:2px;transition:left .25s,width .25s;}
-  /* every task category gets its own tracker color: Corporate = day-strong, Content/admin = day-soft,
-     Deep work = night. Sessions are colored by the category of the task actually worked on, not by
-     which tool (block/pomodoro/timer) was used to track it. */
-  .tracker-seg.cat-day-strong{ background:var(--day-strong); color:var(--day-strong); }
-  .tracker-seg.cat-day-soft{ background:var(--day-soft); color:var(--day-soft); }
-  .tracker-seg.cat-night{ background:var(--night); color:var(--night); }
-  /* the currently-running segment: glows in its category color and pulses so it reads as "live" */
-  .tracker-seg.live{ animation:tracker-live-glow 1.6s ease-in-out infinite; }
-  @keyframes tracker-live-glow{
-    0%,100%{ box-shadow:0 0 6px 1px currentColor, 0 0 14px 2px currentColor; opacity:.9; }
-    50%{ box-shadow:0 0 10px 3px currentColor, 0 0 24px 6px currentColor; opacity:1; }
-  }
-  /* live "now" line at the leading edge of the running segment — position is recomputed every
-     tick straight off the browser's own clock, so it always reflects local time-of-day. */
-  .tracker-now-line{ position:absolute; top:-4px; bottom:-4px; width:2px; background:#fff;
-    box-shadow:0 0 8px rgba(255,255,255,.9); border-radius:1px; pointer-events:none; }
   .row.rest .label, .row.rest .time{ color:var(--text-faint); }
   .row.done .label{ text-decoration:line-through; text-decoration-color:var(--text-faint); text-decoration-thickness:1px; opacity:.55; }
-  .dot{ display:inline-block; width:7px; height:7px; border-radius:2px; margin-right:10px; position:relative; top:-1px; }
-  .dot.day-strong{ background:var(--day-strong); }
-  .dot.day-soft{ background:var(--day-soft); }
-  .dot.night{ background:var(--night); }
-  .dot.rest{ background:transparent; border:1.2px dashed var(--rest-line); }
+  .dot{ display:inline-block; width:9px; height:9px; border-radius:50%; flex:none; }
+  .dot.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
 
-  .why{ margin-top:48px; border-top:1px solid var(--line); padding-top:34px; }
-  .why h2{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; margin:0 0 22px; }
-  .why-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
-  @media (max-width:720px){
-    .why-grid{ grid-template-columns:1fr; }
-    .foundation{ flex-direction:column; gap:12px; }
-    .row:not(.editing){ flex-direction:column; gap:4px; }
-    .row .time{ min-width:0; }
-    .stats{ gap:20px; }
-    .pbar{ order:99; width:100%; }
+  .edit-time, .edit-label, .edit-type{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    border-radius:7px; padding:7px 9px; font-family:'Inter',sans-serif; font-size:13px;
   }
-  .why-item .num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--night); letter-spacing:.1em; }
-  .why-item h3{ font-family:'Fraunces',serif; font-weight:500; font-size:15.5px; margin:8px 0 8px; }
-  .why-item p{ font-size:13px; color:var(--text-dim); line-height:1.6; margin:0; }
+  .edit-time{ width:70px; }
+  .edit-label{ flex:1; min-width:140px; }
+  .edit-del{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    border-radius:7px; width:28px; height:28px; cursor:pointer; flex:none;
+  }
+  .edit-del:hover{ color:var(--danger); border-color:var(--danger); }
+  .row.editing{ align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--line); }
+  .add-block-btn{
+    background:none; border:1px dashed var(--line-strong); color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-size:12.5px; padding:10px 14px;
+    border-radius:var(--radius-sm); cursor:pointer; margin-top:8px; width:100%;
+  }
+  .add-block-btn:hover{ color:var(--text); border-color:var(--text-faint); background:var(--surface-2); }
 
-  footer{ margin-top:48px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); letter-spacing:.05em; }
+  /* ---------------- timeline ---------------- */
+  .timeline-block[hidden]{ display:none; }
+  .timeline-block{ margin-top:26px; padding-top:20px; border-top:1px solid var(--line); }
 
-  /* pomodoro */
+  /* ---------------- global productivity tracker (page-level, persists across views) ---------------- */
+  #globalTracker{ margin-bottom:8px; }
+  #globalTimelineBlock{ margin-top:0; padding-top:0; border-top:none; margin-bottom:32px; }
+  .rail{ position:relative; height:30px; margin-bottom:10px; }
+  .track{ position:absolute; inset:0; border-radius:8px; background:var(--surface-3); }
+  .seg{ position:absolute; top:0; bottom:0; border-radius:7px; }
+  .seg.day-strong{ background:var(--day-strong); }
+  .seg.day-soft{ background:var(--day-soft); }
+  .seg.night{ background:var(--night); }
+  .seg.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
+  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:var(--accent); }
+  .now-label{
+    position:absolute; top:-22px; transform:translateX(-50%);
+    font-family:'Inter',sans-serif; font-size:10px; color:var(--text-dim); white-space:nowrap;
+  }
+  .tracker-now-line{ position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--accent); border-radius:1px; pointer-events:none; }
+  .tracker-empty{font-family:'Inter',sans-serif;font-size:11px;color:var(--text-faint);display:flex;align-items:center;justify-content:center;height:100%;}
+  .tracker-seg{position:absolute;top:0;bottom:0;border-radius:0;min-width:2px;transition:left .25s,width .25s;}
+  .tracker-seg.cat-rest{ background:transparent !important; border:1.4px dashed var(--rest-line); }
+  .tracker-seg.live{ animation:tracker-live-glow 1.6s ease-in-out infinite; }
+  @keyframes tracker-live-glow{
+    0%,100%{ box-shadow:0 0 4px 1px currentColor; opacity:.9; }
+    50%{ box-shadow:0 0 8px 2px currentColor; opacity:1; }
+  }
+  .ticks{ position:relative; height:16px; }
+  .tick{ position:absolute; transform:translateX(-50%); font-family:'Inter',sans-serif; font-size:10.5px; color:var(--text-faint); }
+  .tracker-legend{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px; }
+  .tracker-legend-item{ display:flex; align-items:center; gap:6px; font-family:'Inter',sans-serif; font-size:11px; color:var(--text-dim); }
+  .tracker-legend-dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+
+  /* ---------------- sidebar ---------------- */
+  .sidebar{ display:flex; flex-direction:column; gap:16px; position:sticky; top:78px; }
+  .focus-card, .quote-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:22px 22px 20px; box-shadow:var(--shadow-card);
+  }
+  .focus-title{ display:flex; align-items:center; gap:9px; font-family:'Inter',sans-serif; font-weight:600; font-size:15px; color:var(--text); margin-bottom:16px; }
+  .focus-title-icon{ color:var(--text-faint); }
+  .focus-list{ display:flex; flex-direction:column; gap:14px; }
+  .focus-row{ display:flex; align-items:center; gap:10px; font-size:13px; }
+  .focus-dot{ width:9px; height:9px; border-radius:50%; flex:none; }
+  .focus-name{ flex:1; color:var(--text); font-weight:500; }
+  .focus-time{ color:var(--text-dim); font-family:'Inter',sans-serif; font-size:12.5px; }
+  .focus-empty{ font-size:12.5px; color:var(--text-faint); }
+  .quote-card{ color:var(--text-dim); }
+  .quote-icon{ color:var(--text-faint); margin-bottom:14px; font-size:16px; }
+  .quote-text{ font-family:'Fraunces',serif; font-weight:500; font-size:17px; color:var(--text); line-height:1.35; margin-bottom:10px; }
+  .quote-rule{ width:20px; height:1px; background:var(--line-strong); }
+
+  @media (max-width:720px){
+    .row:not(.editing){ flex-wrap:wrap; }
+    .row .label-wrap{ order:1; width:100%; }
+    .stats{ gap:16px; }
+  }
+
+  /* ---------------- pomodoro ---------------- */
   .pomodoro{
-    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
-    padding:18px 20px; margin-bottom:22px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow-card);
     display:flex; align-items:center; gap:22px; flex-wrap:wrap;
   }
   .pomo-mode{
-    font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em;
-    padding:4px 10px; border-radius:100px; border:1px solid var(--night); color:var(--night);
+    font-family:'Inter',sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+    padding:5px 12px; border-radius:100px; background:var(--night-glow); color:var(--night);
   }
-  .pomo-mode.break{ border-color:var(--day-soft); color:var(--day-soft); }
-  .pomo-time{ font-family:'JetBrains Mono',monospace; font-size:34px; letter-spacing:.02em; min-width:110px; }
+  .pomo-mode.break{ background:var(--tint-break); color:var(--day-soft); }
+  .pomo-time{ font-family:'Fraunces',serif; font-weight:600; font-size:36px; letter-spacing:-.01em; min-width:110px; color:var(--text); }
   .pomo-controls{ display:flex; gap:8px; }
   .pomo-btn{
-    background:var(--surface); border:1px solid var(--line); color:var(--text);
-    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
-    padding:9px 16px; border-radius:8px; cursor:pointer; transition:border-color .15s, background .15s;
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    font-family:'Inter',sans-serif; font-size:13px; font-weight:500;
+    padding:10px 18px; border-radius:100px; cursor:pointer; transition:border-color .15s, background .15s;
   }
-  .pomo-btn:hover{ border-color:#3a3f4b; }
+  .pomo-btn:hover{ border-color:var(--line-strong); background:var(--surface-3); }
   .pomo-btn:disabled{ opacity:.4; cursor:not-allowed; }
-  .pomo-btn.start{ background:var(--night); border-color:var(--night); color:#0F1115; font-weight:600; }
-  .pomo-btn.start.running{ background:var(--surface); color:var(--text); border-color:var(--day-soft); }
+  .pomo-btn.start{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  .pomo-btn.start.running{ background:var(--surface-2); color:var(--text); border-color:var(--line-strong); }
   .pomo-presets{ display:flex; gap:6px; margin-left:auto; }
   .pomo-preset-btn{
-    background:transparent; border:1px solid var(--line); color:var(--text-faint);
-    font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 10px; border-radius:100px; cursor:pointer;
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-size:12px; padding:7px 12px; border-radius:100px; cursor:pointer;
   }
-  .pomo-preset-btn.active{ border-color:var(--night); color:var(--text); }
+  .pomo-preset-btn.active{ border-color:var(--accent); color:var(--text); background:var(--surface-2); }
   .pomo-preset-btn:disabled{ opacity:.4; cursor:not-allowed; }
   .pomo-meta{
     width:100%; display:flex; gap:22px; flex-wrap:wrap;
-    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-size:12.5px; color:var(--text-dim);
   }
-  .pomo-meta b{ color:var(--text); font-weight:500; }
+  .pomo-meta b{ color:var(--text); font-weight:600; }
   @media (max-width:560px){
     .pomo-presets{ margin-left:0; width:100%; }
   }
 
-  /* pomodoro alarm */
-  .pomodoro.ringing{
-    border-color:var(--day-strong);
-    animation: pomo-flash 1s ease-in-out infinite;
-  }
+  .pomodoro.ringing{ border-color:var(--health); animation: pomo-flash 1s ease-in-out infinite; }
   @keyframes pomo-flash{
-    0%, 100%{ box-shadow:0 0 0 0 rgba(227,162,61,0); }
-    50%{ box-shadow:0 0 0 3px rgba(227,162,61,.35); }
+    0%, 100%{ box-shadow:0 0 0 0 var(--tint-ring-glow-0); }
+    50%{ box-shadow:0 0 0 3px var(--tint-ring-glow-1); }
   }
   .pomo-alarm{
     display:none;
     width:100%; align-items:center; gap:14px;
-    background:rgba(227,162,61,.12); border:1px solid var(--day-strong);
-    border-radius:8px; padding:10px 14px;
-    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--day-strong);
+    background:var(--tint-ring-weak); border:1px solid var(--health);
+    border-radius:var(--radius-sm); padding:10px 14px;
+    font-family:'Inter',sans-serif; font-size:12.5px; color:var(--pending-text);
   }
   .pomodoro.ringing .pomo-alarm{ display:flex; }
   .pomo-alarm-text{ flex:1; }
   .pomo-stop-btn{
-    background:var(--day-strong); border:1px solid var(--day-strong); color:#0F1115;
-    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; letter-spacing:.04em;
-    padding:8px 16px; border-radius:8px; cursor:pointer;
+    background:var(--health); border:1px solid var(--health); color:#fff;
+    font-family:'Inter',sans-serif; font-size:12px; font-weight:600; letter-spacing:.02em;
+    padding:8px 16px; border-radius:100px; cursor:pointer;
   }
   .pomo-stop-btn:hover{ opacity:.9; }
 
-  /* "time almost up" toast */
+  /* ---------------- toast ---------------- */
   .wr-toast-wrap{
     position:fixed; top:18px; right:18px; z-index:9999;
     display:flex; flex-direction:column; gap:10px; align-items:flex-end;
@@ -360,10 +559,10 @@
   .wr-toast{
     pointer-events:auto;
     display:flex; align-items:center; gap:10px;
-    background:var(--surface-2); border:1px solid var(--night); border-radius:10px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md);
     padding:12px 16px; max-width:320px;
-    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text); line-height:1.5;
-    box-shadow:0 8px 24px rgba(0,0,0,.35), 0 0 0 1px var(--night-glow);
+    font-family:'Inter',sans-serif; font-size:12.5px; color:var(--text); line-height:1.5;
+    box-shadow:0 10px 28px -10px rgba(20,20,20,.22);
     animation: wr-toast-in .22s ease-out;
   }
   .wr-toast b{ color:var(--night); }
@@ -376,12 +575,11 @@
     .wr-toast{ max-width:none; }
   }
 
-  /* custom timer / stopwatch page */
+  /* ---------------- custom timer / stopwatch page ---------------- */
   .ct-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
-  .ct-title{ font-family:'Fraunces',serif; font-weight:500; font-size:22px; }
-  .ct-note{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); line-height:1.6; margin-bottom:18px; }
+  .ct-title{ font-family:'Fraunces',serif; font-weight:600; font-size:24px; }
+  .ct-note{ font-family:'Inter',sans-serif; font-size:12.5px; color:var(--text-faint); line-height:1.6; margin-bottom:20px; }
 
-  /* draggable custom-time dial */
   .ct-pomodoro{ flex-direction:column; align-items:center; }
   .ct-pomodoro .pomo-controls{ justify-content:center; }
   .ct-pomodoro .pomo-presets{ margin-left:0; width:100%; justify-content:center; }
@@ -393,74 +591,60 @@
   .ct-dial-track{ fill:none; stroke:var(--line); stroke-width:10; }
   .ct-dial-arc{ fill:none; stroke:var(--night); stroke-width:10; stroke-linecap:round; }
   .ct-dial.stopwatch-mode .ct-dial-arc{ stroke:var(--day-soft); }
-  .ct-dial-handle{ fill:var(--bg); stroke:var(--night); stroke-width:3; }
+  .ct-dial-handle{ fill:var(--surface); stroke:var(--night); stroke-width:3; }
   .ct-dial-wrap.locked .ct-dial-handle{ display:none; }
   .ct-dial-center{
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
     pointer-events:none;
   }
   .ct-dial-hint{
-    font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.06em; color:var(--text-faint);
+    font-family:'Inter',sans-serif; font-size:10px; letter-spacing:.06em; color:var(--text-faint);
     text-transform:uppercase; opacity:0; transition:opacity .15s;
   }
   .ct-dial-wrap:not(.locked) .ct-dial-hint{ opacity:1; }
 
   .ct-history{ margin-top:28px; }
-  .ct-history-head{ font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:12px; }
+  .ct-history-head{ font-family:'Inter',sans-serif; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin-bottom:12px; }
   .ct-history-list{ display:flex; flex-direction:column; gap:8px; }
-  .ct-history-empty{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-faint); }
+  .ct-history-empty{ font-family:'Inter',sans-serif; font-size:12.5px; color:var(--text-faint); }
   .ct-row{
     display:flex; align-items:center; gap:14px;
-    background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:10px 14px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:11px 14px;
   }
   .ct-row-type{
-    font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em;
+    font-family:'Inter',sans-serif; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em;
     color:var(--text-faint); border:1px solid var(--line); border-radius:100px; padding:3px 9px; flex:none;
   }
-  .ct-row-dur{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim); flex:none; margin-left:auto; }
-  .ct-row-time{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); flex:none; white-space:nowrap; }
+  .ct-row-dur{ font-family:'Inter',sans-serif; font-size:12.5px; color:var(--text-dim); flex:none; margin-left:auto; }
+  .ct-row-time{ font-family:'Inter',sans-serif; font-size:11px; color:var(--text-faint); flex:none; white-space:nowrap; }
   .ct-row-label{ color:var(--text); font-size:13px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .ct-row-del{
     background:none; border:1px solid var(--line); color:var(--text-faint);
     border-radius:6px; width:24px; height:24px; cursor:pointer; flex:none; font-size:12px; line-height:1;
   }
-  .ct-row-del:hover{ color:#d16b63; border-color:#d16b63; }
+  .ct-row-del:hover{ color:var(--danger-2); border-color:var(--danger-2); }
 
-  /* view switcher */
-  .view-switch{ display:flex; gap:8px; margin-bottom:36px; }
-  .view-btn{
-    background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
-    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.04em;
-    padding:9px 16px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s, background .15s;
-  }
-  .view-btn:hover{ color:var(--text); border-color:#3a3f4b; }
-  .view-btn.active{ background:var(--surface-2); color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
-
-  /* productivity matrix */
+  /* ---------------- productivity matrix ---------------- */
   .matrix-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:26px; }
-  .matrix-title{ font-family:'Fraunces',serif; font-weight:500; font-size:21px; letter-spacing:-.01em; }
+  .matrix-title{ font-family:'Fraunces',serif; font-weight:600; font-size:23px; letter-spacing:-.01em; }
   .matrix-controls{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .mx-btn{
     background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
-    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.03em;
-    padding:8px 13px; border-radius:8px; cursor:pointer; transition:border-color .15s, color .15s;
+    font-family:'Inter',sans-serif; font-size:12.5px; padding:8px 13px; border-radius:100px; cursor:pointer; transition:border-color .15s, color .15s;
   }
-  .mx-btn:hover{ color:var(--text); border-color:#3a3f4b; }
-  .mx-btn.active{ color:var(--text); border-color:var(--night); box-shadow:0 0 0 1px var(--night) inset; }
-  .mx-period{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); font-weight:500; min-width:56px; text-align:center; }
+  .mx-btn:hover{ color:var(--text); border-color:var(--line-strong); }
+  .mx-btn.active{ color:var(--text); border-color:var(--accent); background:var(--surface-2); }
+  .mx-period{ font-family:'Inter',sans-serif; font-size:13px; color:var(--text); font-weight:600; min-width:56px; text-align:center; }
 
-  .mx-note{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); margin:-14px 0 22px; }
+  .mx-note{ font-family:'Inter',sans-serif; font-size:12px; color:var(--text-faint); margin:-14px 0 22px; }
 
-  .mx-legend{ display:flex; flex-wrap:wrap; gap:18px; margin:0 0 26px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-dim); }
+  .mx-legend{ display:flex; flex-wrap:wrap; gap:18px; margin:0 0 26px; font-family:'Inter',sans-serif; font-size:12px; color:var(--text-dim); }
   .mx-legend-item{ display:flex; align-items:center; gap:7px; }
   .mx-swatch{ width:10px; height:10px; border-radius:2px; flex:none; }
 
-  /* dense matrix — flat grid, column count computed to keep a ~4:3 shape.
-     Cells fill the container width fluidly (grid + aspect-ratio), so resizing
-     the page just reflows/rescales the dots instead of causing horizontal scroll. */
   .mx-matrix-wrap{
-    background:var(--surface); border:1px solid var(--line); border-radius:12px;
-    padding:22px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:22px; box-shadow:var(--shadow-card);
   }
   .mx-matrix{
     display:grid;
@@ -469,30 +653,78 @@
     width:100%;
   }
   .mx-cell{ width:100%; aspect-ratio:1/1; border-radius:3px; border:1px solid var(--line); }
-  .mx-cell.mx-pretrack{ background:transparent; border:1px dashed rgba(91,95,105,.35); }
+  .mx-cell.mx-pretrack{ background:transparent; border:1px dashed var(--rest-line); }
   .mx-cell.mx-future{ background:transparent; border-color:var(--line); }
-  .mx-cell.mx-off{ background:rgba(180,72,66,.32); border-color:rgba(180,72,66,.5); }
-  .mx-cell.mx-d2{ background:rgba(90,120,100,.38); border-color:rgba(90,120,100,.5); }
-  .mx-cell.mx-d1{ background:rgba(70,150,105,.55); border-color:rgba(70,150,105,.65); }
-  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; box-shadow:0 0 6px rgba(47,191,110,.5); }
-  .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--night); }
+  .mx-cell.mx-off{ background:rgba(180,72,66,.32); border-color:rgba(180,72,66,.46); }
+  .mx-cell.mx-d2{ background:rgba(90,120,100,.38); border-color:rgba(90,120,100,.52); }
+  .mx-cell.mx-d1{ background:rgba(70,150,105,.55); border-color:rgba(70,150,105,.68); }
+  .mx-cell.mx-bright{ background:#2fbf6e; border-color:#2fbf6e; }
+  .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--accent); }
 
   @media (max-width:560px){
     .mx-matrix{ gap:4px; }
-    .sync-dot{ right:14px; }
   }
 
-  /* account-bar sync indicator */
-  .sync-dot{
-    position:absolute; right:24px; top:50%; transform:translateY(-50%);
-    width:8px; height:8px; border-radius:50%;
-    background:var(--text-faint); opacity:0;
-    transition:background .2s, opacity .2s;
+  /* ---------------- view switcher (legacy, kept for other pages) ---------------- */
+  .view-switch{ display:flex; gap:8px; margin-bottom:36px; flex-wrap:wrap; }
+
+  /* ---------------- category manager ---------------- */
+  .cat-manager{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:16px 18px 18px; margin-bottom:18px;
   }
-  .sync-dot.syncing{ background:#2fbf6e; opacity:1; animation: sync-pulse 1s ease-in-out infinite; }
-  .sync-dot.synced{ background:#2fbf6e; opacity:1; }
-  .sync-dot.error{ background:var(--text-faint); opacity:.55; }
-  @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+  .cat-manager-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .cat-manager-title{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--text-faint);
+  }
+  .cat-edit-toggle{
+    background:none; border:none; color:var(--text-dim); font-family:'Inter',sans-serif; font-weight:500;
+    font-size:12px; cursor:pointer; padding:2px 4px; transition:color .15s;
+  }
+  .cat-edit-toggle:hover{ color:var(--text); }
+  .cat-manager-list{ display:flex; flex-direction:column; gap:9px; }
+  .cat-row-view{ padding:2px 0; }
+  .cat-swatch-static{ width:18px; height:18px; border-radius:6px; flex:none; }
+  .cat-name-static{ font-size:13.5px; color:var(--text); }
+  .cat-row{ display:flex; align-items:center; gap:10px; position:relative; }
+  .cat-swatch-btn{
+    width:24px; height:24px; border-radius:7px; border:1px solid var(--line);
+    cursor:pointer; flex:none; padding:0; transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .cat-swatch-btn:hover{ transform:scale(1.08); box-shadow:0 0 0 3px rgba(20,20,20,.06); }
+  .cat-name-input{
+    flex:1; background:var(--surface); border:1px solid var(--line); color:var(--text);
+    font-family:inherit; font-size:13px; padding:8px 10px; border-radius:8px; min-width:0;
+  }
+  .cat-name-input:focus{ outline:none; border-color:var(--accent); }
+  .cat-del-btn{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    border-radius:7px; width:26px; height:26px; cursor:pointer; flex:none; font-size:12px;
+    display:inline-flex; align-items:center; justify-content:center; transition:color .15s, border-color .15s;
+  }
+  .cat-del-btn:hover{ color:var(--danger); border-color:var(--danger); }
+  .cat-palette{
+    display:none;
+    position:absolute; top:calc(100% + 6px); left:0; z-index:20;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:8px; grid-template-columns:repeat(4,1fr); gap:6px;
+    box-shadow:0 10px 26px -8px rgba(20,20,20,.22);
+  }
+  .cat-palette.open{ display:grid; }
+  .cat-row:has(.cat-palette.open){ z-index:20; }
+  .cat-palette-swatch{
+    width:22px; height:22px; border-radius:6px; border:1px solid var(--line); cursor:pointer;
+    padding:0; transition:transform .12s ease;
+  }
+  .cat-palette-swatch:hover{ transform:scale(1.12); }
+  .cat-add-btn{
+    margin-top:12px; background:none; border:1px dashed var(--line-strong); color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-size:12px; padding:9px 14px; border-radius:9px;
+    cursor:pointer; width:100%; transition:border-color .15s, color .15s;
+  }
+  .cat-add-btn:hover{ border-color:var(--accent); color:var(--text); }
+  .sidebar .cat-manager{ margin-bottom:0; }
 </style>
 </head>
 <body>
@@ -506,88 +738,93 @@
     <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
       <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
       <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
-      <button id="signInBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
+      <button id="signInBtn" type="button" style="background:var(--night);border:none;color:var(--on-night);padding:11px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
       <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:'JetBrains Mono',monospace;font-size:12px;padding-top:4px;">Create account</button>
     </div>
     <div id="authMsg" style="color:var(--text-faint);font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:14px;min-height:16px;"></div>
   </div>
 </div>
 
-<div id="authBar" style="position:fixed;top:0;left:0;right:0;z-index:20;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -12px rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);">
-  <button id="editNameBtn" type="button" class="name-chip" title="Set a display name">
-    <span id="userLabel"></span>
-  </button>
-  <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
-    <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
-    <button id="saveNameBtn" type="button" style="background:var(--night);border:none;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
-  </span>
-  <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-  </button>
-  <button id="enableAlarmsBtn" type="button" class="iconbtn" title="Enable alarms even when the screen is off">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-  </button>
-  <span id="syncStatus" class="sync-dot" title=""></span>
+<div id="authBar" class="topnav" style="display:none;">
+  <div class="topnav-brand"><span class="brand-dot"></span><button type="button" id="themeToggleBtn" class="brand-dot brand-dot-2" aria-label="Toggle dark mode"></button>bitrhythm</div>
+  <nav class="topnav-links">
+    <button class="view-btn active" id="showScheduleBtn" type="button">Weekly Rhythm</button>
+    <button class="view-btn" id="showTimerBtn" type="button">Timer</button>
+    <button class="view-btn" id="showPomodoroBtn" type="button">Pomodoro</button>
+    <button class="view-btn" id="showLogBtn" type="button">Activity Log</button>
+    <button class="view-btn" id="showMatrixBtn" type="button">Matrix</button>
+  </nav>
+  <div class="topnav-actions">
+    <button id="editNameBtn" type="button" class="name-chip" title="Set a display name">
+      <span id="userLabel"></span>
+    </button>
+    <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
+      <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
+      <button id="saveNameBtn" type="button" style="background:var(--night);border:none;color:var(--on-night);padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;">Save</button>
+    </span>
+    <button id="enableAlarmsBtn" type="button" class="iconbtn" title="Enable alarms even when the screen is off">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+    </button>
+    <button id="logoutBtn" type="button" class="iconbtn" title="Sign out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+    </button>
+    <span id="syncStatus" class="sync-dot" title=""></span>
+  </div>
 </div>
 
 <div class="wrap" id="appWrap" hidden>
 
-  <header class="hero" style="text-align:center;">
-    <div class="eyebrow" style="justify-content:center;">Weekly Schedule</div>
-    <h1>Scheduled by <em>Hilla</em>,<br>build for <em>productivity</em>.</h1>
-    <p class="sub" style="margin-left:auto;margin-right:auto;">be wealth, be rich, be smart, top of the mountain. For indeed, with hardship comes ease.</p>
-
-    <div class="legend" style="justify-content:center;">
-      <div class="legend-item"><span class="swatch strong"></span>Corporate (day job)</div>
-      <div class="legend-item"><span class="swatch soft"></span>Content &amp; admin</div>
-      <div class="legend-item"><span class="swatch night"></span>Deep work (night)</div>
-      <div class="legend-item"><span class="swatch rest"></span>Rest / free</div>
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Focus / Plan / Build</div>
+      <h1>Bitrhythm</h1>
+      <p class="sub">your fully functional time tracker</p>
+    </div>
+    <div class="hero-right">
+      <div class="hero-right-text">今度は今度、<br>今は今。<span class="rule">Kondo wa kondo, ima wa ima.</span></div>
     </div>
   </header>
 
-  <div class="view-switch">
-    <button class="view-btn active" id="showScheduleBtn" type="button">Weekly Rhythm</button>
-    <button class="view-btn" id="showMatrixBtn" type="button">Productivity Matrix</button>
-    <button class="view-btn" id="showTimerBtn" type="button">Timer</button>
-    <button class="view-btn" id="showPomodoroBtn" type="button">Pomodoro</button>
-    <button class="view-btn" id="showLogBtn" type="button">Activity Log</button>
+  <div id="globalTracker">
+    <div class="tracker-block" id="globalTrackerBlock">
+      <div class="stats-slot" id="globalStatsSlot"></div>
+      <button type="button" class="stats-edit-btn" id="globalTargetBtn" title="Edit today's target" aria-label="Edit today's target">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+      </button>
+      <div class="stats-edit-popover" id="globalTargetEditor" hidden>
+        <input type="number" id="globalTargetH" min="0" max="23" placeholder="h">
+        <span>h</span>
+        <input type="number" id="globalTargetM" min="0" max="59" placeholder="m">
+        <span>m</span>
+        <button type="button" class="day-target-save" id="globalTargetSave">Save</button>
+        <button type="button" class="day-target-auto" id="globalTargetAuto">Auto</button>
+      </div>
+    </div>
+    <div class="timeline-block" id="globalTimelineBlock">
+      <div class="rail"><div class="track"></div><div class="segs-slot" id="globalSegsSlot" style="position:absolute;inset:0;"></div></div>
+      <div class="ticks" id="globalTicks"></div>
+      <div class="tracker-legend" id="globalTrackerLegend" hidden></div>
+    </div>
   </div>
 
   <div id="viewSchedule">
-  <div class="foundation">
-    <div class="ftitle">Daily<br>Foundation</div>
-    <div class="fitems">
-      <div class="frow"><span class="t">7:30 – 10:00</span> Corporate Work</div>
-      <div class="frow"><span class="t">10:00 – 11:00</span> Content uploading, distribution &amp; community engagement</div>
-      <div class="fnote">Applies Monday through Friday, before each day's own track begins.</div>
+  <div class="tabs-row">
+    <div class="tabs" id="tabs"></div>
+    <div class="date-display" id="dateDisplay">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      <span id="dateDisplayText"></span>
     </div>
   </div>
-
-  <div class="tabs" id="tabs"></div>
-  <div id="days"></div>
-
-  <div class="why">
-    <h2>Why the shape holds up</h2>
-    <div class="why-grid">
-      <div class="why-item">
-        <div class="num">01</div>
-        <h3>Office nights stay protected</h3>
-        <p>Tuesday and Wednesday carry zero extra tasks, so the in-office days never bleed into a mid-week crash.</p>
+  <div class="dashboard-grid">
+    <div id="days"></div>
+    <aside class="sidebar">
+      <div class="focus-card">
+        <div class="focus-title"><span class="focus-title-icon">◎</span> Today's Focus</div>
+        <div class="focus-list" id="focusList"></div>
       </div>
-      <div class="why-item">
-        <div class="num">02</div>
-        <h3>Quiet hours, real focus</h3>
-        <p>Late night removes notifications and noise — the two conditions filming and editing actually need.</p>
-      </div>
-      <div class="why-item">
-        <div class="num">03</div>
-        <h3>One brand, one block</h3>
-        <p>A single five-hour night is given to one brand at a time, so a full flow state produces a week's worth of assets.</p>
-      </div>
-    </div>
+      <div id="catManagerMount"></div>
+    </aside>
   </div>
-
-  <footer>Rendered from your weekly plan</footer>
   </div>
 
   <div id="viewMatrix" hidden>
@@ -600,7 +837,7 @@
         <button class="mx-btn" id="mxToday" type="button">Today</button>
       </div>
     </div>
-    <div class="mx-note">Tracking began July 31, 2026 — every cell is one day, left to right, top to bottom.</div>
+    <div class="mx-note" id="mxNote">Tracking began July 31, 2026 — every cell is one day, left to right, top to bottom.</div>
     <div class="mx-legend">
       <div class="mx-legend-item"><span class="mx-swatch" style="background:#2fbf6e;"></span>On target or above</div>
       <div class="mx-legend-item"><span class="mx-swatch" style="background:rgba(70,150,105,.55);"></span>Below target</div>
@@ -712,8 +949,8 @@ const sb = supabase.createClient(
 let currentUser = null;
 </script>
 <script>
-const SCALE_START = 450;   // 7:30
-const SCALE_END   = 1500;  // 25:00 (1:00 AM)
+const SCALE_START = 0;     // 12:00 AM — the rail now always spans the full 24h day
+const SCALE_END   = 1440;  // 24:00 (12:00 AM the next day)
 const SCALE_RANGE = SCALE_END - SCALE_START;
 
 // --- keep the screen awake while a pomodoro is running, so mobile auto-lock doesn't suspend
@@ -724,6 +961,9 @@ const SCALE_RANGE = SCALE_END - SCALE_START;
 // instead of losing or "pausing" time.
 let wakeLock = null;
 let ctState = null; // forward declaration — the custom timer/stopwatch, built further below
+let pomo = null; // forward declaration — the pomodoro, built further below (same reason as ctState:
+                  // renderList() runs during initial day-panel setup, before the pomo object exists,
+                  // and needs to check its busy-state for cross-timer exclusivity)
 async function acquireWakeLock(){
   if(!('wakeLock' in navigator)) return;
   try{
@@ -848,20 +1088,36 @@ const showTimerBtn = document.getElementById('showTimerBtn');
 const showPomodoroBtn = document.getElementById('showPomodoroBtn');
 const showLogBtn = document.getElementById('showLogBtn');
 
+const VIEW_TRANSITION_MS = 160; // must stay <= the CSS opacity transition duration above
+
 function showView(which){
-  scheduleView.hidden = which !== 'schedule';
-  matrixView.hidden = which !== 'matrix';
-  timerView.hidden = which !== 'timer';
-  pomodoroView.hidden = which !== 'pomodoro';
-  logView.hidden = which !== 'log';
-  showScheduleBtn.classList.toggle('active', which === 'schedule');
-  showMatrixBtn.classList.toggle('active', which === 'matrix');
-  showTimerBtn.classList.toggle('active', which === 'timer');
-  showPomodoroBtn.classList.toggle('active', which === 'pomodoro');
-  showLogBtn.classList.toggle('active', which === 'log');
-  if(which === 'matrix') renderMatrix();
-  if(which === 'timer') renderCtHistory();
-  if(which === 'log') renderActivityLog();
+  const views = { schedule:scheduleView, matrix:matrixView, timer:timerView, pomodoro:pomodoroView, log:logView };
+  const buttons = { schedule:showScheduleBtn, matrix:showMatrixBtn, timer:showTimerBtn, pomodoro:showPomodoroBtn, log:showLogBtn };
+  const nextEl = views[which];
+  const current = Object.values(views).find(v => v && !v.hidden);
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const swap = () => {
+    Object.entries(views).forEach(([key, el]) => { if(el) el.hidden = key !== which; });
+    Object.entries(buttons).forEach(([key, btn]) => { if(btn) btn.classList.toggle('active', key === which); });
+    if(which === 'matrix') renderMatrix();
+    if(which === 'timer') renderCtHistory();
+    if(which === 'log') renderActivityLog();
+    if(nextEl && !reduceMotion){
+      // start faded/offset, then release to the resting state on the next frame so the
+      // browser actually animates the transition instead of snapping straight to it
+      nextEl.classList.add('view-enter');
+      requestAnimationFrame(() => requestAnimationFrame(() => nextEl.classList.remove('view-enter')));
+    }
+  };
+
+  if(current && current !== nextEl && !reduceMotion){
+    current.classList.add('view-leave');
+    setTimeout(() => { current.classList.remove('view-leave'); swap(); }, VIEW_TRANSITION_MS);
+  } else {
+    if(current && current !== nextEl) current.classList.remove('view-leave');
+    swap();
+  }
 }
 showScheduleBtn.addEventListener('click', () => showView('schedule'));
 showMatrixBtn.addEventListener('click', () => showView('matrix'));
@@ -916,6 +1172,153 @@ function classifyDay(actualMin, targetMin, isFuture){
   return ratio >= 0.5 ? 'mx-d1' : 'mx-d2';
 }
 
+// --- customizable task categories (name + color), managed from each day's edit view and
+// shared across the whole week. "rest" stays a fixed, non-colorable special case (dashed/empty),
+// since it behaves differently everywhere else too (no timer, excluded from productive time).
+const CATEGORY_KEY = 'wr_categories_v1';
+const CATEGORY_PALETTE = ['#E3A23D','#B98A52','#6C7BFF','#4FB3D9','#5FBF7A','#D9738C','#B07DE0','#D9C24E'];
+const DEFAULT_CATEGORIES = [
+  {id:'day-strong', name:'Corporate (day job)', color:'#E3A23D'},
+  {id:'day-soft', name:'Content & admin', color:'#B98A52'},
+  {id:'night', name:'Deep work (night)', color:'#6C7BFF'},
+];
+function loadCategories(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(CATEGORY_KEY) || 'null');
+    if(Array.isArray(raw) && raw.length) return raw;
+  }catch(e){ /* storage unavailable — fall back to defaults */ }
+  return DEFAULT_CATEGORIES.map(c => ({...c}));
+}
+function saveCategoriesLocal(){
+  try{ localStorage.setItem(CATEGORY_KEY, JSON.stringify(categories)); }catch(e){}
+}
+let categories = loadCategories();
+// Fixed, non-customizable "categories" for time logged from the Timer, Stopwatch, and Pomodoro
+// widgets, so their sessions get their own distinct colors on the rail/activity log instead of
+// silently falling back to a generic/soft color and being indistinguishable from each other.
+const SOURCE_CATEGORIES = {
+  timer:     {id:'__timer',     name:'Timer',     color:'#2BB3B3'},
+  stopwatch: {id:'__stopwatch', name:'Stopwatch', color:'#3E9B4F'},
+  pomodoro:  {id:'__pomodoro',  name:'Pomodoro',  color:'#E0554F'},
+};
+function getCategory(id){
+  if(id === 'rest') return {id:'rest', name:'Rest / free', color:null};
+  const src = Object.values(SOURCE_CATEGORIES).find(c => c.id === id);
+  if(src) return src;
+  return categories.find(c => c.id === id) || {id, name:'(deleted category)', color:'#5B5F69'};
+}
+function makeCategoryId(){ return 'cat-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function makeCategoryId(){ return 'cat-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+// re-render everything that shows category names/colors, then persist (locally + across devices)
+function onCategoriesChanged(){
+  saveCategoriesLocal();
+  if(typeof dayPanels !== 'undefined'){
+    dayPanels.forEach(p => { renderList(p); renderRail(p); });
+  }
+  renderActivityLog();
+  renderCategoryManagerSidebar();
+  persistLocal();
+}
+function renderCategoryManagerSidebar(){
+  const mount = document.getElementById('catManagerMount');
+  if(!mount) return;
+  mount.innerHTML = '';
+  mount.appendChild(buildCategoryManager());
+}
+// whether the sidebar categories card is currently showing the editable form
+// (inputs, delete buttons, add-category) or just the plain read-only list
+let catManagerEditing = false;
+function buildCategoryManager(){
+  const wrap = document.createElement('div');
+  wrap.className = 'cat-manager';
+  wrap.innerHTML = `
+    <div class="cat-manager-head">
+      <div class="cat-manager-title">Categories</div>
+      <button type="button" class="cat-edit-toggle">${catManagerEditing ? 'Done' : 'Edit'}</button>
+    </div>
+    <div class="cat-manager-list"></div>
+    ${catManagerEditing ? '<button type="button" class="cat-add-btn">+ Add category</button>' : ''}
+  `;
+  wrap.querySelector('.cat-edit-toggle').addEventListener('click', () => {
+    catManagerEditing = !catManagerEditing;
+    renderCategoryManagerSidebar();
+  });
+  const listWrap = wrap.querySelector('.cat-manager-list');
+
+  if(!catManagerEditing){
+    // plain, read-only view — just the swatch and name for each category
+    categories.forEach(cat => {
+      const row = document.createElement('div');
+      row.className = 'cat-row cat-row-view';
+      row.innerHTML = `
+        <span class="cat-swatch-static" style="background:${cat.color}"></span>
+        <span class="cat-name-static">${escapeHtml(cat.name)}</span>
+      `;
+      listWrap.appendChild(row);
+    });
+    return wrap;
+  }
+
+  categories.forEach(cat => {
+    const row = document.createElement('div');
+    row.className = 'cat-row';
+    row.innerHTML = `
+      <button type="button" class="cat-swatch-btn" style="background:${cat.color}" title="Change color"></button>
+      <input type="text" class="cat-name-input" value="${escapeHtml(cat.name)}" maxlength="40" title="Category name">
+      <button type="button" class="cat-del-btn" title="Delete category">✕</button>
+      <div class="cat-palette">${CATEGORY_PALETTE.map(hex => `<button type="button" class="cat-palette-swatch" data-color="${hex}" style="background:${hex}" title="${hex}"></button>`).join('')}</div>
+    `;
+    row.querySelector('.cat-name-input').addEventListener('change', e => {
+      cat.name = e.target.value.trim() || cat.name;
+      onCategoriesChanged();
+    });
+    const swatchBtn = row.querySelector('.cat-swatch-btn');
+    const palette = row.querySelector('.cat-palette');
+    swatchBtn.addEventListener('click', () => {
+      const willOpen = !palette.classList.contains('open');
+      document.querySelectorAll('.cat-palette.open').forEach(p => { if(p !== palette) p.classList.remove('open'); });
+      palette.classList.toggle('open', willOpen);
+    });
+    palette.querySelectorAll('.cat-palette-swatch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        cat.color = sw.dataset.color;
+        palette.classList.remove('open');
+        onCategoriesChanged();
+      });
+    });
+    row.querySelector('.cat-del-btn').addEventListener('click', () => {
+      if(categories.length <= 1) return; // always keep at least one category
+      categories = categories.filter(c => c.id !== cat.id);
+      onCategoriesChanged();
+    });
+    listWrap.appendChild(row);
+  });
+  wrap.querySelector('.cat-add-btn').addEventListener('click', () => {
+    const used = categories.map(c => c.color);
+    const color = CATEGORY_PALETTE.find(c => !used.includes(c)) || CATEGORY_PALETTE[categories.length % CATEGORY_PALETTE.length];
+    categories.push({id:makeCategoryId(), name:'New category', color});
+    onCategoriesChanged();
+  });
+  return wrap;
+}
+// clicking anywhere outside an open color palette closes it — registered once, not per render
+let catPaletteOutsideClickBound = false;
+function ensureCatPaletteOutsideClick(){
+  if(catPaletteOutsideClickBound) return;
+  catPaletteOutsideClickBound = true;
+  document.addEventListener('click', e => {
+    if(e.target.closest('.cat-palette') || e.target.closest('.cat-swatch-btn')) return;
+    document.querySelectorAll('.cat-palette.open').forEach(p => p.classList.remove('open'));
+  });
+}
+ensureCatPaletteOutsideClick();
+
 // --- unified state persistence (per-day pomodoro state) + optional cross-device sync ---
 const POMO_KEY = 'wr_pomo_state_v1';
 const pomoRefs = []; // {pomo, render} for each day, filled in as day panels are built
@@ -933,10 +1336,11 @@ function snapshotState(){
     blockTimer: {...blockTimerState},
     schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
     targetOverrides: {...targetOverrides},
+    categories: categories.map(c => ({...c})),
     pomo: pomoRefs.map(r => ({
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
-      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds
+      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, trackerSeconds:r.pomo.trackerSeconds
     })),
     customTimer: ctState ? {
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
@@ -958,6 +1362,12 @@ function applyState(state, {rerenderMatrix} = {}){
   if(state.trackerLog) saveTrackerLog(state.trackerLog);
   if(state.targetOverrides){
     targetOverrides = {...state.targetOverrides};
+  }
+  if(Array.isArray(state.categories) && state.categories.length){
+    categories = state.categories.map(c => ({...c}));
+    saveCategoriesLocal();
+    dayPanels.forEach(p => { if(p.editing) renderList(p); renderRail(p); });
+    renderCategoryManagerSidebar();
   }
   if(state.schedule){
     dayPanels.forEach(p => {
@@ -1122,6 +1532,7 @@ async function onSignedIn(user){
   document.getElementById('appWrap').hidden = false;
   hideNameEditor();
   userLabelEl.textContent = displayNameFor(user);
+  if(user && user.created_at) applyTrackStart(user.created_at);
 
   try{
     const remote = await pullCloudState();
@@ -1301,10 +1712,28 @@ function wrCancelAlarm(key){
     .then(({error}) => { if(error) console.error('cancel alarm failed', error); });
 }
 
-const TRACK_START = new Date(2026, 6, 31); // matrix tracking begins July 31, 2026 — the day this tracker was created
-TRACK_START.setHours(0,0,0,0);
+// Matrix tracking normally starts the day the signed-in account was created (from Supabase's
+// user.created_at), so this is just the fallback used before that's known (first paint, signed
+// out, etc.) — see applyTrackStart(), called from onSignedIn once we have the real user object.
+const TRACK_START_FALLBACK = new Date(2026, 6, 31);
+TRACK_START_FALLBACK.setHours(0,0,0,0);
+let TRACK_START = TRACK_START_FALLBACK;
 
 let mxYear = TRACK_START.getFullYear();
+
+function applyTrackStart(date){
+  const d = new Date(date);
+  if(isNaN(d)) return; // malformed/missing created_at — keep whatever TRACK_START already is
+  d.setHours(0,0,0,0);
+  TRACK_START = d;
+  mxYear = TRACK_START.getFullYear();
+  const noteEl = document.getElementById('mxNote');
+  if(noteEl){
+    const label = TRACK_START.toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' });
+    noteEl.textContent = `Tracking began ${label} — every cell is one day, left to right, top to bottom.`;
+  }
+  if(matrixView && !matrixView.hidden) renderMatrix();
+}
 
 const mxPrevBtn = document.getElementById('mxPrev');
 const mxNextBtn = document.getElementById('mxNext');
@@ -1323,10 +1752,11 @@ function renderMatrix(){
   const log = loadFocusLog();
   const today = new Date(); today.setHours(0,0,0,0);
 
-  // 2026 is the year tracking began (July 31, 2026) — start that year's grid at August 1
-  // so months before tracking never render as "not tracked" cells. Other years show Jan-Dec.
+  // The year tracking began should start its grid at the 1st of the month tracking actually
+  // began in (not January), so months before the account existed never render as "not tracked"
+  // cells. Every other year shows the full Jan-Dec grid.
   const gridStart = (mxYear === TRACK_START.getFullYear())
-    ? new Date(mxYear, 7, 1)
+    ? new Date(mxYear, TRACK_START.getMonth(), 1)
     : new Date(mxYear, 0, 1);
   const yearEnd = new Date(mxYear, 11, 31);
   const totalDays = Math.round((yearEnd - gridStart) / 86400000) + 1;
@@ -1368,12 +1798,12 @@ function fmt(min){
   let h12 = h % 12; if(h12 === 0) h12 = 12;
   return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
 }
+// 24-hour tick label (00, 03, 06 ... 21, 24) — the rail is a straightforward midnight-to-midnight
+// clock now, so labels are plain 24h hour numbers instead of 12h am/pm.
 function tickLabel(min){
-  const t = min >= 1440 ? min - 1440 : min;
-  let h = Math.floor(t/60) % 24;
-  const ampm = (h < 12 || h === 24) ? 'a' : 'p';
-  let h12 = h % 12; if(h12 === 0) h12 = 12;
-  return h12 + ampm;
+  const wrapped = ((min % 1440) + 1440) % 1440;
+  const h = (min >= 1440 && wrapped === 0) ? 24 : Math.floor(wrapped/60);
+  return String(h).padStart(2,'0');
 }
 function minsToHM(mins){
   mins = Math.max(0, Math.round(mins));
@@ -1395,12 +1825,14 @@ function parseClock(str){
 function computeProductive(day){
   return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.duration != null ? b.duration : (b.e - b.s)), 0);
 }
-// keep a day panel's "Set custom target" button in sync with whether an override is set
-function refreshDayTargetUI(panel){
-  const btn = panel.el.querySelector('.day-target-btn');
-  if(!btn) return;
+// keep the global edit-target icon (top-right of the stats card) in sync with whether today's
+// override is set — it always acts on the actual current day, not whichever tab is selected.
+function refreshGlobalTargetUI(){
+  const btn = document.getElementById('globalTargetBtn');
+  const panel = dayPanels[logical.idx];
+  if(!btn || !panel) return;
   const ov = targetOverrides[panel.day.key];
-  btn.textContent = ov != null ? ('Target: ' + minsToHM(ov)) : 'Set custom target';
+  btn.title = ov != null ? ('Edit today\'s target — currently ' + minsToHM(ov) + ' (custom)') : "Edit today's target";
   btn.classList.toggle('active', ov != null);
 }
 // --- unified activity tracker + per-block countdowns ---
@@ -1409,15 +1841,15 @@ const ACTIVITY_LOG_WINDOW_MS = 48*60*60*1000; // the Activity Log page only ever
 function loadTrackerLog(){ try{return JSON.parse(localStorage.getItem(TRACKER_KEY)||'{}')}catch(e){return {}} }
 function saveTrackerLog(x){ try{localStorage.setItem(TRACKER_KEY,JSON.stringify(x));}catch(e){} }
 function makeSessionId(){ return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
-function addTrackerSession(source, seconds, label, cat){
+function addTrackerSession(source, seconds, label, cat, id){
   seconds=Math.max(0,Math.round(seconds)); if(!seconds) return;
   const log=loadTrackerLog(), k=dateKey(new Date());
   log[k]=log[k]||[];
-  log[k].push({id:makeSessionId(),source,seconds,label:label||source,at:Date.now(),cat:cat||'day-soft'});
+  log[k].push({id:id||makeSessionId(),source,seconds,label:label||source,at:Date.now(),cat:cat||'day-soft'});
   saveTrackerLog(log); renderAllTrackers(); persistLocal();
   if(!logView.hidden) renderActivityLog();
 }
-function renderAllTrackers(){ dayPanels.forEach(p=>renderRail(p)); }
+function renderAllTrackers(){ renderRail(); }
 
 // drop any session older than the 48h window (and any now-empty date bucket) so the log doesn't
 // grow forever; also backfills an id onto any legacy entry that predates ids existing.
@@ -1456,8 +1888,10 @@ function renderActivityLog(){
   flat.forEach(entry => {
     const row = document.createElement('div');
     row.className = 'ct-row';
+    const entryCat = getCategory(entry.cat || 'day-soft');
+    const dotHtml = entryCat.id === 'rest' ? `<span class="dot rest"></span>` : `<span class="dot" style="background:${entryCat.color}"></span>`;
     row.innerHTML = `
-      <span class="dot ${entry.cat || 'day-soft'}"></span>
+      ${dotHtml}
       <span class="ct-row-time">${activityLogTimeLabel(entry.at)}</span>
       <span class="ct-row-label"></span>
       <span class="ct-row-dur">${ctDurationFmt(entry.seconds)}</span>
@@ -1551,7 +1985,12 @@ function blockFinishSession(){
   const elapsed = Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000));
   const total = blockTimerState.elapsed + elapsed;
   const finishedInfo = findBlockByKey(blockTimerState.blockKey);
-  if(finishedInfo) delete finishedInfo.b.remainingSec; // countdown hit zero — nothing left over
+  if(finishedInfo){
+    delete finishedInfo.b.remainingSec; delete finishedInfo.b.remainingDate; // countdown hit zero — nothing left over
+    // mark it "Done" for the rest of today; comparing this date against "today" each render is
+    // what makes the status naturally reset the next time this weekday comes around.
+    finishedInfo.b.doneDate = dateKey(new Date());
+  }
   clearInterval(blockTimerState.timerId);
   blockTimerState.running = false;
   blockTimerState.elapsed = 0; blockTimerState.endAt = null; blockTimerState.startedAt = null; blockTimerState.warned30 = false;
@@ -1559,6 +1998,7 @@ function blockFinishSession(){
   blockStartRinging();
   releaseWakeLockIfIdle();
   renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
+  renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
 }
 // manual Stop (mid-countdown) or dismissing an alarm that's already ringing
 function stopBlockTimer(){
@@ -1566,6 +2006,7 @@ function stopBlockTimer(){
     blockStopRinging();
     blockTimerState.blockKey = null; blockTimerState.label = '';
     dayPanels.forEach(renderList); persistLocal();
+    renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
     return;
   }
   if(!blockTimerState.running) return;
@@ -1575,7 +2016,10 @@ function stopBlockTimer(){
   // from there next time instead of resetting back to its full duration.
   const leftoverSec = Math.max(0, Math.round((blockTimerState.endAt - Date.now())/1000));
   const stoppedInfo = findBlockByKey(blockTimerState.blockKey);
-  if(stoppedInfo){ if(leftoverSec > 0) stoppedInfo.b.remainingSec = leftoverSec; else delete stoppedInfo.b.remainingSec; }
+  if(stoppedInfo){
+    if(leftoverSec > 0){ stoppedInfo.b.remainingSec = leftoverSec; stoppedInfo.b.remainingDate = dateKey(new Date()); }
+    else{ delete stoppedInfo.b.remainingSec; delete stoppedInfo.b.remainingDate; }
+  }
   clearInterval(blockTimerState.timerId);
   blockTimerState.running=false;
   blockTimerState.elapsed=0; blockTimerState.endAt=null; blockTimerState.startedAt=null; blockTimerState.warned30=false;
@@ -1583,6 +2027,7 @@ function stopBlockTimer(){
   if(total>0){ addFocusSeconds(total); addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
   releaseWakeLockIfIdle();
   renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
+  renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
 }
 // Same endAt-based tick used by the interval below AND by the background heartbeat
 // (tickAllRunning), so a throttled/backgrounded tab still catches up and fires the alarm the
@@ -1599,13 +2044,28 @@ function blockTimerTick(){
   const panel = dayKey ? dayPanels.find(p => p.day.key === dayKey) : null;
   if(panel){ renderList(panel); renderRail(panel); }
 }
+// Only one of the three timer types (block / pomodoro / custom timer-stopwatch) may tick at
+// once. These read the live state directly, so they're safe to call from anywhere regardless
+// of definition order in the file.
+function isBlockTimerBusy(){ return blockTimerState.running || blockTimerState.ringing; }
+function isPomoBusy(){ return !!(pomo && (pomo.running || pomo.ringing)); }
+function isCtBusy(){ return !!(ctState && (ctState.running || ctState.ringing)); }
+
 function toggleBlockTimer(panel,idx){
   const b=panel.day.blocks[idx]; if(b.type==='rest') return;
+  // Blocks can only be started on the day tab that is actually "today" — other days are
+  // read-only for timer purposes. (The Start button is also hidden for non-today panels in
+  // renderList, so this is a defense-in-depth check, not the primary gate.)
+  if(panel.dayIdx !== logical.idx) return;
   const key=panel.day.key+':'+idx;
   if(blockTimerState.ringing && blockTimerState.blockKey===key){ stopBlockTimer(); return; }
   if(blockTimerState.running || blockTimerState.ringing){
     if(blockTimerState.blockKey===key){ stopBlockTimer(); return; }
     stopBlockTimer();
+  } else if(isPomoBusy() || isCtBusy()){
+    // A pomodoro or custom timer/stopwatch session is already running — block timers stay
+    // locked out until it stops.
+    return;
   }
   if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   // Warm up the alarm's AudioContext right on this click (a real user gesture) — same reasoning
@@ -1613,7 +2073,12 @@ function toggleBlockTimer(panel,idx){
   if(!blockAudioCtx){ blockAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => blockAudioCtx); }
   if(blockAudioCtx.state === 'suspended') blockAudioCtx.resume();
   const fullDurationSec=Math.max(1,Math.round(b.duration!=null?b.duration:b.e-b.s))*60;
-  const duration=(b.remainingSec != null && b.remainingSec > 0) ? b.remainingSec : fullDurationSec;
+  // leftover time only resumes if it was left over *today* — otherwise (e.g. this is next
+  // week's occurrence of the same weekday block) it starts fresh from the full duration.
+  const today = dateKey(new Date());
+  const resumable = b.remainingSec != null && b.remainingSec > 0 && b.remainingDate === today;
+  const duration = resumable ? b.remainingSec : fullDurationSec;
+  delete b.doneDate; // (re)starting means it's no longer sitting in the "Done" state
   blockTimerState.running=true; blockTimerState.blockKey=key; blockTimerState.startedAt=Date.now();
   blockTimerState.elapsed=0; blockTimerState.endAt=Date.now()+duration*1000; blockTimerState.label=b.label;
   blockTimerState.category=b.type; blockTimerState.warned30=false;
@@ -1622,17 +2087,25 @@ function toggleBlockTimer(panel,idx){
   // screen off — same mechanism as the pomodoro and custom timer.
   wrScheduleAlarm('block', blockTimerState.endAt, 'Weekly Rhythm', `${b.label} — time's up.`, 'wr-block');
   acquireWakeLock(); renderList(panel); renderRail(panel); persistLocal();
+  renderPomo(); renderCt(); // block timer now busy — lock the other two widgets' Start buttons
 }
 
-// converts a real Date into "minutes on the rail's scale" (SCALE_START..SCALE_END, 7:30am–1am) —
-// times before 7:30am count as the tail end of the previous day, same convention as parseClock.
+// converts a real Date into "minutes on the rail's scale" (SCALE_START..SCALE_END, a full
+// midnight-to-midnight 24h day).
 function toScaleMinutes(d){
   let mins = d.getHours()*60 + d.getMinutes() + d.getSeconds()/60;
   if(mins < SCALE_START) mins += 1440;
   return Math.min(SCALE_END, Math.max(SCALE_START, mins));
 }
+// The productivity rail is now page-level (lives under the title, not inside a day panel), so it
+// always reflects the real current day regardless of which day tab is selected or which page
+// (Timer, Pomodoro, etc.) is showing. The `panel` argument is accepted for backwards-compat with
+// existing call sites but ignored — we always resolve today's own panel here.
 function renderRail(panel){
-  panel.segsSlot.innerHTML = '';
+  const todayPanel = dayPanels[logical.idx];
+  const segsSlot = document.getElementById('globalSegsSlot');
+  if(!todayPanel || !segsSlot) return;
+  segsSlot.innerHTML = '';
   const k = dateKey(new Date());
   const sessions = loadTrackerLog()[k] || [];
   // seconds accumulated so far in whatever block is running right now but hasn't been logged yet —
@@ -1641,37 +2114,41 @@ function renderRail(panel){
     ? blockTimerState.elapsed + Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000))
     : 0;
 
-  // This is a real 24-hour timeline (same 7:30am–1am scale as the hour ticks below it), not a
-  // "% of today's target" bar — so every segment is placed at the actual clock time it happened.
+  // This is a real 24-hour timeline (same midnight-to-midnight scale as the hour ticks below it),
+  // not a "% of today's target" bar — so every segment is placed at the actual clock time it happened.
   sessions.forEach(x => {
     const sec = Math.max(0, Number(x.seconds)||0);
     if(!sec) return;
     const endMin = toScaleMinutes(new Date(x.at));
     const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(x.at - sec*1000))));
+    const cat = getCategory(x.cat || 'day-soft');
     const seg = document.createElement('div');
-    seg.className = 'tracker-seg cat-' + (x.cat || 'day-soft');
+    seg.className = 'tracker-seg' + (cat.id === 'rest' ? ' cat-rest' : '');
+    if(cat.color){ seg.style.background = cat.color; seg.style.color = cat.color; }
     seg.style.left = ((startMin - SCALE_START) / SCALE_RANGE * 100) + '%';
     seg.style.width = Math.max(0, (endMin - startMin) / SCALE_RANGE * 100) + '%';
     seg.title = (x.label || x.source || 'Session') + ' — ' + ctDurationFmt(sec);
-    panel.segsSlot.appendChild(seg);
+    segsSlot.appendChild(seg);
   });
 
   if(liveSeconds > 0){
     const endMin = toScaleMinutes(new Date());
     const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(blockTimerState.startedAt - blockTimerState.elapsed*1000))));
+    const liveCat = getCategory(blockTimerState.category || 'day-soft');
     const seg = document.createElement('div');
-    seg.className = 'tracker-seg live cat-' + (blockTimerState.category || 'day-soft');
+    seg.className = 'tracker-seg live' + (liveCat.id === 'rest' ? ' cat-rest' : '');
+    if(liveCat.color){ seg.style.background = liveCat.color; seg.style.color = liveCat.color; }
     seg.style.left = ((startMin - SCALE_START) / SCALE_RANGE * 100) + '%';
     seg.style.width = Math.max(0, (endMin - startMin) / SCALE_RANGE * 100) + '%';
     seg.title = blockTimerState.label + ' — running now (' + ctDurationFmt(liveSeconds) + ')';
-    panel.segsSlot.appendChild(seg);
+    segsSlot.appendChild(seg);
   }
 
   if(!sessions.length && !liveSeconds){
     const empty = document.createElement('div');
     empty.className = 'tracker-empty';
     empty.textContent = "start any timer to build today's tracker";
-    panel.segsSlot.appendChild(empty);
+    segsSlot.appendChild(empty);
   }
 
   // a live "now" line, always on — it moves across the bar in real time like a clock hand,
@@ -1681,7 +2158,7 @@ function renderRail(panel){
     const nowLine = document.createElement('div');
     nowLine.className = 'tracker-now-line';
     nowLine.style.left = ((nowMin - SCALE_START) / SCALE_RANGE * 100) + '%';
-    panel.segsSlot.appendChild(nowLine);
+    segsSlot.appendChild(nowLine);
   }
 }
 function renderList(panel){
@@ -1693,16 +2170,16 @@ function renderList(panel){
     row.dataset.duration = duration;
     if(panel.editing){
       row.className = 'row editing';
+      let typeOptions = categories.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('')
+        + `<option value="rest">Rest</option>`;
+      if(b.type !== 'rest' && !categories.some(c => c.id === b.type)){
+        typeOptions = `<option value="${b.type}">(deleted category)</option>` + typeOptions;
+      }
       row.innerHTML = `
         <input class="edit-time edit-duration" type="number" min="1" max="1440" value="${duration}" title="Minutes">
         <span class="task-duration">min</span>
         <input class="edit-label">
-        <select class="edit-type">
-          <option value="day-strong">Corporate</option>
-          <option value="day-soft">Content/admin</option>
-          <option value="night">Deep work</option>
-          <option value="rest">Rest</option>
-        </select>
+        <select class="edit-type">${typeOptions}</select>
         <button type="button" class="edit-del" title="Remove block">✕</button>`;
       row.querySelector('.edit-label').value = b.label;
       row.querySelector('.edit-type').value = b.type;
@@ -1711,7 +2188,7 @@ function renderList(panel){
         b.s = 0; b.e = b.duration;
         b.label = row.querySelector('.edit-label').value.trim() || b.label;
         b.type = row.querySelector('.edit-type').value;
-        delete b.remainingSec; // edited duration invalidates any leftover time from before
+        delete b.remainingSec; delete b.remainingDate; delete b.doneDate; // edited duration invalidates any leftover/done state from before
         updateDay(panel);
       };
       row.querySelectorAll('.edit-duration,.edit-label,.edit-type').forEach(inp => inp.addEventListener('change', commit));
@@ -1721,7 +2198,11 @@ function renderList(panel){
       const running = blockTimerState.running && blockTimerState.blockKey === key;
       const ringingHere = blockTimerState.ringing && blockTimerState.blockKey === key;
       row.className = 'row' + (b.type === 'rest' ? ' rest' : '') + (ringingHere ? ' block-ringing' : '');
-      const hasLeftover = b.remainingSec != null && b.remainingSec > 0;
+      // Both "leftover time to resume" and "finished today" are scoped to today's date, since
+      // these blocks recur weekly — that's what makes the status reset on its own once this
+      // weekday next comes around, instead of carrying over from last time.
+      const today = dateKey(new Date());
+      const hasLeftover = b.remainingSec != null && b.remainingSec > 0 && b.remainingDate === today;
       let leftHtml;
       if(running){
         const left = Math.max(0, Math.round((blockTimerState.endAt - Date.now())/1000));
@@ -1737,10 +2218,19 @@ function renderList(panel){
       const btnLabel = ringingHere ? 'Stop alarm' : (running ? 'Stop' : (hasLeftover ? 'Resume' : 'Start'));
       const resetBtn = (hasLeftover && !running && !ringingHere)
         ? `<button type="button" class="task-reset" title="Reset back to the full duration">↺</button>` : '';
-      row.innerHTML = `<span class="label"></span>${leftHtml}${resetBtn}${b.type !== 'rest' ? `<button type="button" class="task-start ${running?'running':''} ${ringingHere?'ringing':''}">${btnLabel}</button>` : ''}`;
+      // Timer controls only exist on the day that is actually "today" — other day tabs are a
+      // read-only schedule preview, so no Start/Stop button is rendered for them at all.
+      const isToday = panel.dayIdx === logical.idx;
+      const lockedByOtherTimer = !running && !ringingHere && (isPomoBusy() || isCtBusy());
+      const showBtn = b.type !== 'rest' && isToday;
+      const rowCat = getCategory(b.type);
+      const dotHtml = rowCat.id === 'rest' ? `<span class="dot rest"></span>` : `<span class="dot" style="background:${rowCat.color}"></span>`;
+      // Status pills (Done/Upcoming/In Progress/etc.) have been removed from the row per request.
+      const statusHtml = '';
+      row.innerHTML = `${dotHtml}<span class="label-wrap"><span class="label"></span><span class="task-sub">${escapeHtml(rowCat.name)}</span></span>${leftHtml}${statusHtml}${resetBtn}${showBtn ? `<button type="button" class="task-start ${running?'running':''} ${ringingHere?'ringing':''}" ${lockedByOtherTimer ? 'disabled title="A pomodoro or timer/stopwatch session is already running"' : ''}>${btnLabel}</button>` : ''}`;
       row.querySelector('.label').textContent = b.label;
       const resetEl = row.querySelector('.task-reset');
-      if(resetEl) resetEl.addEventListener('click', () => { delete b.remainingSec; updateDay(panel); });
+      if(resetEl) resetEl.addEventListener('click', () => { delete b.remainingSec; delete b.remainingDate; updateDay(panel); });
       const btn = row.querySelector('.task-start');
       if(btn) btn.addEventListener('click', () => toggleBlockTimer(panel, idx));
     }
@@ -1750,7 +2240,8 @@ function renderList(panel){
     const addBtn = document.createElement('button');
     addBtn.type = 'button'; addBtn.className = 'add-block-btn'; addBtn.textContent = '+ Add block';
     addBtn.addEventListener('click', () => {
-      panel.day.blocks.push({duration:60,s:0,e:60,label:'New block',type:'day-soft'});
+      const defaultType = categories[0] ? categories[0].id : 'rest';
+      panel.day.blocks.push({duration:60,s:0,e:60,label:'New block',type:defaultType});
       updateDay(panel);
     });
     listEl.appendChild(addBtn);
@@ -1761,7 +2252,7 @@ function applyScheduleUpdate(panel){
   panel.productiveTotal = getProductiveTarget(panel.day);
   const isCustom = targetOverrides[panel.day.key] != null;
   panel.el.querySelector('.day-total').textContent = minsToHM(panel.productiveTotal) + ' target' + (isCustom ? ' (custom target)' : '');
-  refreshDayTargetUI(panel);
+  refreshGlobalTargetUI();
   renderRail(panel);
   renderList(panel);
 }
@@ -1769,7 +2260,7 @@ function updateDay(panel){
   panel.day.blocks.sort((a,b) => a.s - b.s);
   applyScheduleUpdate(panel);
   persistLocal();
-  if(panel === dayPanels[activeIdx]) renderStats();
+  if(panel === dayPanels[activeIdx] || panel.dayIdx === logical.idx) renderStats();
   if(!matrixView.hidden) renderMatrix();
 }
 
@@ -1818,7 +2309,23 @@ const days = [
 const DEFAULT_SCHEDULE = days.map(d => d.blocks.map(b => ({...b})));
 days.forEach(d => d.blocks.forEach(b => { if(b.duration == null) b.duration=Math.max(1,b.e-b.s); }));
 
-const ticks = [450,600,780,960,1140,1320,1500];
+const ticks = [0,180,360,540,720,900,1080,1260,1440];
+
+// the hour-tick labels under the global rail never change, so build them once here instead of
+// per day panel (the rail itself is now page-level, not per-day — see #globalTicks).
+(function initGlobalTicks(){
+  const el = document.getElementById('globalTicks');
+  if(!el) return;
+  el.innerHTML = ticks.map(t => `<span class="tick" style="left:${((t-SCALE_START)/SCALE_RANGE)*100}%">${tickLabel(t)}</span>`).join('');
+})();
+
+// the Timer/Stopwatch/Pomodoro legend row (under the rail ticks) has been removed per request —
+// this function is kept a no-op (rather than deleted) so #globalTrackerLegend just stays hidden.
+(function initGlobalTrackerLegend(){
+  const el = document.getElementById('globalTrackerLegend');
+  if(!el) return;
+  el.innerHTML = '';
+})();
 
 // --- figure out "logical" schedule day: rolls over at real midnight, same as the calendar date.
 function getLogicalNow(){
@@ -1851,38 +2358,41 @@ days.forEach((day, i) => {
   el.className = 'day';
   el.hidden = true;
 
-  const tickHtml = ticks.map(t => `<span class="tick" style="left:${((t-SCALE_START)/SCALE_RANGE)*100}%">${tickLabel(t)}</span>`).join('');
-
   el.innerHTML = `
     <div class="day-head">
-      <div class="day-name">${day.key}${i === logical.idx ? '<span class="today-pill">Today</span>' : ''}</div>
+      <div class="day-head-left">
+        <div class="day-eyebrow">${day.key.toUpperCase()}</div>
+        <div class="day-heading-row">
+          <div class="day-name">${day.key}${i === logical.idx ? '<span class="today-pill">Today</span>' : ''}</div>
+          <div class="day-total"></div>
+        </div>
+      </div>
       <div class="day-head-right">
         <div class="day-tag">${day.tag}</div>
         <button type="button" class="day-edit-btn">Edit</button>
       </div>
     </div>
-    <div class="day-total-row">
-      <div class="day-total"></div>
-      <button type="button" class="day-target-btn"></button>
-      <span class="day-target-editor" hidden>
-        <input type="number" class="day-target-h" min="0" max="23" placeholder="h">
-        <span>h</span>
-        <input type="number" class="day-target-m" min="0" max="59" placeholder="m">
-        <span>m</span>
-        <button type="button" class="day-target-save">Save</button>
-        <button type="button" class="day-target-auto">Auto</button>
-      </span>
+    <div class="list-header">
+      <div class="list-header-title"><span class="list-header-icon">☰</span> What I'm Doing</div>
+      <button type="button" class="add-task-btn">+ Add Task</button>
     </div>
-    <div class="stats-slot"></div>
-    <div class="rail"><div class="track"></div><div class="segs-slot" style="position:absolute;inset:0;"></div></div>
-    <div class="ticks">${tickHtml}</div>
     <div class="list"></div>
   `;
 
-  const segsSlot = el.querySelector('.segs-slot');
   const listEl = el.querySelector('.list');
   const editBtn = el.querySelector('.day-edit-btn');
-  const panel = { el, btn, day, productiveTotal, segsSlot, listEl, editing:false };
+  const panel = { el, btn, day, productiveTotal, listEl, editing:false, dayIdx:i, editBtn };
+
+  el.querySelector('.add-task-btn').addEventListener('click', () => {
+    if(!panel.editing){
+      panel.editing = true;
+      editBtn.textContent = 'Done';
+      editBtn.classList.add('active');
+    }
+    const defaultType = categories[0] ? categories[0].id : 'rest';
+    panel.day.blocks.push({duration:60,s:0,e:60,label:'New task',type:defaultType});
+    updateDay(panel);
+  });
 
   editBtn.addEventListener('click', () => {
     panel.editing = !panel.editing;
@@ -1891,46 +2401,10 @@ days.forEach((day, i) => {
     renderList(panel);
   });
 
-  // custom productive-time target: fill in the initial label, then wire the inline editor
+  // day-total chip: informational only now — the editable target control lives in the
+  // global tracker block up top (it always edits today's real target, see initGlobalTargetEditor).
   const isCustomInit = targetOverrides[day.key] != null;
   el.querySelector('.day-total').textContent = minsToHM(productiveTotal) + ' target' + (isCustomInit ? ' (custom target)' : '');
-  refreshDayTargetUI(panel);
-
-  const targetBtn = el.querySelector('.day-target-btn');
-  const targetEditor = el.querySelector('.day-target-editor');
-  const targetHInput = el.querySelector('.day-target-h');
-  const targetMInput = el.querySelector('.day-target-m');
-  const targetSaveBtn = el.querySelector('.day-target-save');
-  const targetAutoBtn = el.querySelector('.day-target-auto');
-
-  targetBtn.addEventListener('click', () => {
-    const willShow = targetEditor.hidden;
-    targetEditor.hidden = !willShow;
-    if(willShow){
-      const current = targetOverrides[day.key] != null ? targetOverrides[day.key] : panel.productiveTotal;
-      targetHInput.value = Math.floor(current / 60);
-      targetMInput.value = current % 60;
-      targetHInput.focus();
-    }
-  });
-  targetSaveBtn.addEventListener('click', () => {
-    const h = Math.max(0, Math.floor(Number(targetHInput.value) || 0));
-    const m = Math.max(0, Math.min(59, Math.floor(Number(targetMInput.value) || 0)));
-    targetOverrides[day.key] = h * 60 + m;
-    targetEditor.hidden = true;
-    applyScheduleUpdate(panel);
-    if(panel === dayPanels[activeIdx]) renderStats();
-    if(!matrixView.hidden) renderMatrix();
-    persistLocal();
-  });
-  targetAutoBtn.addEventListener('click', () => {
-    delete targetOverrides[day.key];
-    targetEditor.hidden = true;
-    applyScheduleUpdate(panel);
-    if(panel === dayPanels[activeIdx]) renderStats();
-    if(!matrixView.hidden) renderMatrix();
-    persistLocal();
-  });
 
   renderRail(panel);
   renderList(panel);
@@ -1940,11 +2414,64 @@ days.forEach((day, i) => {
   dayPanels.push(panel);
 });
 
+// --- global target editor (top of page): always edits today's real day, wherever the schedule
+// tabs happen to be scrolled to. Wired once here instead of per day panel. ---
+(function initGlobalTargetEditor(){
+  const targetBtn = document.getElementById('globalTargetBtn');
+  const targetEditor = document.getElementById('globalTargetEditor');
+  const targetHInput = document.getElementById('globalTargetH');
+  const targetMInput = document.getElementById('globalTargetM');
+  const targetSaveBtn = document.getElementById('globalTargetSave');
+  const targetAutoBtn = document.getElementById('globalTargetAuto');
+  if(!targetBtn) return;
+
+  targetBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const panel = dayPanels[logical.idx];
+    if(!panel) return;
+    const willShow = targetEditor.hidden;
+    targetEditor.hidden = !willShow;
+    if(willShow){
+      const current = targetOverrides[panel.day.key] != null ? targetOverrides[panel.day.key] : panel.productiveTotal;
+      targetHInput.value = Math.floor(current / 60);
+      targetMInput.value = current % 60;
+      targetHInput.focus();
+    }
+  });
+  targetEditor.addEventListener('click', (e) => e.stopPropagation());
+  // close the popover on any click elsewhere on the page, like a normal dropdown
+  document.addEventListener('click', () => { targetEditor.hidden = true; });
+  targetSaveBtn.addEventListener('click', () => {
+    const panel = dayPanels[logical.idx];
+    if(!panel) return;
+    const h = Math.max(0, Math.floor(Number(targetHInput.value) || 0));
+    const m = Math.max(0, Math.min(59, Math.floor(Number(targetMInput.value) || 0)));
+    targetOverrides[panel.day.key] = h * 60 + m;
+    targetEditor.hidden = true;
+    applyScheduleUpdate(panel);
+    renderStats();
+    if(!matrixView.hidden) renderMatrix();
+    persistLocal();
+  });
+  targetAutoBtn.addEventListener('click', () => {
+    const panel = dayPanels[logical.idx];
+    if(!panel) return;
+    delete targetOverrides[panel.day.key];
+    targetEditor.hidden = true;
+    applyScheduleUpdate(panel);
+    renderStats();
+    if(!matrixView.hidden) renderMatrix();
+    persistLocal();
+  });
+
+  refreshGlobalTargetUI();
+})();
+
 // ============================================================================
 // Pomodoro — single global instance, lives on the Timer page (in-memory only,
 // resets on page reload, same as it did per-day before)
 // ============================================================================
-const pomo = {
+pomo = {
   workLen: 25*60, breakLen: 5*60,
   mode: 'focus', remaining: 25*60,
   running: false, timerId: null,
@@ -1952,7 +2479,17 @@ const pomo = {
   ringing: false, alarmId: null, warned30: false,
   endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
   lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
+  trackerSeconds: 0, // focus seconds accumulated since the last flush to the rail/tracker log
 };
+// Commits whatever focus time has piled up (since the last flush) to the rail/productivity-
+// indicator tracker log as one session, then zeroes the accumulator. Called whenever a
+// continuous focus stretch ends: pause, reset, or a focus period completing into a break.
+function pomoFlushTracker(){
+  if(pomo.trackerSeconds > 0){
+    addTrackerSession('pomodoro', pomo.trackerSeconds, SOURCE_CATEGORIES.pomodoro.name, SOURCE_CATEGORIES.pomodoro.id);
+    pomo.trackerSeconds = 0;
+  }
+}
 
 const pomoAlarmKey = 'pomo'; // stable id for the server-side scheduled alarm
 
@@ -2013,6 +2550,7 @@ function pomoStopRinging(){
   clearInterval(pomo.alarmId);
   pomo.alarmId = null;
   wrCancelAlarm(pomoAlarmKey); // acknowledged locally — stop the server's repeat pushes
+  renderCt(); dayPanels.forEach(renderList); // pomodoro no longer ringing/busy — unlock the other widgets
 }
 gpStopAlarmBtn.addEventListener('click', pomoStopRinging);
 
@@ -2027,6 +2565,10 @@ function renderPomo(){
   gpModeTag.classList.toggle('break', pomo.mode === 'break');
   gpStartBtn.textContent = pomo.running ? 'Pause' : (pomo.remaining < (pomo.mode==='focus'?pomo.workLen:pomo.breakLen) ? 'Resume' : 'Start');
   gpStartBtn.classList.toggle('running', pomo.running);
+  // Locked out while a block timer or the custom timer/stopwatch is actively running elsewhere —
+  // pausing/resuming its own already-running session is still allowed.
+  gpStartBtn.disabled = !pomo.running && (isBlockTimerBusy() || isCtBusy());
+  gpStartBtn.title = gpStartBtn.disabled ? 'A block timer or timer/stopwatch session is already running' : '';
   gpSessionsEl.textContent = pomo.sessions;
   gpLoggedEl.textContent = minsToHM(pomo.focusSeconds/60);
   gpPresetBtns.forEach(b => b.disabled = pomo.running);
@@ -2040,6 +2582,7 @@ function pomoCreditElapsedFocus(now){
     if(elapsed > 0){
       pomo.focusSeconds += elapsed;
       addFocusSeconds(elapsed);
+      pomo.trackerSeconds += elapsed;
       pomo.lastCredit += elapsed * 1000;
     }
   } else {
@@ -2066,6 +2609,7 @@ function pomoTick(){
       pomo.sessions++;
       pomo.mode = 'break';
       pomo.remaining = pomo.breakLen;
+      pomoFlushTracker(); // focus stretch just ended — log it to the rail now
     } else {
       pomo.mode = 'focus';
       pomo.remaining = pomo.workLen;
@@ -2089,11 +2633,15 @@ gpStartBtn.addEventListener('click', () => {
   if(pomo.ringing) pomoStopRinging();
   if(pomo.running){
     // pause: lock in the precise remaining time from the deadline, not a tick count
+    pomoCreditElapsedFocus(Date.now()); // credit right up to the pause, same as ctState's pause
     pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
     pomo.running = false;
     clearInterval(pomo.timerId);
     releaseWakeLockIfIdle();
     wrCancelAlarm(pomoAlarmKey);
+    pomoFlushTracker(); // log the focus stretch so far to the rail now that it's paused
+  } else if(isBlockTimerBusy() || isCtBusy()){
+    return; // a block timer or the custom timer/stopwatch is already running
   } else {
     ensurePomoNotifyPermission();
     // Warm up the alarm's AudioContext right on this click (a real user gesture) — see the
@@ -2113,17 +2661,22 @@ gpStartBtn.addEventListener('click', () => {
       'wr-pomo');
   }
   renderPomo();
+  renderStats(); // picks up any tracker session pomoFlushTracker() just logged (e.g. on pause)
+  renderCt(); dayPanels.forEach(renderList); // pomodoro busy-state changed — refresh the other widgets' Start buttons
   persistLocal();
 });
 
 gpResetBtn.addEventListener('click', () => {
   if(pomo.ringing) pomoStopRinging();
+  pomoFlushTracker(); // log whatever focus time had accumulated before wiping the countdown
   pomo.running = false;
   pomo.warned30 = false;
   clearInterval(pomo.timerId);
   pomo.mode = 'focus';
   pomo.remaining = pomo.workLen;
   renderPomo();
+  renderStats();
+  renderCt(); dayPanels.forEach(renderList); // pomodoro freed up — unlock the other widgets' Start buttons
   persistLocal();
   releaseWakeLockIfIdle();
   wrCancelAlarm(pomoAlarmKey);
@@ -2177,8 +2730,9 @@ function addTimerHistoryEntry(entry){
   saveTimerHistoryLocal();
   renderCtHistory();
 }
-// removing an entry also un-credits the seconds it added to today's productive total — this is
-// the fix for "forgot to stop it": delete the mistaken entry and the progress bar corrects itself
+// removing an entry also un-credits the seconds it added to today's productive total, AND
+// removes the matching rail/tracker-log entry (same id) so the bar and productivity indicator
+// correct themselves too — this is the fix for "forgot to stop it".
 function deleteTimerHistoryEntry(id){
   const idx = timerHistory.entries.findIndex(e => e.id === id);
   if(idx === -1) return;
@@ -2189,8 +2743,20 @@ function deleteTimerHistoryEntry(id){
   const k = dateKey(new Date());
   log[k] = Math.max(0, (log[k] || 0) - entry.seconds);
   saveFocusLog(log);
+  const tracker = loadTrackerLog();
+  const dayArr = tracker[k];
+  if(dayArr){
+    const tIdx = dayArr.findIndex(x => x.id === id);
+    if(tIdx !== -1){
+      dayArr.splice(tIdx, 1);
+      if(!dayArr.length) delete tracker[k];
+      saveTrackerLog(tracker);
+    }
+  }
   renderCtHistory();
+  renderAllTrackers();
   renderStats();
+  if(!logView.hidden) renderActivityLog();
   persistLocal();
 }
 // unlike minsToHM (used for the daily productive-time totals), session history always shows
@@ -2293,6 +2859,7 @@ function ctStopRinging(){
   clearInterval(ctState.alarmId);
   ctState.alarmId = null;
   wrCancelAlarm('ct'); // acknowledged locally — stop the server's repeat pushes
+  renderPomo(); dayPanels.forEach(renderList); // timer/stopwatch no longer ringing/busy — unlock the other widgets
 }
 ctStopAlarmBtn.addEventListener('click', ctStopRinging);
 
@@ -2396,6 +2963,10 @@ function renderCt(){
   ctTimeEl.textContent = isTimer ? ctClockFmt(ctState.remaining) : ctClockFmt(ctStopwatchElapsed());
   ctStartBtn.textContent = ctState.running ? 'Pause' : (ctState.sessionActive ? 'Resume' : 'Start');
   ctStartBtn.classList.toggle('running', ctState.running);
+  // Locked out while a block timer or the pomodoro is actively running elsewhere — pausing/
+  // resuming its own already-running session is still allowed.
+  ctStartBtn.disabled = !ctState.running && (isBlockTimerBusy() || isPomoBusy());
+  ctStartBtn.title = ctStartBtn.disabled ? 'A block timer or pomodoro session is already running' : '';
   ctResetBtn.textContent = 'Stop';
   ctResetBtn.disabled = !ctState.sessionActive && !ctState.running;
   ctDurationPresets.style.display = isTimer ? 'flex' : 'none';
@@ -2425,11 +2996,17 @@ function ctFinishSession(ring){
   clearInterval(ctState.timerId);
   ctState.running = false;
   if(ctState.sessionActive && ctState.sessionSeconds > 0){
+    const entryId = Date.now().toString(36) + Math.random().toString(36).slice(2,7);
     addTimerHistoryEntry({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      id: entryId,
       type: ctState.mode,
       seconds: ctState.sessionSeconds, startedAt: ctState.sessionStartedAt, endedAt: Date.now()
     });
+    // also credit the rail/productivity-indicator tracker log — this is what was missing before:
+    // Timer/Stopwatch sessions counted toward the focus log but never showed up on the bar.
+    // Reuses the same id as the history entry above so deleting one un-credits the other too.
+    const srcCat = ctState.mode === 'timer' ? SOURCE_CATEGORIES.timer : SOURCE_CATEGORIES.stopwatch;
+    addTrackerSession(ctState.mode, ctState.sessionSeconds, srcCat.name, srcCat.id, entryId);
   }
   ctState.sessionActive = false;
   ctState.sessionSeconds = 0;
@@ -2495,6 +3072,8 @@ ctStartBtn.addEventListener('click', () => {
     clearInterval(ctState.timerId);
     releaseWakeLockIfIdle();
     wrCancelAlarm('ct');
+  } else if(isBlockTimerBusy() || isPomoBusy()){
+    return; // a block timer or the pomodoro is already running
   } else {
     if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
     // Warm up the alarm's AudioContext right on this click (a real user gesture) instead of
@@ -2520,12 +3099,14 @@ ctStartBtn.addEventListener('click', () => {
     acquireWakeLock();
   }
   renderCt();
+  renderPomo(); dayPanels.forEach(renderList); // timer/stopwatch busy-state changed — refresh the other widgets' Start buttons
   persistLocal();
 });
 ctResetBtn.addEventListener('click', () => {
   if(ctState.ringing) ctStopRinging();
   ctFinishSession(false); // logs whatever was accumulated (even partial) so it stays correctable
   wrCancelAlarm('ct');
+  renderPomo(); dayPanels.forEach(renderList); // timer/stopwatch freed up — unlock the other widgets' Start buttons
 });
 
 renderCt();
@@ -2543,23 +3124,105 @@ function selectDay(i){
 }
 
 function renderStats(){
-  const p=dayPanels[activeIdx];
-  const slot=p.el.querySelector('.stats-slot');
+  // The stats card is page-level now (under the title), so it always tracks the real current
+  // day's target/progress — not whichever day tab happens to be selected in Weekly Rhythm.
+  const p=dayPanels[logical.idx];
+  const slot=document.getElementById('globalStatsSlot');
+  if(!p || !slot) return;
   const k=dateKey(new Date());
   const sessions=loadTrackerLog()[k]||[];
   const doneSeconds=sessions.reduce((a,x)=>a+(Number(x.seconds)||0),0);
   const targetSeconds=Math.max(0,p.productiveTotal*60);
   const pct=targetSeconds?Math.min(100,doneSeconds/targetSeconds*100):0;
   const remaining=Math.max(0,(targetSeconds-doneSeconds)/60);
+  const R=46, C=2*Math.PI*R;
+  const dashOffset = C*(1-pct/100);
+  const caption = pct>=100 ? "Target reached — nice work." : "Keep going, you're doing great.";
   slot.innerHTML=`<div class="stats">
-    <div class="stat"><div class="lbl">Tracked — done</div><div class="val">${minsToHM(doneSeconds/60)}</div></div>
-    <div class="pbar"><div class="pbar-fill" style="width:${pct}%"></div></div>
-    <div class="stat left"><div class="lbl">Target — left</div><div class="val">${minsToHM(remaining)}</div></div>
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 104 104">
+        <circle class="ring-track" cx="52" cy="52" r="${R}"></circle>
+        <circle class="ring-fill" cx="52" cy="52" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${dashOffset}"></circle>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-time">${minsToHM(remaining)}</div>
+        <div class="ring-sub">left</div>
+      </div>
+    </div>
+    <div class="stats-mid">
+      <div class="stats-heading">Productivity Time Left</div>
+      <div class="stats-caption">${caption}</div>
+      <div class="pbar"><div class="pbar-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="stats-right">
+      <div class="stats-right-label">Today's Progress</div>
+      <div class="stats-right-frac">${minsToHM(doneSeconds/60)} / ${minsToHM(targetSeconds/60)}</div>
+      <div class="stats-right-pct">${Math.round(pct)}%</div>
+    </div>
   </div>`;
   renderRail(p);
+  // The "Today's Focus" sidebar stays part of Weekly Rhythm and reflects whichever day tab is
+  // currently selected there, same as before.
+  renderFocusSidebar(dayPanels[activeIdx]);
 }
+function renderFocusSidebar(panel){
+  const list = document.getElementById('focusList');
+  if(!list) return;
+  const totals = {};
+  panel.day.blocks.forEach(b => {
+    if(b.type === 'rest') return;
+    const dur = Math.max(1, Math.round((b.duration != null ? b.duration : (b.e-b.s)) || 1));
+    totals[b.type] = (totals[b.type]||0) + dur;
+  });
+  const rows = Object.keys(totals)
+    .map(id => ({cat:getCategory(id), mins:totals[id]}))
+    .sort((a,b) => b.mins - a.mins);
+  if(!rows.length){
+    list.innerHTML = `<div class="focus-empty">No tasks scheduled yet.</div>`;
+    return;
+  }
+  list.innerHTML = rows.map(r => `
+    <div class="focus-row">
+      <span class="focus-dot" style="background:${r.cat.color || '#9DA1A8'}"></span>
+      <span class="focus-name">${escapeHtml(r.cat.name)}</span>
+      <span class="focus-time">${minsToHM(r.mins)}</span>
+    </div>
+  `).join('');
+}
+(function initThemeToggle(){
+  const btn = document.getElementById('themeToggleBtn');
+  const meta = document.getElementById('themeColorMeta');
+  const LIGHT_THEME_COLOR = '#F7F7F5';
+  const DARK_THEME_COLOR = '#141416';
+  function apply(theme){
+    if(theme === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    if(meta) meta.setAttribute('content', theme === 'dark' ? DARK_THEME_COLOR : LIGHT_THEME_COLOR);
+  }
+  // sync in case the inline head script (or another tab, via storage events) already set it
+  apply(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+  if(!btn) return;
+  btn.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    apply(next);
+    try{ localStorage.setItem('wr_theme', next); }catch(e){}
+  });
+  window.addEventListener('storage', (e) => {
+    if(e.key === 'wr_theme') apply(e.newValue === 'dark' ? 'dark' : 'light');
+  });
+})();
+(function initDateDisplay(){
+  const el = document.getElementById('dateDisplayText');
+  if(!el) return;
+  const fmt = () => {
+    el.textContent = new Date().toLocaleDateString(undefined, { weekday:'long', month:'short', day:'numeric' });
+  };
+  fmt();
+  setInterval(fmt, 60000);
+})();
+renderCategoryManagerSidebar();
 selectDay(logical.idx);
-setInterval(() => { if(activeIdx === logical.idx) renderStats(); }, 30000);
+setInterval(() => { renderStats(); }, 30000);
 
 // The tab stays open for hours (that's the whole point of the alarms) — so the "today" the app
 // booted with can go stale if midnight passes while it's open. Check for that periodically and
@@ -2585,6 +3248,8 @@ setInterval(() => {
   });
   if(wasFollowing) selectDay(fresh.idx);
   else renderStats(); // still refresh the now-marker/stats even on a day the user pinned
+  renderRail(); // refresh the global tracker rail against the new "today"
+  refreshGlobalTargetUI(); // and the target editor, since it now acts on a different day
 }, 30000);
 </script>
 </div>
