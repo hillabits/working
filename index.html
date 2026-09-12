@@ -544,9 +544,36 @@
   .quote-rule{ width:20px; height:1px; background:var(--line-strong); }
 
   @media (max-width:720px){
-    .row:not(.editing){ flex-wrap:wrap; }
-    .row .label-wrap{ order:1; width:100%; }
     .stats{ gap:16px; }
+  }
+
+  /* ---------------- task rows on mobile ----------------
+     Below ~640px there isn't room for dot / label / time / reset / button
+     all on one line, so the row becomes a compact 2-line grid instead of
+     letting flex-wrap scatter pieces across the line unpredictably:
+       [dot]  Task name
+              category · duration          [reset] [Start/Resume]          */
+  @media (max-width:640px){
+    .row:not(.editing){
+      display:grid;
+      grid-template-columns:auto 1fr auto auto;
+      grid-template-areas:
+        "dot   label label label"
+        ".     time  reset action";
+      align-items:center;
+      column-gap:10px; row-gap:8px;
+      padding:14px 4px;
+    }
+    .row:not(.editing) .dot{ grid-area:dot; margin-top:2px; }
+    .row:not(.editing) .label-wrap{ grid-area:label; width:auto; }
+    .row:not(.editing) .task-duration,
+    .row:not(.editing) .task-remaining{
+      grid-area:time; justify-self:start; min-width:0; font-size:12px;
+    }
+    .row:not(.editing) .task-reset{ grid-area:reset; justify-self:end; }
+    .row:not(.editing) .task-start{
+      grid-area:action; justify-self:end; min-width:78px; text-align:center;
+    }
   }
 
   /* ---------------- pomodoro ---------------- */
@@ -790,9 +817,8 @@
 
 <div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
   <div style="max-width:360px;width:100%;text-align:center;">
-    <div class="eyebrow" style="justify-content:center;">Weekly Rhythm</div>
-    <h1 style="font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,6vw,34px);line-height:1.1;margin:0 0 10px;">Your week,<br><em style="font-style:italic;font-weight:400;background:linear-gradient(90deg,var(--day-strong),var(--night));-webkit-background-clip:text;background-clip:text;color:transparent;">held together.</em></h1>
-    <p class="sub" style="margin:0 auto 28px;">Sign in to sync your schedule and progress across every device.</p>
+    <h1 style="font-family:'Fraunces',serif;font-weight:600;font-size:clamp(32px,7vw,44px);line-height:1.1;margin:0 0 10px;letter-spacing:-.02em;">Bitrhythm</h1>
+    <p class="sub" style="margin:0 auto 28px;">your fully functional time tracker</p>
     <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
       <input id="authEmail" type="email" placeholder="email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
       <input id="authPass" type="password" placeholder="password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
