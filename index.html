@@ -217,7 +217,52 @@
   .list{ display:flex; flex-direction:column; gap:16px; }
   .row{ display:flex; gap:16px; align-items:baseline; font-size:13.5px; }
   .row .time{ font-family:'JetBrains Mono',monospace; color:var(--text-dim); flex:none; min-width:118px; white-space:nowrap; }
-  .row .label{ color:var(--text); line-height:1.5; }
+  .row .label{ color:var(--text); line-height:1.5; flex:1; }
+  .task-duration{font-family:'JetBrains Mono',monospace;color:var(--text-dim);font-size:11.5px;min-width:55px;}
+  .task-remaining{font-family:'JetBrains Mono',monospace;color:var(--night);font-size:11.5px;min-width:70px;font-weight:600;white-space:nowrap;}
+  .task-start{
+    background:linear-gradient(180deg,#7885ff,var(--night));
+    border:1px solid var(--night); color:#fff; font-family:'JetBrains Mono',monospace;
+    font-size:11px; font-weight:700; letter-spacing:.03em; padding:7px 15px; border-radius:100px;
+    cursor:pointer; white-space:nowrap; box-shadow:0 3px 12px -3px var(--night-glow);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .task-start:hover{ transform:translateY(-1px); box-shadow:0 5px 18px -3px var(--night-glow); }
+  .task-start:active{ transform:translateY(0); box-shadow:0 2px 8px -3px var(--night-glow); }
+  .task-start.running{ background:var(--surface-2); border-color:var(--day-soft); color:var(--day-soft); box-shadow:none; }
+  .task-start.running:hover{ transform:none; box-shadow:none; }
+  .task-start.ringing{background:var(--day-strong);border-color:var(--day-strong);color:#0F1115;font-weight:700; box-shadow:0 0 0 4px rgba(227,162,61,.18);}
+  .task-start:disabled{opacity:.45;cursor:not-allowed; box-shadow:none; transform:none;}
+  .task-reset{
+    background:none; border:1px solid var(--line); color:var(--text-faint);
+    border-radius:7px; width:28px; height:28px; cursor:pointer; flex:none; font-size:14px; line-height:1;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:color .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .task-reset:hover{ color:var(--night); border-color:var(--night); transform:rotate(-45deg); }
+  .row.block-ringing{ animation:block-ring-flash 1s ease-in-out infinite; border-radius:8px; }
+  @keyframes block-ring-flash{
+    0%,100%{ background:transparent; }
+    50%{ background:rgba(227,162,61,.14); }
+  }
+  .tracker-empty{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-faint);display:flex;align-items:center;justify-content:center;height:100%;}
+  .tracker-seg{position:absolute;top:0;bottom:0;border-radius:8px;min-width:2px;transition:left .25s,width .25s;}
+  /* every task category gets its own tracker color: Corporate = day-strong, Content/admin = day-soft,
+     Deep work = night. Sessions are colored by the category of the task actually worked on, not by
+     which tool (block/pomodoro/timer) was used to track it. */
+  .tracker-seg.cat-day-strong{ background:var(--day-strong); color:var(--day-strong); }
+  .tracker-seg.cat-day-soft{ background:var(--day-soft); color:var(--day-soft); }
+  .tracker-seg.cat-night{ background:var(--night); color:var(--night); }
+  /* the currently-running segment: glows in its category color and pulses so it reads as "live" */
+  .tracker-seg.live{ animation:tracker-live-glow 1.6s ease-in-out infinite; }
+  @keyframes tracker-live-glow{
+    0%,100%{ box-shadow:0 0 6px 1px currentColor, 0 0 14px 2px currentColor; opacity:.9; }
+    50%{ box-shadow:0 0 10px 3px currentColor, 0 0 24px 6px currentColor; opacity:1; }
+  }
+  /* live "now" line at the leading edge of the running segment — position is recomputed every
+     tick straight off the browser's own clock, so it always reflects local time-of-day. */
+  .tracker-now-line{ position:absolute; top:-4px; bottom:-4px; width:2px; background:#fff;
+    box-shadow:0 0 8px rgba(255,255,255,.9); border-radius:1px; pointer-events:none; }
   .row.rest .label, .row.rest .time{ color:var(--text-faint); }
   .row.done .label{ text-decoration:line-through; text-decoration-color:var(--text-faint); text-decoration-thickness:1px; opacity:.55; }
   .dot{ display:inline-block; width:7px; height:7px; border-radius:2px; margin-right:10px; position:relative; top:-1px; }
@@ -373,6 +418,8 @@
     color:var(--text-faint); border:1px solid var(--line); border-radius:100px; padding:3px 9px; flex:none;
   }
   .ct-row-dur{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim); flex:none; margin-left:auto; }
+  .ct-row-time{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); flex:none; white-space:nowrap; }
+  .ct-row-label{ color:var(--text); font-size:13px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .ct-row-del{
     background:none; border:1px solid var(--line); color:var(--text-faint);
     border-radius:6px; width:24px; height:24px; cursor:pointer; flex:none; font-size:12px; line-height:1;
@@ -503,6 +550,7 @@
     <button class="view-btn" id="showMatrixBtn" type="button">Productivity Matrix</button>
     <button class="view-btn" id="showTimerBtn" type="button">Timer</button>
     <button class="view-btn" id="showPomodoroBtn" type="button">Pomodoro</button>
+    <button class="view-btn" id="showLogBtn" type="button">Activity Log</button>
   </div>
 
   <div id="viewSchedule">
@@ -639,6 +687,18 @@
     </div>
   </div>
 
+  <div id="viewLog" hidden>
+    <div class="ct-head">
+      <div class="ct-title">Activity Log</div>
+    </div>
+    <div class="ct-note">Every block session from the last 48 hours, most recent first. Remove an entry to correct a mistaken run — it un-credits that time from the productive-time total and the Productivity Matrix, and clears it from the day's timeline bar too.</div>
+
+    <div class="ct-history" id="activityLogSection">
+      <div class="ct-history-list" id="activityLogList"></div>
+      <div class="ct-history-empty" id="activityLogEmpty">Nothing logged in the last 48 hours.</div>
+    </div>
+  </div>
+
 <!--
   CROSS-DEVICE SYNC: create an account (email + password, top of page) to save progress to
   Supabase and sync it live across devices. Signed out, everything still saves locally.
@@ -672,7 +732,7 @@ async function acquireWakeLock(){
   }catch(e){ /* unavailable or denied — the endAt-based resync below still keeps time correct */ }
 }
 function releaseWakeLockIfIdle(){
-  if(wakeLock && !pomoRefs.some(r => r.pomo.running) && !(ctState && ctState.running)){
+  if(wakeLock && !pomoRefs.some(r => r.pomo.running) && !(ctState && ctState.running) && !blockTimerState.running){
     wakeLock.release().catch(() => {});
     wakeLock = null;
   }
@@ -745,6 +805,7 @@ function notifyAlmostDone(label){
 function tickAllRunning(){
   pomoRefs.forEach(r => { if(r.pomo.running) r.tick(); });
   if(ctState && ctState.running) ctTick();
+  if(blockTimerState.running) blockTimerTick();
 }
 
 // Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
@@ -780,27 +841,33 @@ const scheduleView = document.getElementById('viewSchedule');
 const matrixView = document.getElementById('viewMatrix');
 const timerView = document.getElementById('viewTimer');
 const pomodoroView = document.getElementById('viewPomodoro');
+const logView = document.getElementById('viewLog');
 const showScheduleBtn = document.getElementById('showScheduleBtn');
 const showMatrixBtn = document.getElementById('showMatrixBtn');
 const showTimerBtn = document.getElementById('showTimerBtn');
 const showPomodoroBtn = document.getElementById('showPomodoroBtn');
+const showLogBtn = document.getElementById('showLogBtn');
 
 function showView(which){
   scheduleView.hidden = which !== 'schedule';
   matrixView.hidden = which !== 'matrix';
   timerView.hidden = which !== 'timer';
   pomodoroView.hidden = which !== 'pomodoro';
+  logView.hidden = which !== 'log';
   showScheduleBtn.classList.toggle('active', which === 'schedule');
   showMatrixBtn.classList.toggle('active', which === 'matrix');
   showTimerBtn.classList.toggle('active', which === 'timer');
   showPomodoroBtn.classList.toggle('active', which === 'pomodoro');
+  showLogBtn.classList.toggle('active', which === 'log');
   if(which === 'matrix') renderMatrix();
   if(which === 'timer') renderCtHistory();
+  if(which === 'log') renderActivityLog();
 }
 showScheduleBtn.addEventListener('click', () => showView('schedule'));
 showMatrixBtn.addEventListener('click', () => showView('matrix'));
 showTimerBtn.addEventListener('click', () => showView('timer'));
 showPomodoroBtn.addEventListener('click', () => showView('pomodoro'));
+showLogBtn.addEventListener('click', () => showView('log'));
 
 // --- persistent focus log (per real calendar date, in localStorage) ---
 const FOCUS_LOG_KEY = 'wr_focus_log_v1';
@@ -862,6 +929,8 @@ function snapshotState(){
     updatedAt: Date.now(),
     ownerId: currentUser ? currentUser.id : null,
     focusLog: loadFocusLog(),
+    trackerLog: loadTrackerLog(),
+    blockTimer: {...blockTimerState},
     schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
     targetOverrides: {...targetOverrides},
     pomo: pomoRefs.map(r => ({
@@ -886,6 +955,7 @@ function persistLocal(){
 // apply a full state object (from localStorage on load, or a remote device) to the live UI
 function applyState(state, {rerenderMatrix} = {}){
   if(state.focusLog) saveFocusLog(state.focusLog);
+  if(state.trackerLog) saveTrackerLog(state.trackerLog);
   if(state.targetOverrides){
     targetOverrides = {...state.targetOverrides};
   }
@@ -984,7 +1054,7 @@ function subscribeRealtime(){
 function resetToDefaults(){
   targetOverrides = {};
   dayPanels.forEach((p, i) => { p.day.blocks = DEFAULT_SCHEDULE[i].map(b => ({...b})); applyScheduleUpdate(p); });
-  saveFocusLog({});
+  saveFocusLog({}); saveTrackerLog({});
   pomoRefs.forEach(r => {
     clearInterval(r.pomo.timerId);
     Object.assign(r.pomo, {
@@ -1323,7 +1393,7 @@ function parseClock(str){
   return Math.min(SCALE_END, Math.max(SCALE_START, total));
 }
 function computeProductive(day){
-  return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.e - b.s), 0);
+  return day.blocks.filter(b => b.type !== 'rest').reduce((a,b) => a + (b.duration != null ? b.duration : (b.e - b.s)), 0);
 }
 // keep a day panel's "Set custom target" button in sync with whether an override is set
 function refreshDayTargetUI(panel){
@@ -1333,28 +1403,299 @@ function refreshDayTargetUI(panel){
   btn.textContent = ov != null ? ('Target: ' + minsToHM(ov)) : 'Set custom target';
   btn.classList.toggle('active', ov != null);
 }
+// --- unified activity tracker + per-block countdowns ---
+const TRACKER_KEY = 'wr_activity_tracker_v1';
+const ACTIVITY_LOG_WINDOW_MS = 48*60*60*1000; // the Activity Log page only ever shows the last 48h
+function loadTrackerLog(){ try{return JSON.parse(localStorage.getItem(TRACKER_KEY)||'{}')}catch(e){return {}} }
+function saveTrackerLog(x){ try{localStorage.setItem(TRACKER_KEY,JSON.stringify(x));}catch(e){} }
+function makeSessionId(){ return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function addTrackerSession(source, seconds, label, cat){
+  seconds=Math.max(0,Math.round(seconds)); if(!seconds) return;
+  const log=loadTrackerLog(), k=dateKey(new Date());
+  log[k]=log[k]||[];
+  log[k].push({id:makeSessionId(),source,seconds,label:label||source,at:Date.now(),cat:cat||'day-soft'});
+  saveTrackerLog(log); renderAllTrackers(); persistLocal();
+  if(!logView.hidden) renderActivityLog();
+}
+function renderAllTrackers(){ dayPanels.forEach(p=>renderRail(p)); }
+
+// drop any session older than the 48h window (and any now-empty date bucket) so the log doesn't
+// grow forever; also backfills an id onto any legacy entry that predates ids existing.
+function pruneTrackerLogWindow(){
+  const log = loadTrackerLog();
+  const cutoff = Date.now() - ACTIVITY_LOG_WINDOW_MS;
+  let changed = false;
+  Object.keys(log).forEach(k => {
+    const before = (log[k]||[]).length;
+    log[k] = (log[k]||[]).filter(x => (x.at||0) >= cutoff);
+    log[k].forEach(x => { if(!x.id){ x.id = makeSessionId(); changed = true; } });
+    if(log[k].length !== before) changed = true;
+    if(!log[k].length){ delete log[k]; changed = true; }
+  });
+  if(changed) saveTrackerLog(log);
+  return log;
+}
+function activityLogTimeLabel(at){
+  const d = new Date(at), now = new Date();
+  const yest = new Date(now); yest.setDate(yest.getDate()-1);
+  const time = fmt(d.getHours()*60 + d.getMinutes());
+  if(dateKey(d) === dateKey(now)) return 'Today, ' + time;
+  if(dateKey(d) === dateKey(yest)) return 'Yesterday, ' + time;
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ', ' + time;
+}
+function renderActivityLog(){
+  const log = pruneTrackerLogWindow();
+  const list = document.getElementById('activityLogList');
+  const empty = document.getElementById('activityLogEmpty');
+  if(!list || !empty) return;
+  list.innerHTML = '';
+  const flat = [];
+  Object.keys(log).forEach(k => (log[k]||[]).forEach(x => flat.push(Object.assign({dayKey:k}, x))));
+  flat.sort((a,b) => b.at - a.at);
+  empty.style.display = flat.length ? 'none' : 'block';
+  flat.forEach(entry => {
+    const row = document.createElement('div');
+    row.className = 'ct-row';
+    row.innerHTML = `
+      <span class="dot ${entry.cat || 'day-soft'}"></span>
+      <span class="ct-row-time">${activityLogTimeLabel(entry.at)}</span>
+      <span class="ct-row-label"></span>
+      <span class="ct-row-dur">${ctDurationFmt(entry.seconds)}</span>
+      <button type="button" class="ct-row-del" title="Remove and un-credit this time">✕</button>`;
+    row.querySelector('.ct-row-label').textContent = entry.label || entry.source || 'Session';
+    row.querySelector('.ct-row-del').addEventListener('click', () => deleteActivitySession(entry.dayKey, entry.id));
+    list.appendChild(row);
+  });
+}
+// removing a run un-credits its seconds from that day's focus log too, so the productive-time
+// bar and the Productivity Matrix both correct themselves — same fix-a-mistake pattern as the
+// timer's own history — and it disappears from that day's timeline bar on the next render.
+function deleteActivitySession(dayKey, id){
+  const log = loadTrackerLog();
+  const arr = log[dayKey];
+  if(!arr) return;
+  const idx = arr.findIndex(x => x.id === id);
+  if(idx === -1) return;
+  const entry = arr[idx];
+  arr.splice(idx, 1);
+  if(!arr.length) delete log[dayKey];
+  saveTrackerLog(log);
+  const focus = loadFocusLog();
+  focus[dayKey] = Math.max(0, (focus[dayKey]||0) - entry.seconds);
+  saveFocusLog(focus);
+  renderActivityLog();
+  renderAllTrackers();
+  renderStats();
+  if(!matrixView.hidden) renderMatrix();
+  persistLocal();
+}
+
+const blockTimerState={running:false,blockKey:null,startedAt:null,elapsed:0,endAt:null,timerId:null,label:'',category:'day-soft',warned30:false,ringing:false,alarmId:null};
+
+// resolve a "DayKey:idx" block-timer key back to the actual block object, so leftover time can
+// be persisted directly on it (and picked back up the next time that block is started).
+function findBlockByKey(key){
+  if(!key) return null;
+  const sep = key.lastIndexOf(':');
+  if(sep < 0) return null;
+  const dayKey = key.slice(0, sep), idx = Number(key.slice(sep+1));
+  const panel = dayPanels.find(p => p.day.key === dayKey);
+  if(!panel || !panel.day.blocks[idx]) return null;
+  return { panel, idx, b: panel.day.blocks[idx] };
+}
+
+// --- block-timer alarm: same "beep loop until acknowledged" pattern as the pomodoro/custom
+// timer, so finishing a block is just as hard to miss as the other two timers ---
+let blockAudioCtx = null;
+function blockBeep(){
+  try{
+    if(!blockAudioCtx){ blockAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => blockAudioCtx); }
+    if(blockAudioCtx.state === 'suspended') blockAudioCtx.resume();
+    const now = blockAudioCtx.currentTime;
+    [0, 0.22].forEach(offset => {
+      [880, 1320].forEach(freq => {
+        const osc = blockAudioCtx.createOscillator();
+        const gain = blockAudioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
+        osc.connect(gain).connect(blockAudioCtx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.24);
+      });
+    });
+  }catch(e){ /* audio unavailable — ignore */ }
+}
+function blockStartRinging(){
+  blockTimerState.ringing = true;
+  blockBeep();
+  blockTimerState.alarmId = setInterval(blockBeep, 900);
+  if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
+  // Same as pomodoro/custom timer: the beep can be silent in a backgrounded tab, so also fire a
+  // local system notification, and let the server-side push (scheduled below) keep spamming as
+  // a guaranteed backup even if the tab is fully asleep or the screen is locked.
+  if(document.hidden) wrNotify('Weekly Rhythm', `${blockTimerState.label} — time's up.`, 'wr-block');
+  dayPanels.forEach(renderList);
+}
+function blockStopRinging(){
+  blockTimerState.ringing = false;
+  clearInterval(blockTimerState.alarmId);
+  blockTimerState.alarmId = null;
+  wrCancelAlarm('block'); // acknowledged locally — stop the server's repeat pushes
+  dayPanels.forEach(renderList);
+}
+// countdown hit zero: log the completed time, then ring until the person hits "Stop alarm"
+function blockFinishSession(){
+  const elapsed = Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000));
+  const total = blockTimerState.elapsed + elapsed;
+  const finishedInfo = findBlockByKey(blockTimerState.blockKey);
+  if(finishedInfo) delete finishedInfo.b.remainingSec; // countdown hit zero — nothing left over
+  clearInterval(blockTimerState.timerId);
+  blockTimerState.running = false;
+  blockTimerState.elapsed = 0; blockTimerState.endAt = null; blockTimerState.startedAt = null; blockTimerState.warned30 = false;
+  if(total>0){ addFocusSeconds(total); addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
+  blockStartRinging();
+  releaseWakeLockIfIdle();
+  renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
+}
+// manual Stop (mid-countdown) or dismissing an alarm that's already ringing
+function stopBlockTimer(){
+  if(blockTimerState.ringing){
+    blockStopRinging();
+    blockTimerState.blockKey = null; blockTimerState.label = '';
+    dayPanels.forEach(renderList); persistLocal();
+    return;
+  }
+  if(!blockTimerState.running) return;
+  const elapsed=Math.max(0,Math.floor((Date.now()-blockTimerState.startedAt)/1000));
+  const total=blockTimerState.elapsed+elapsed;
+  // a manual stop mid-countdown keeps whatever time hadn't run out yet, so the block resumes
+  // from there next time instead of resetting back to its full duration.
+  const leftoverSec = Math.max(0, Math.round((blockTimerState.endAt - Date.now())/1000));
+  const stoppedInfo = findBlockByKey(blockTimerState.blockKey);
+  if(stoppedInfo){ if(leftoverSec > 0) stoppedInfo.b.remainingSec = leftoverSec; else delete stoppedInfo.b.remainingSec; }
+  clearInterval(blockTimerState.timerId);
+  blockTimerState.running=false;
+  blockTimerState.elapsed=0; blockTimerState.endAt=null; blockTimerState.startedAt=null; blockTimerState.warned30=false;
+  wrCancelAlarm('block');
+  if(total>0){ addFocusSeconds(total); addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
+  releaseWakeLockIfIdle();
+  renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
+}
+// Same endAt-based tick used by the interval below AND by the background heartbeat
+// (tickAllRunning), so a throttled/backgrounded tab still catches up and fires the alarm the
+// moment it's checked again, instead of drifting.
+function blockTimerTick(){
+  if(!blockTimerState.running) return;
+  const left=Math.max(0,Math.round((blockTimerState.endAt-Date.now())/1000));
+  if(left<=30 && left>0 && !blockTimerState.warned30){
+    blockTimerState.warned30=true;
+    notifyAlmostDone(blockTimerState.label);
+  }
+  if(left<=0){ blockFinishSession(); return; }
+  const dayKey = blockTimerState.blockKey ? blockTimerState.blockKey.split(':')[0] : null;
+  const panel = dayKey ? dayPanels.find(p => p.day.key === dayKey) : null;
+  if(panel){ renderList(panel); renderRail(panel); }
+}
+function toggleBlockTimer(panel,idx){
+  const b=panel.day.blocks[idx]; if(b.type==='rest') return;
+  const key=panel.day.key+':'+idx;
+  if(blockTimerState.ringing && blockTimerState.blockKey===key){ stopBlockTimer(); return; }
+  if(blockTimerState.running || blockTimerState.ringing){
+    if(blockTimerState.blockKey===key){ stopBlockTimer(); return; }
+    stopBlockTimer();
+  }
+  if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+  // Warm up the alarm's AudioContext right on this click (a real user gesture) — same reasoning
+  // as the pomodoro/custom timer Start handlers.
+  if(!blockAudioCtx){ blockAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => blockAudioCtx); }
+  if(blockAudioCtx.state === 'suspended') blockAudioCtx.resume();
+  const fullDurationSec=Math.max(1,Math.round(b.duration!=null?b.duration:b.e-b.s))*60;
+  const duration=(b.remainingSec != null && b.remainingSec > 0) ? b.remainingSec : fullDurationSec;
+  blockTimerState.running=true; blockTimerState.blockKey=key; blockTimerState.startedAt=Date.now();
+  blockTimerState.elapsed=0; blockTimerState.endAt=Date.now()+duration*1000; blockTimerState.label=b.label;
+  blockTimerState.category=b.type; blockTimerState.warned30=false;
+  blockTimerState.timerId=setInterval(blockTimerTick,250);
+  // Server-side push, so the "time's up" alarm still lands (and keeps repeating) even with the
+  // screen off — same mechanism as the pomodoro and custom timer.
+  wrScheduleAlarm('block', blockTimerState.endAt, 'Weekly Rhythm', `${b.label} — time's up.`, 'wr-block');
+  acquireWakeLock(); renderList(panel); renderRail(panel); persistLocal();
+}
+
+// converts a real Date into "minutes on the rail's scale" (SCALE_START..SCALE_END, 7:30am–1am) —
+// times before 7:30am count as the tail end of the previous day, same convention as parseClock.
+function toScaleMinutes(d){
+  let mins = d.getHours()*60 + d.getMinutes() + d.getSeconds()/60;
+  if(mins < SCALE_START) mins += 1440;
+  return Math.min(SCALE_END, Math.max(SCALE_START, mins));
+}
 function renderRail(panel){
   panel.segsSlot.innerHTML = '';
-  panel.day.blocks.forEach(b => {
+  const k = dateKey(new Date());
+  const sessions = loadTrackerLog()[k] || [];
+  // seconds accumulated so far in whatever block is running right now but hasn't been logged yet —
+  // computed straight off Date.now(), i.e. the clock of whatever device/timezone the tab is open in.
+  const liveSeconds = blockTimerState.running
+    ? blockTimerState.elapsed + Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000))
+    : 0;
+
+  // This is a real 24-hour timeline (same 7:30am–1am scale as the hour ticks below it), not a
+  // "% of today's target" bar — so every segment is placed at the actual clock time it happened.
+  sessions.forEach(x => {
+    const sec = Math.max(0, Number(x.seconds)||0);
+    if(!sec) return;
+    const endMin = toScaleMinutes(new Date(x.at));
+    const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(x.at - sec*1000))));
     const seg = document.createElement('div');
-    seg.className = 'seg ' + b.type;
-    seg.style.left = (((b.s - SCALE_START)/SCALE_RANGE)*100) + '%';
-    seg.style.width = (((b.e - b.s)/SCALE_RANGE)*100) + '%';
-    seg.title = b.label;
+    seg.className = 'tracker-seg cat-' + (x.cat || 'day-soft');
+    seg.style.left = ((startMin - SCALE_START) / SCALE_RANGE * 100) + '%';
+    seg.style.width = Math.max(0, (endMin - startMin) / SCALE_RANGE * 100) + '%';
+    seg.title = (x.label || x.source || 'Session') + ' — ' + ctDurationFmt(sec);
     panel.segsSlot.appendChild(seg);
   });
+
+  if(liveSeconds > 0){
+    const endMin = toScaleMinutes(new Date());
+    const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(blockTimerState.startedAt - blockTimerState.elapsed*1000))));
+    const seg = document.createElement('div');
+    seg.className = 'tracker-seg live cat-' + (blockTimerState.category || 'day-soft');
+    seg.style.left = ((startMin - SCALE_START) / SCALE_RANGE * 100) + '%';
+    seg.style.width = Math.max(0, (endMin - startMin) / SCALE_RANGE * 100) + '%';
+    seg.title = blockTimerState.label + ' — running now (' + ctDurationFmt(liveSeconds) + ')';
+    panel.segsSlot.appendChild(seg);
+  }
+
+  if(!sessions.length && !liveSeconds){
+    const empty = document.createElement('div');
+    empty.className = 'tracker-empty';
+    empty.textContent = "start any timer to build today's tracker";
+    panel.segsSlot.appendChild(empty);
+  }
+
+  // a live "now" line, always on — it moves across the bar in real time like a clock hand,
+  // independent of whether anything is currently being tracked.
+  if(SCALE_START <= SCALE_END){
+    const nowMin = toScaleMinutes(new Date());
+    const nowLine = document.createElement('div');
+    nowLine.className = 'tracker-now-line';
+    nowLine.style.left = ((nowMin - SCALE_START) / SCALE_RANGE * 100) + '%';
+    panel.segsSlot.appendChild(nowLine);
+  }
 }
 function renderList(panel){
   const listEl = panel.listEl;
   listEl.innerHTML = '';
   panel.day.blocks.forEach((b, idx) => {
+    const duration = Math.max(1, Math.round((b.duration != null ? b.duration : (b.e-b.s)) || 1));
     const row = document.createElement('div');
-    row.dataset.s = b.s; row.dataset.e = b.e;
+    row.dataset.duration = duration;
     if(panel.editing){
       row.className = 'row editing';
       row.innerHTML = `
-        <input class="edit-time edit-s" value="${fmt(b.s)}">
-        <input class="edit-time edit-e" value="${fmt(b.e)}">
+        <input class="edit-time edit-duration" type="number" min="1" max="1440" value="${duration}" title="Minutes">
+        <span class="task-duration">min</span>
         <input class="edit-label">
         <select class="edit-type">
           <option value="day-strong">Corporate</option>
@@ -1366,23 +1707,42 @@ function renderList(panel){
       row.querySelector('.edit-label').value = b.label;
       row.querySelector('.edit-type').value = b.type;
       const commit = () => {
-        const ns = parseClock(row.querySelector('.edit-s').value);
-        const ne = parseClock(row.querySelector('.edit-e').value);
-        if(ns != null) b.s = ns;
-        if(ne != null) b.e = ne;
+        b.duration = Math.max(1, Math.floor(Number(row.querySelector('.edit-duration').value)||1));
+        b.s = 0; b.e = b.duration;
         b.label = row.querySelector('.edit-label').value.trim() || b.label;
         b.type = row.querySelector('.edit-type').value;
+        delete b.remainingSec; // edited duration invalidates any leftover time from before
         updateDay(panel);
       };
-      row.querySelectorAll('.edit-s,.edit-e,.edit-label,.edit-type').forEach(inp => inp.addEventListener('change', commit));
-      row.querySelector('.edit-del').addEventListener('click', () => {
-        panel.day.blocks.splice(idx,1);
-        updateDay(panel);
-      });
+      row.querySelectorAll('.edit-duration,.edit-label,.edit-type').forEach(inp => inp.addEventListener('change', commit));
+      row.querySelector('.edit-del').addEventListener('click', () => { panel.day.blocks.splice(idx,1); updateDay(panel); });
     } else {
-      row.className = 'row' + (b.type === 'rest' ? ' rest' : '');
-      row.innerHTML = `<span class="time"><span class="dot ${b.type}"></span>${fmt(b.s)} – ${fmt(b.e)}</span><span class="label"></span>`;
+      const key = panel.day.key + ':' + idx;
+      const running = blockTimerState.running && blockTimerState.blockKey === key;
+      const ringingHere = blockTimerState.ringing && blockTimerState.blockKey === key;
+      row.className = 'row' + (b.type === 'rest' ? ' rest' : '') + (ringingHere ? ' block-ringing' : '');
+      const hasLeftover = b.remainingSec != null && b.remainingSec > 0;
+      let leftHtml;
+      if(running){
+        const left = Math.max(0, Math.round((blockTimerState.endAt - Date.now())/1000));
+        leftHtml = `<span class="task-remaining">${ctClockFmt(left)} left</span>`;
+      } else if(ringingHere){
+        leftHtml = `<span class="task-remaining">Time's up!</span>`;
+      } else if(hasLeftover){
+        // stopping mid-countdown keeps the leftover time — show it instead of the full duration.
+        leftHtml = `<span class="task-remaining">${ctClockFmt(b.remainingSec)} left</span>`;
+      } else {
+        leftHtml = `<span class="task-duration">${minsToHM(duration)}</span>`;
+      }
+      const btnLabel = ringingHere ? 'Stop alarm' : (running ? 'Stop' : (hasLeftover ? 'Resume' : 'Start'));
+      const resetBtn = (hasLeftover && !running && !ringingHere)
+        ? `<button type="button" class="task-reset" title="Reset back to the full duration">↺</button>` : '';
+      row.innerHTML = `<span class="label"></span>${leftHtml}${resetBtn}${b.type !== 'rest' ? `<button type="button" class="task-start ${running?'running':''} ${ringingHere?'ringing':''}">${btnLabel}</button>` : ''}`;
       row.querySelector('.label').textContent = b.label;
+      const resetEl = row.querySelector('.task-reset');
+      if(resetEl) resetEl.addEventListener('click', () => { delete b.remainingSec; updateDay(panel); });
+      const btn = row.querySelector('.task-start');
+      if(btn) btn.addEventListener('click', () => toggleBlockTimer(panel, idx));
     }
     listEl.appendChild(row);
   });
@@ -1390,9 +1750,7 @@ function renderList(panel){
     const addBtn = document.createElement('button');
     addBtn.type = 'button'; addBtn.className = 'add-block-btn'; addBtn.textContent = '+ Add block';
     addBtn.addEventListener('click', () => {
-      const last = panel.day.blocks[panel.day.blocks.length - 1];
-      const s = last ? last.e : SCALE_START;
-      panel.day.blocks.push({ s, e: Math.min(s + 60, SCALE_END), label:'New block', type:'day-soft' });
+      panel.day.blocks.push({duration:60,s:0,e:60,label:'New block',type:'day-soft'});
       updateDay(panel);
     });
     listEl.appendChild(addBtn);
@@ -1402,7 +1760,7 @@ function renderList(panel){
 function applyScheduleUpdate(panel){
   panel.productiveTotal = getProductiveTarget(panel.day);
   const isCustom = targetOverrides[panel.day.key] != null;
-  panel.el.querySelector('.day-total').textContent = minsToHM(panel.productiveTotal) + ' of productive time scheduled' + (isCustom ? ' (custom target)' : '');
+  panel.el.querySelector('.day-total').textContent = minsToHM(panel.productiveTotal) + ' target' + (isCustom ? ' (custom target)' : '');
   refreshDayTargetUI(panel);
   renderRail(panel);
   renderList(panel);
@@ -1458,6 +1816,7 @@ const days = [
 ];
 
 const DEFAULT_SCHEDULE = days.map(d => d.blocks.map(b => ({...b})));
+days.forEach(d => d.blocks.forEach(b => { if(b.duration == null) b.duration=Math.max(1,b.e-b.s); }));
 
 const ticks = [450,600,780,960,1140,1320,1500];
 
@@ -1534,7 +1893,7 @@ days.forEach((day, i) => {
 
   // custom productive-time target: fill in the initial label, then wire the inline editor
   const isCustomInit = targetOverrides[day.key] != null;
-  el.querySelector('.day-total').textContent = minsToHM(productiveTotal) + ' of productive time scheduled' + (isCustomInit ? ' (custom target)' : '');
+  el.querySelector('.day-total').textContent = minsToHM(productiveTotal) + ' target' + (isCustomInit ? ' (custom target)' : '');
   refreshDayTargetUI(panel);
 
   const targetBtn = el.querySelector('.day-target-btn');
@@ -2184,64 +2543,21 @@ function selectDay(i){
 }
 
 function renderStats(){
-  const p = dayPanels[activeIdx];
-  const isLogicalToday = activeIdx === logical.idx;
-  const slot = p.el.querySelector('.stats-slot');
-
-  // clear existing now-marker
-  const oldMarker = p.el.querySelector('.now-marker');
-  if(oldMarker) oldMarker.remove();
-  const oldLabel = p.el.querySelector('.now-label');
-  if(oldLabel) oldLabel.remove();
-
-  if(!isLogicalToday){
-    slot.innerHTML = '';
-    p.el.querySelectorAll('.row').forEach(r => r.classList.remove('done'));
-    return;
-  }
-
-  const now = getLogicalNow().min;
-  const nowClamped = Math.min(Math.max(now, SCALE_START), SCALE_END);
-
-  const focusLog = loadFocusLog();
-  const doneSeconds = focusLog[dateKey(new Date())] || 0;
-  const done = Math.min(p.productiveTotal, doneSeconds / 60);
-  const remaining = Math.max(0, p.productiveTotal - done);
-  const pct = p.productiveTotal ? Math.min(100, (done / p.productiveTotal) * 100) : 0;
-
-  slot.innerHTML = `
-    <div class="stats">
-      <div class="stat">
-        <div class="lbl">Productive — done</div>
-        <div class="val">${minsToHM(done)}</div>
-      </div>
-      <div class="pbar"><div class="pbar-fill" style="width:${pct}%"></div></div>
-      <div class="stat left">
-        <div class="lbl">Productive — left</div>
-        <div class="val">${minsToHM(remaining)}</div>
-      </div>
-    </div>
-  `;
-
-  // now-marker on rail
-  const left = ((nowClamped - SCALE_START) / SCALE_RANGE) * 100;
-  const marker = document.createElement('div');
-  marker.className = 'now-marker';
-  marker.style.left = left + '%';
-  p.segsSlot.appendChild(marker);
-  const label = document.createElement('div');
-  label.className = 'now-label';
-  label.style.left = left + '%';
-  label.textContent = 'now';
-  p.segsSlot.appendChild(label);
-
-  // strike through finished rows
-  p.el.querySelectorAll('.row').forEach(r => {
-    const e = Number(r.dataset.e);
-    r.classList.toggle('done', e <= now);
-  });
+  const p=dayPanels[activeIdx];
+  const slot=p.el.querySelector('.stats-slot');
+  const k=dateKey(new Date());
+  const sessions=loadTrackerLog()[k]||[];
+  const doneSeconds=sessions.reduce((a,x)=>a+(Number(x.seconds)||0),0);
+  const targetSeconds=Math.max(0,p.productiveTotal*60);
+  const pct=targetSeconds?Math.min(100,doneSeconds/targetSeconds*100):0;
+  const remaining=Math.max(0,(targetSeconds-doneSeconds)/60);
+  slot.innerHTML=`<div class="stats">
+    <div class="stat"><div class="lbl">Tracked — done</div><div class="val">${minsToHM(doneSeconds/60)}</div></div>
+    <div class="pbar"><div class="pbar-fill" style="width:${pct}%"></div></div>
+    <div class="stat left"><div class="lbl">Target — left</div><div class="val">${minsToHM(remaining)}</div></div>
+  </div>`;
+  renderRail(p);
 }
-
 selectDay(logical.idx);
 setInterval(() => { if(activeIdx === logical.idx) renderStats(); }, 30000);
 
