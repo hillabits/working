@@ -1248,6 +1248,11 @@ function targetMinutesFor(date){
 }
 function classifyDay(actualMin, targetMin, isFuture){
   if(isFuture) return 'mx-future';
+  // Reaching (or beating) a real target always counts as "on target or above" — even under the
+  // 30-minute floor below. That floor exists to catch genuinely idle/near-idle days, not to
+  // override a target that was actually met (this was the bug: a 15m target hit with 24m logged
+  // was still forced red, since the under-30 check ran unconditionally before the target check).
+  if(targetMin > 0 && actualMin >= targetMin) return 'mx-bright';
   if(actualMin < 30) return 'mx-off';
   if(actualMin >= targetMin) return 'mx-bright';
   const ratio = targetMin > 0 ? actualMin / targetMin : 1;
@@ -1494,7 +1499,30 @@ function applyState(state, {rerenderMatrix} = {}){
     }
     renderCt();
   }
+  // Restores a block timer left running on another device — same resume pattern as the custom
+  // timer/stopwatch just above. This was the missing piece: the block timer's state was already
+  // captured in snapshotState() and pushed to the cloud, but nothing ever read it back, so
+  // opening the site on a second device (or a fresh tab) never showed a task block as running —
+  // unlike the Pomodoro and Timer/Stopwatch widgets, which already resumed correctly.
+  if(state.blockTimer){
+    if(blockTimerState.running) clearInterval(blockTimerState.timerId);
+    Object.assign(blockTimerState, state.blockTimer);
+    if(blockTimerState.running && blockTimerState.endAt){
+      const now = Date.now();
+      const left = Math.round((blockTimerState.endAt - now)/1000);
+      if(left <= 0){ blockTimerState.running = false; }
+      else {
+        // don't re-credit the gap between the sending device's last credit and now — that time
+        // is already reflected in the focusLog snapshot applied above
+        blockTimerState.lastCredit = now;
+        blockTimerState.timerId = setInterval(blockTimerTick, 250);
+        acquireWakeLock();
+      }
+    }
+    dayPanels.forEach(renderList);
+  }
   renderStats();
+  renderRail();
   if(rerenderMatrix && !matrixView.hidden) renderMatrix();
 }
 
@@ -2006,7 +2034,23 @@ function deleteActivitySession(dayKey, id){
   persistLocal();
 }
 
-const blockTimerState={running:false,blockKey:null,startedAt:null,elapsed:0,endAt:null,timerId:null,label:'',category:'day-soft',warned30:false,ringing:false,alarmId:null};
+const blockTimerState={running:false,blockKey:null,startedAt:null,elapsed:0,endAt:null,timerId:null,label:'',category:'day-soft',warned30:false,ringing:false,alarmId:null,lastCredit:null};
+// Credit any focus-seconds that elapsed since the last credit, in one lump sum — same live-
+// crediting pattern as ctCreditElapsed/pomoCreditElapsedFocus below. Without this, a running
+// block timer never touched the focus log until it finished or was stopped, so the Productivity
+// Matrix (and anything else reading the focus log) sat frozen for the whole length of a block
+// no matter how much productive time — or which milestone — had actually been logged.
+function blockCreditElapsedFocus(now){
+  if(blockTimerState.lastCredit != null){
+    const elapsed = Math.floor((now - blockTimerState.lastCredit) / 1000);
+    if(elapsed > 0){
+      addFocusSeconds(elapsed);
+      blockTimerState.lastCredit += elapsed * 1000;
+    }
+  } else {
+    blockTimerState.lastCredit = now;
+  }
+}
 
 // resolve a "DayKey:idx" block-timer key back to the actual block object, so leftover time can
 // be persisted directly on it (and picked back up the next time that block is started).
@@ -2064,6 +2108,9 @@ function blockStopRinging(){
 }
 // countdown hit zero: log the completed time, then ring until the person hits "Stop alarm"
 function blockFinishSession(){
+  // catch up any trailing partial second that hasn't been credited to the focus log yet — the
+  // rest was already credited live, tick by tick, via blockCreditElapsedFocus
+  blockCreditElapsedFocus(Date.now());
   const elapsed = Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000));
   const total = blockTimerState.elapsed + elapsed;
   const finishedInfo = findBlockByKey(blockTimerState.blockKey);
@@ -2076,7 +2123,9 @@ function blockFinishSession(){
   clearInterval(blockTimerState.timerId);
   blockTimerState.running = false;
   blockTimerState.elapsed = 0; blockTimerState.endAt = null; blockTimerState.startedAt = null; blockTimerState.warned30 = false;
-  if(total>0){ addFocusSeconds(total); addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
+  blockTimerState.lastCredit = null;
+  // focus log was already credited live above — only the rail/history still need this lump sum
+  if(total>0){ addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
   blockStartRinging();
   releaseWakeLockIfIdle();
   renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
@@ -2092,6 +2141,8 @@ function stopBlockTimer(){
     return;
   }
   if(!blockTimerState.running) return;
+  // catch up any trailing partial second not yet credited — see blockFinishSession
+  blockCreditElapsedFocus(Date.now());
   const elapsed=Math.max(0,Math.floor((Date.now()-blockTimerState.startedAt)/1000));
   const total=blockTimerState.elapsed+elapsed;
   // a manual stop mid-countdown keeps whatever time hadn't run out yet, so the block resumes
@@ -2105,8 +2156,10 @@ function stopBlockTimer(){
   clearInterval(blockTimerState.timerId);
   blockTimerState.running=false;
   blockTimerState.elapsed=0; blockTimerState.endAt=null; blockTimerState.startedAt=null; blockTimerState.warned30=false;
+  blockTimerState.lastCredit=null;
   wrCancelAlarm('block');
-  if(total>0){ addFocusSeconds(total); addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
+  // focus log was already credited live above — only the rail/history still need this lump sum
+  if(total>0){ addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
   releaseWakeLockIfIdle();
   renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
   renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
@@ -2116,7 +2169,9 @@ function stopBlockTimer(){
 // moment it's checked again, instead of drifting.
 function blockTimerTick(){
   if(!blockTimerState.running) return;
-  const left=Math.max(0,Math.round((blockTimerState.endAt-Date.now())/1000));
+  const now = Date.now();
+  blockCreditElapsedFocus(now);
+  const left=Math.max(0,Math.round((blockTimerState.endAt-now)/1000));
   if(left<=30 && left>0 && !blockTimerState.warned30){
     blockTimerState.warned30=true;
     notifyAlmostDone(blockTimerState.label);
@@ -2124,7 +2179,12 @@ function blockTimerTick(){
   if(left<=0){ blockFinishSession(); return; }
   const dayKey = blockTimerState.blockKey ? blockTimerState.blockKey.split(':')[0] : null;
   const panel = dayKey ? dayPanels.find(p => p.day.key === dayKey) : null;
-  if(panel){ renderList(panel); renderRail(panel); }
+  if(panel) renderList(panel);
+  // Rail + the Productivity Time Left box used to only update once the block finished or was
+  // stopped. Throttled to once per whole second (same pattern as pomo/ctTick below) so this
+  // stays cheap even though the interval itself fires every 250ms.
+  const nowSec = Math.floor(now/1000);
+  if(nowSec !== blockTimerState._statsSec){ blockTimerState._statsSec = nowSec; renderRail(); renderStats(); }
 }
 // Only one of the three timer types (block / pomodoro / custom timer-stopwatch) may tick at
 // once. These read the live state directly, so they're safe to call from anywhere regardless
@@ -2163,7 +2223,7 @@ function toggleBlockTimer(panel,idx){
   delete b.doneDate; // (re)starting means it's no longer sitting in the "Done" state
   blockTimerState.running=true; blockTimerState.blockKey=key; blockTimerState.startedAt=Date.now();
   blockTimerState.elapsed=0; blockTimerState.endAt=Date.now()+duration*1000; blockTimerState.label=b.label;
-  blockTimerState.category=b.type; blockTimerState.warned30=false;
+  blockTimerState.category=b.type; blockTimerState.warned30=false; blockTimerState.lastCredit=Date.now();
   blockTimerState.timerId=setInterval(blockTimerTick,250);
   // Server-side push, so the "time's up" alarm still lands (and keeps repeating) even with the
   // screen off — same mechanism as the pomodoro and custom timer.
@@ -2183,6 +2243,27 @@ function toScaleMinutes(d){
 // always reflects the real current day regardless of which day tab is selected or which page
 // (Timer, Pomodoro, etc.) is showing. The `panel` argument is accepted for backwards-compat with
 // existing call sites but ignored — we always resolve today's own panel here.
+// Whichever of the three timer types (block / pomodoro / custom timer-stopwatch) is currently
+// running, together with how many seconds of the current stretch haven't been flushed to the
+// tracker log yet. Only one can run at a time (see isBlockTimerBusy/isPomoBusy/isCtBusy), so
+// there's never a conflict to resolve. Used by both renderRail() and renderStats() so the rail's
+// live segment and the Productivity Time Left box move together, in real time, no matter which
+// timer is the one actually running — previously only the block timer had a live rail segment,
+// and none of the three fed the stats box until their session was paused/finished.
+function getLiveTracking(){
+  if(blockTimerState.running && blockTimerState.startedAt != null){
+    const seconds = blockTimerState.elapsed + Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000));
+    if(seconds > 0) return { seconds, cat: blockTimerState.category, label: blockTimerState.label, startedAt: blockTimerState.startedAt - blockTimerState.elapsed*1000 };
+  }
+  if(pomo && pomo.running && pomo.mode === 'focus' && pomo.trackerSeconds > 0){
+    return { seconds: pomo.trackerSeconds, cat: SOURCE_CATEGORIES.pomodoro.id, label: SOURCE_CATEGORIES.pomodoro.name, startedAt: Date.now() - pomo.trackerSeconds*1000 };
+  }
+  if(ctState && ctState.running && ctState.sessionSeconds > 0){
+    const srcCat = ctState.mode === 'timer' ? SOURCE_CATEGORIES.timer : SOURCE_CATEGORIES.stopwatch;
+    return { seconds: ctState.sessionSeconds, cat: srcCat.id, label: srcCat.name, startedAt: ctState.sessionStartedAt || (Date.now() - ctState.sessionSeconds*1000) };
+  }
+  return null;
+}
 function renderRail(panel){
   const todayPanel = dayPanels[logical.idx];
   const segsSlot = document.getElementById('globalSegsSlot');
@@ -2190,11 +2271,10 @@ function renderRail(panel){
   segsSlot.innerHTML = '';
   const k = dateKey(new Date());
   const sessions = loadTrackerLog()[k] || [];
-  // seconds accumulated so far in whatever block is running right now but hasn't been logged yet —
-  // computed straight off Date.now(), i.e. the clock of whatever device/timezone the tab is open in.
-  const liveSeconds = blockTimerState.running
-    ? blockTimerState.elapsed + Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000))
-    : 0;
+  // seconds accumulated so far in whatever timer is running right now but hasn't been logged
+  // yet — computed straight off Date.now(), i.e. the clock of whatever device/timezone the tab
+  // is open in.
+  const live = getLiveTracking();
 
   // This is a real 24-hour timeline (same midnight-to-midnight scale as the hour ticks below it),
   // not a "% of today's target" bar — so every segment is placed at the actual clock time it happened.
@@ -2213,20 +2293,20 @@ function renderRail(panel){
     segsSlot.appendChild(seg);
   });
 
-  if(liveSeconds > 0){
+  if(live){
     const endMin = toScaleMinutes(new Date());
-    const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(blockTimerState.startedAt - blockTimerState.elapsed*1000))));
-    const liveCat = getCategory(blockTimerState.category || 'day-soft');
+    const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(live.startedAt))));
+    const liveCat = getCategory(live.cat || 'day-soft');
     const seg = document.createElement('div');
     seg.className = 'tracker-seg live' + (liveCat.id === 'rest' ? ' cat-rest' : '');
     if(liveCat.color){ seg.style.background = liveCat.color; seg.style.color = liveCat.color; }
     seg.style.left = ((startMin - SCALE_START) / SCALE_RANGE * 100) + '%';
     seg.style.width = Math.max(0, (endMin - startMin) / SCALE_RANGE * 100) + '%';
-    seg.title = blockTimerState.label + ' — running now (' + ctDurationFmt(liveSeconds) + ')';
+    seg.title = live.label + ' — running now (' + ctDurationFmt(live.seconds) + ')';
     segsSlot.appendChild(seg);
   }
 
-  if(!sessions.length && !liveSeconds){
+  if(!sessions.length && !live){
     const empty = document.createElement('div');
     empty.className = 'tracker-empty';
     empty.textContent = "start any timer to build today's tracker";
@@ -2727,7 +2807,7 @@ function pomoTick(){
   }
   renderPomo();
   const nowSec = Math.floor(now / 1000);
-  if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderStats(); }
+  if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderRail(); renderStats(); }
 }
 
 function ensurePomoNotifyPermission(){
@@ -3144,7 +3224,7 @@ function ctTick(){
   }
   renderCt();
   const nowSec = Math.floor(now/1000);
-  if(nowSec !== ctState._statsSec){ ctState._statsSec = nowSec; renderStats(); }
+  if(nowSec !== ctState._statsSec){ ctState._statsSec = nowSec; renderRail(); renderStats(); }
 }
 
 ctModeTimerBtn.addEventListener('click', () => {
@@ -3238,7 +3318,11 @@ function renderStats(){
   if(!p || !slot) return;
   const k=dateKey(new Date());
   const sessions=loadTrackerLog()[k]||[];
-  const doneSeconds=sessions.reduce((a,x)=>a+(Number(x.seconds)||0),0);
+  // add whatever the currently-running timer (block/pomodoro/custom) has accumulated but not
+  // yet flushed to the tracker log — otherwise this box only ever jumped forward when a session
+  // was paused or finished, instead of moving live while it ran.
+  const live = getLiveTracking();
+  const doneSeconds=sessions.reduce((a,x)=>a+(Number(x.seconds)||0),0) + (live ? live.seconds : 0);
   const targetSeconds=Math.max(0,p.productiveTotal*60);
   const pct=targetSeconds?Math.min(100,doneSeconds/targetSeconds*100):0;
   const remaining=Math.max(0,(targetSeconds-doneSeconds)/60);
