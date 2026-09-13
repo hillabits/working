@@ -1427,13 +1427,14 @@ function snapshotState(){
     pomo: pomoRefs.map(r => ({
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
-      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, trackerSeconds:r.pomo.trackerSeconds
+      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, trackerSeconds:r.pomo.trackerSeconds,
+      ringing:r.pomo.ringing
     })),
     customTimer: ctState ? {
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
       targetSeconds:ctState.targetSeconds, remaining:ctState.remaining, elapsedStopwatch:ctState.elapsedStopwatch,
       endAt:ctState.endAt, runStartedAt:ctState.runStartedAt, sessionStartedAt:ctState.sessionStartedAt,
-      sessionSeconds:ctState.sessionSeconds
+      sessionSeconds:ctState.sessionSeconds, ringing:ctState.ringing
     } : null,
     // history resets every day, so this never accumulates more than one day's worth of entries
     timerHistory: pruneTimerHistoryToToday()
@@ -1877,7 +1878,16 @@ function renderMatrix(){
   mxPeriodLabel.textContent = String(mxYear);
   mxMatrixEl.innerHTML = '';
 
-  const log = loadFocusLog();
+  // Reads from the same ledger (trackerLog) and the same live-in-progress helper that the rail
+  // and the Productivity Time Left box use — previously this read a separate `focusLog` that was
+  // credited on a different schedule (live, per second) than trackerLog (committed as a lump sum
+  // only when a session ends). The two were supposed to stay in lockstep but nothing guaranteed
+  // it — an interrupted/abandoned session was enough to leave them permanently out of sync, which
+  // is exactly what showed up as the Matrix disagreeing with the rail and the stats box for the
+  // same day. Sharing one source makes that class of bug structurally impossible going forward.
+  const trackerLog = loadTrackerLog();
+  const todayKey = dateKey(new Date());
+  const liveToday = getLiveTracking();
   const today = new Date(); today.setHours(0,0,0,0);
 
   // The year tracking began should start its grid at the 1st of the month tracking actually
@@ -1905,7 +1915,10 @@ function renderMatrix(){
       cell.title = `${key} — before tracking started`;
     } else {
       const isFuture = cursor > today;
-      const actualMin = (log[key] || 0) / 60;
+      const sessions = trackerLog[key] || [];
+      let actualSeconds = sessions.reduce((a,x) => a + (Number(x.seconds)||0), 0);
+      if(key === todayKey && liveToday) actualSeconds += liveToday.seconds;
+      const actualMin = actualSeconds / 60;
       const targetMin = targetMinutesFor(cursor);
       const cls = classifyDay(actualMin, targetMin, isFuture);
       cell.className = 'mx-cell ' + cls;
