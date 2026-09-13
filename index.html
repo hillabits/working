@@ -1879,13 +1879,13 @@ function renderMatrix(){
   mxMatrixEl.innerHTML = '';
 
   // Reads from the same ledger (trackerLog) and the same live-in-progress helper that the rail
-  // and the Productivity Time Left box use — previously this read a separate `focusLog` that was
-  // credited on a different schedule (live, per second) than trackerLog (committed as a lump sum
-  // only when a session ends). The two were supposed to stay in lockstep but nothing guaranteed
-  // it — an interrupted/abandoned session was enough to leave them permanently out of sync, which
-  // is exactly what showed up as the Matrix disagreeing with the rail and the stats box for the
-  // same day. Sharing one source makes that class of bug structurally impossible going forward.
+  // and the Productivity Time Left box use, so the three can't disagree about *today*. But some
+  // days may only have a record in the older, separate `focusLog` (e.g. anything logged before
+  // trackerLog was mirroring every session) — falling back to trackerLog exclusively would make
+  // those days' history vanish. So each day takes whichever ledger recorded *more* for it, never
+  // less than what was already on record.
   const trackerLog = loadTrackerLog();
+  const focusLog = loadFocusLog();
   const todayKey = dateKey(new Date());
   const liveToday = getLiveTracking();
   const today = new Date(); today.setHours(0,0,0,0);
@@ -1916,9 +1916,10 @@ function renderMatrix(){
     } else {
       const isFuture = cursor > today;
       const sessions = trackerLog[key] || [];
-      let actualSeconds = sessions.reduce((a,x) => a + (Number(x.seconds)||0), 0);
-      if(key === todayKey && liveToday) actualSeconds += liveToday.seconds;
-      const actualMin = actualSeconds / 60;
+      let trackerSeconds = sessions.reduce((a,x) => a + (Number(x.seconds)||0), 0);
+      if(key === todayKey && liveToday) trackerSeconds += liveToday.seconds;
+      const focusSeconds = Number(focusLog[key]) || 0;
+      const actualMin = Math.max(trackerSeconds, focusSeconds) / 60;
       const targetMin = targetMinutesFor(cursor);
       const cls = classifyDay(actualMin, targetMin, isFuture);
       cell.className = 'mx-cell ' + cls;
