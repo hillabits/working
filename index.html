@@ -1444,6 +1444,18 @@ function persistLocal(){
   queueCloudPush();
 }
 // apply a full state object (from localStorage on load, or a remote device) to the live UI
+// Silences THIS device's own beep loop for an alarm that another device already acknowledged —
+// used whenever a synced update shows `ringing` flipping from true to false. Takes the alarmId
+// captured *before* the incoming state overwrote it, since the incoming value is the other
+// device's own (meaningless) interval id — clearing that instead would leave this device's
+// actual loop running forever with no button left to stop it, since the UI hides the Stop
+// button the instant `ringing` reads false.
+function silenceAcknowledgedAlarm(localAlarmId, ringingEl, cancelKey){
+  clearInterval(localAlarmId);
+  if(ringingEl) ringingEl.classList.remove('ringing');
+  wrCancelAlarm(cancelKey);
+  if('vibrate' in navigator){ try{ navigator.vibrate(0); }catch(e){} }
+}
 function applyState(state, {rerenderMatrix} = {}){
   if(state.focusLog) saveFocusLog(state.focusLog);
   if(state.trackerLog) saveTrackerLog(state.trackerLog);
@@ -1468,8 +1480,10 @@ function applyState(state, {rerenderMatrix} = {}){
   (state.pomo || []).forEach((s, i) => {
     const r = pomoRefs[i];
     if(!r) return;
+    const wasRinging = r.pomo.ringing, localAlarmId = r.pomo.alarmId;
     if(r.pomo.running) { clearInterval(r.pomo.timerId); }
     Object.assign(r.pomo, s);
+    if(wasRinging && !r.pomo.ringing) silenceAcknowledgedAlarm(localAlarmId, gpEl, pomoAlarmKey);
     if(r.pomo.running && r.pomo.endAt){
       const left = Math.round((r.pomo.endAt - Date.now())/1000);
       if(left <= 0){ r.pomo.running = false; r.pomo.remaining = 0; }
@@ -1483,8 +1497,10 @@ function applyState(state, {rerenderMatrix} = {}){
     renderCtHistory();
   }
   if(state.customTimer && ctState){
+    const wasRinging = ctState.ringing, localAlarmId = ctState.alarmId;
     if(ctState.running) clearInterval(ctState.timerId);
     Object.assign(ctState, state.customTimer);
+    if(wasRinging && !ctState.ringing) silenceAcknowledgedAlarm(localAlarmId, ctPomodoroEl, 'ct');
     if(ctState.running){
       const now = Date.now();
       if(ctState.mode === 'timer' && ctState.endAt){
@@ -1505,8 +1521,10 @@ function applyState(state, {rerenderMatrix} = {}){
   // opening the site on a second device (or a fresh tab) never showed a task block as running —
   // unlike the Pomodoro and Timer/Stopwatch widgets, which already resumed correctly.
   if(state.blockTimer){
+    const wasRinging = blockTimerState.ringing, localAlarmId = blockTimerState.alarmId;
     if(blockTimerState.running) clearInterval(blockTimerState.timerId);
     Object.assign(blockTimerState, state.blockTimer);
+    if(wasRinging && !blockTimerState.ringing) silenceAcknowledgedAlarm(localAlarmId, null, 'block');
     if(blockTimerState.running && blockTimerState.endAt){
       const now = Date.now();
       const left = Math.round((blockTimerState.endAt - now)/1000);
@@ -2739,7 +2757,7 @@ function pomoStopRinging(){
   wrCancelAlarm(pomoAlarmKey); // acknowledged locally — stop the server's repeat pushes
   renderCt(); dayPanels.forEach(renderList); // pomodoro no longer ringing/busy — unlock the other widgets
 }
-gpStopAlarmBtn.addEventListener('click', pomoStopRinging);
+gpStopAlarmBtn.addEventListener('click', () => { pomoStopRinging(); persistLocal(); });
 
 function pomoClockFmt(s){
   const m = Math.floor(s/60), sec = s%60;
@@ -3048,7 +3066,7 @@ function ctStopRinging(){
   wrCancelAlarm('ct'); // acknowledged locally — stop the server's repeat pushes
   renderPomo(); dayPanels.forEach(renderList); // timer/stopwatch no longer ringing/busy — unlock the other widgets
 }
-ctStopAlarmBtn.addEventListener('click', ctStopRinging);
+ctStopAlarmBtn.addEventListener('click', () => { ctStopRinging(); persistLocal(); });
 
 function ctClockFmt(s){
   s = Math.max(0, Math.round(s));
