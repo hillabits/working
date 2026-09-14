@@ -1014,7 +1014,7 @@
 
     <div class="ct-history" id="activityLogSection">
       <div class="ct-history-list" id="activityLogList"></div>
-      <div class="ct-history-empty" id="activityLogEmpty">Nothing logged in the last 48 hours.</div>
+      <div class="ct-history-empty" id="activityLogEmpty">Nothing logged today.</div>
     </div>
   </div>
 
@@ -1979,7 +1979,7 @@ function refreshGlobalTargetUI(){
 }
 // --- unified activity tracker + per-block countdowns ---
 const TRACKER_KEY = 'wr_activity_tracker_v1';
-const ACTIVITY_LOG_WINDOW_MS = 48*60*60*1000; // the Activity Log page only ever shows the last 48h
+const ACTIVITY_LOG_WINDOW_MS = 48*60*60*1000; // storage retention only — the Activity Log view itself now shows just today (see renderActivityLog); this window just bounds how long a finished session's data sticks around before pruneTrackerLogWindow() clears it out, as a safety margin past a plain midnight cutoff
 function loadTrackerLog(){ try{return JSON.parse(localStorage.getItem(TRACKER_KEY)||'{}')}catch(e){return {}} }
 function saveTrackerLog(x){ try{localStorage.setItem(TRACKER_KEY,JSON.stringify(x));}catch(e){} }
 function makeSessionId(){ return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
@@ -2023,8 +2023,12 @@ function renderActivityLog(){
   const empty = document.getElementById('activityLogEmpty');
   if(!list || !empty) return;
   list.innerHTML = '';
-  const flat = [];
-  Object.keys(log).forEach(k => (log[k]||[]).forEach(x => flat.push(Object.assign({dayKey:k}, x))));
+  // Only today's entries — this used to show a rolling 48h window, which meant yesterday's
+  // entries stuck around mixed in with today's until they aged out mid-afternoon, rather than
+  // clearing at the actual day boundary. The underlying data for older days isn't touched (the
+  // Matrix and rail still need it) — this only changes what this list displays.
+  const todayKey = dateKey(new Date());
+  const flat = (log[todayKey] || []).map(x => Object.assign({dayKey:todayKey}, x));
   flat.sort((a,b) => b.at - a.at);
   empty.style.display = flat.length ? 'none' : 'block';
   flat.forEach(entry => {
@@ -3502,6 +3506,7 @@ setInterval(() => {
   else renderStats(); // still refresh the now-marker/stats even on a day the user pinned
   renderRail(); // refresh the global tracker rail against the new "today"
   refreshGlobalTargetUI(); // and the target editor, since it now acts on a different day
+  if(!logView.hidden) renderActivityLog(); // Activity Log resets to the new day too, if it's open
 }, 30000);
 </script>
 </div>
