@@ -530,6 +530,7 @@
   .focus-row{ display:flex; align-items:center; gap:10px; font-size:13px; }
   .focus-dot{ width:9px; height:9px; border-radius:50%; flex:none; }
   .focus-name{ flex:1; color:var(--text); font-weight:500; }
+  .focus-row.done .focus-name{ text-decoration:line-through; text-decoration-color:var(--text-faint); text-decoration-thickness:1px; opacity:.55; }
   .focus-time{ color:var(--text-dim); font-family:'Inter',sans-serif; font-size:12.5px; }
   .focus-empty{ font-size:12.5px; color:var(--text-faint); }
   .quote-card{ color:var(--text-dim); }
@@ -1121,6 +1122,38 @@ function notifyAlmostDone(label){
   if(document.hidden) wrNotify('Weekly Rhythm', `${label} — 30 seconds left`, 'wr-almost-done');
   if('vibrate' in navigator){ try{ navigator.vibrate(150); }catch(e){} }
 }
+
+// --- single-writer lock: if the app is open in more than one tab (or the user tabs away to
+// another site and back, leaving a stray tab behind), every open tab was independently ticking
+// and crediting the SAME elapsed wall-clock time into the focus log — two tabs open across a
+// 10-minute pomodoro logged 20 minutes. Only the "leader" tab is allowed to actually add
+// credited seconds; every other tab still advances its own lastCredit (so it never dumps a huge
+// backlog if it becomes the leader later) but skips the addFocusSeconds() call itself.
+const WR_TAB_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
+const WR_LEADER_KEY = 'wr_tab_leader_v1';
+const WR_LEADER_TTL_MS = 4000; // leader renews well inside this window; a gap this long means it's gone (closed tab, crash, etc.)
+let wrIsLeader = false;
+function wrClaimLeadership(){
+  let cur = null;
+  try{ cur = JSON.parse(localStorage.getItem(WR_LEADER_KEY) || 'null'); }catch(e){}
+  const now = Date.now();
+  if(!cur || (now - cur.ts) > WR_LEADER_TTL_MS || cur.id === WR_TAB_ID){
+    wrIsLeader = true;
+    try{ localStorage.setItem(WR_LEADER_KEY, JSON.stringify({id:WR_TAB_ID, ts:now})); }catch(e){}
+  } else {
+    wrIsLeader = false;
+  }
+}
+wrClaimLeadership();
+setInterval(wrClaimLeadership, 1500);
+window.addEventListener('storage', (e) => { if(e.key === WR_LEADER_KEY) wrClaimLeadership(); });
+window.addEventListener('beforeunload', () => {
+  if(!wrIsLeader) return;
+  try{
+    const cur = JSON.parse(localStorage.getItem(WR_LEADER_KEY) || 'null');
+    if(cur && cur.id === WR_TAB_ID) localStorage.removeItem(WR_LEADER_KEY); // free it up immediately instead of waiting out the TTL
+  }catch(e){}
+});
 
 // Tick every currently-running timer once. Shared by the visibility resync below and by the
 // background heartbeat further down, so both paths stay in sync instead of duplicating the loop.
@@ -2080,7 +2113,7 @@ function blockCreditElapsedFocus(now){
   if(blockTimerState.lastCredit != null){
     const elapsed = Math.floor((now - blockTimerState.lastCredit) / 1000);
     if(elapsed > 0){
-      addFocusSeconds(elapsed);
+      if(wrIsLeader) addFocusSeconds(elapsed); // only the elected tab writes credited time — see wrClaimLeadership above
       blockTimerState.lastCredit += elapsed * 1000;
     }
   } else {
@@ -2395,12 +2428,13 @@ function renderList(panel){
       const key = panel.day.key + ':' + idx;
       const running = blockTimerState.running && blockTimerState.blockKey === key;
       const ringingHere = blockTimerState.ringing && blockTimerState.blockKey === key;
-      row.className = 'row' + (b.type === 'rest' ? ' rest' : '') + (ringingHere ? ' block-ringing' : '');
+      const today = dateKey(new Date());
       // Both "leftover time to resume" and "finished today" are scoped to today's date, since
       // these blocks recur weekly — that's what makes the status reset on its own once this
       // weekday next comes around, instead of carrying over from last time.
-      const today = dateKey(new Date());
       const hasLeftover = b.remainingSec != null && b.remainingSec > 0 && b.remainingDate === today;
+      const doneToday = b.doneDate === today;
+      row.className = 'row' + (b.type === 'rest' ? ' rest' : '') + (ringingHere ? ' block-ringing' : '') + (doneToday ? ' done' : '');
       let leftHtml;
       if(running){
         const left = Math.max(0, Math.round((blockTimerState.endAt - Date.now())/1000));
@@ -2598,7 +2632,7 @@ days.forEach((day, i) => {
     </div>
     <div class="list-header">
       <div class="list-header-title"><span class="list-header-icon">☰</span> What I'm Doing</div>
-      <button type="button" class="add-task-btn">+ Add Task</button>
+      <button type="button" class="add-task-btn">Edit</button>
     </div>
     <div class="list"></div>
   `;
@@ -2607,13 +2641,14 @@ days.forEach((day, i) => {
   const addTaskBtn = el.querySelector('.add-task-btn');
   const panel = { el, btn, day, productiveTotal, listEl, editing:false, dayIdx:i };
 
-  // Single button does double duty: while browsing, it adds a new task and
-  // drops the day into edit mode; while already editing, it just closes edit
-  // mode again (no separate Edit/Done button needed).
+  // Single button does double duty: while browsing, it just drops the day into
+  // edit mode (no task added yet — that's what the "+ Add block" button inside
+  // edit mode is for); while already editing, it closes edit mode again (no
+  // separate Edit/Done button needed).
   addTaskBtn.addEventListener('click', () => {
     if(panel.editing){
       panel.editing = false;
-      addTaskBtn.textContent = '+ Add Task';
+      addTaskBtn.textContent = 'Edit';
       addTaskBtn.classList.remove('active');
       renderList(panel);
       return;
@@ -2621,7 +2656,7 @@ days.forEach((day, i) => {
     panel.editing = true;
     addTaskBtn.textContent = 'Done';
     addTaskBtn.classList.add('active');
-    addTaskBlock(panel);
+    renderList(panel);
   });
 
   // day-total chip: informational only now — the editable target control lives in the
@@ -2803,9 +2838,11 @@ function pomoCreditElapsedFocus(now){
   if(pomo.mode === 'focus' && pomo.lastCredit != null){
     const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
     if(elapsed > 0){
-      pomo.focusSeconds += elapsed;
-      addFocusSeconds(elapsed);
-      pomo.trackerSeconds += elapsed;
+      if(wrIsLeader){ // only the elected tab writes credited time — see wrClaimLeadership above
+        pomo.focusSeconds += elapsed;
+        addFocusSeconds(elapsed);
+        pomo.trackerSeconds += elapsed;
+      }
       pomo.lastCredit += elapsed * 1000;
     }
   } else {
@@ -3207,7 +3244,7 @@ function ctCreditElapsed(now){
   if(ctState.lastCredit != null){
     const elapsed = Math.floor((now - ctState.lastCredit) / 1000);
     if(elapsed > 0){
-      addFocusSeconds(elapsed);
+      if(wrIsLeader) addFocusSeconds(elapsed); // only the elected tab writes credited time — see wrClaimLeadership above
       ctState.sessionSeconds += elapsed;
       ctState.lastCredit += elapsed * 1000;
     }
@@ -3397,23 +3434,41 @@ function renderStats(){
 function renderFocusSidebar(panel){
   const list = document.getElementById('focusList');
   if(!list) return;
-  const totals = {};
-  panel.day.blocks.forEach(b => {
-    if(b.type === 'rest') return;
-    const dur = Math.max(1, Math.round((b.duration != null ? b.duration : (b.e-b.s)) || 1));
-    totals[b.type] = (totals[b.type]||0) + dur;
-  });
-  const rows = Object.keys(totals)
-    .map(id => ({cat:getCategory(id), mins:totals[id]}))
-    .sort((a,b) => b.mins - a.mins);
+  const todayKey = dateKey(new Date());
+  const isToday = panel.dayIdx === logical.idx;
+  // Only "today" has a live tracker log/running timer to compare against — other day tabs are a
+  // read-only schedule preview, so they just show the plain scheduled duration per task.
+  const sessions = isToday ? (loadTrackerLog()[todayKey] || []) : [];
+  const live = isToday ? getLiveTracking() : null;
+  const rows = panel.day.blocks
+    .map((b, idx) => ({b, idx}))
+    .filter(({b}) => b.type !== 'rest')
+    .map(({b, idx}) => {
+      const scheduledMin = Math.max(1, Math.round((b.duration != null ? b.duration : (b.e-b.s)) || 1));
+      // Time actually logged against this exact task today, matched by label+category since a
+      // tracker session doesn't carry a direct link back to a specific scheduled block. Running
+      // the same task's timer more than once (or past its scheduled length) just keeps adding up
+      // here — once it passes the scheduled amount, the total shown switches over to reflect
+      // that real, possibly-overtime total instead of the original estimate.
+      let actualSeconds = sessions
+        .filter(x => x.source === 'block' && x.label === b.label && x.cat === b.type)
+        .reduce((a,x) => a + (Number(x.seconds)||0), 0);
+      if(live && blockTimerState.blockKey === (panel.day.key + ':' + idx)) actualSeconds += live.seconds;
+      return {
+        cat: getCategory(b.type),
+        label: b.label,
+        mins: Math.max(scheduledMin, actualSeconds/60),
+        done: isToday && b.doneDate === todayKey
+      };
+    });
   if(!rows.length){
     list.innerHTML = `<div class="focus-empty">No tasks scheduled yet.</div>`;
     return;
   }
   list.innerHTML = rows.map(r => `
-    <div class="focus-row">
+    <div class="focus-row${r.done ? ' done' : ''}">
       <span class="focus-dot" style="background:${r.cat.color || '#9DA1A8'}"></span>
-      <span class="focus-name">${escapeHtml(r.cat.name)}</span>
+      <span class="focus-name">${escapeHtml(r.label)}</span>
       <span class="focus-time">${minsToHM(r.mins)}</span>
     </div>
   `).join('');
