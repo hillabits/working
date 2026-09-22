@@ -3450,7 +3450,15 @@ function renderStats(){
   // yet flushed to the tracker log — otherwise this box only ever jumped forward when a session
   // was paused or finished, instead of moving live while it ran.
   const live = getLiveTracking();
-  const doneSeconds=sessions.reduce((a,x)=>a+(Number(x.seconds)||0),0) + (live ? live.seconds : 0);
+  const trackerSeconds = sessions.reduce((a,x)=>a+(Number(x.seconds)||0),0) + (live ? live.seconds : 0);
+  // Same fallback the Productivity Matrix uses (see renderMatrix): take whichever ledger has
+  // logged *more* for today, trackerLog or the older focusLog, instead of trackerLog alone.
+  // Without this, a session that got credited to focusLog (live, tick by tick) but — for
+  // whatever reason — never made it into trackerLog as a finished session would show up on the
+  // Matrix (which already checks both) but not here or in the Activity Log, which only reads
+  // trackerLog: the exact "timer ran, but the bar/log show nothing" mismatch this fixes.
+  const focusSeconds = Number(loadFocusLog()[k]) || 0;
+  const doneSeconds = Math.max(trackerSeconds, focusSeconds);
   const targetSeconds=Math.max(0,p.productiveTotal*60);
   const pct=targetSeconds?Math.min(100,doneSeconds/targetSeconds*100):0;
   const remaining=Math.max(0,(targetSeconds-doneSeconds)/60);
