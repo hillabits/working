@@ -1072,6 +1072,17 @@ function wrResumeAudioContexts(){
     if(ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
   });
 }
+// Mobile browsers (iOS Safari in particular) only allow an AudioContext to be resumed from
+// inside a real user-gesture event handler — calling resume() from visibilitychange/focus (as
+// resyncRunningPomos does below) is not a gesture and silently fails there. That's the main
+// reason alarms rang inconsistently on mobile: once the tab had been backgrounded and its
+// AudioContext auto-suspended, nothing gesture-based ever ran again to re-unlock it. Any tap
+// or click anywhere on the page is a genuine gesture, so opportunistically resume on every one
+// of those too — this makes the very next beep after the user touches the screen audible even
+// if the alarm itself started ringing while the page had no recent interaction.
+['touchstart','touchend','click'].forEach(evt => {
+  document.addEventListener(evt, wrResumeAudioContexts, { passive: true });
+});
 
 // --- service worker registration, purely so notifications can be shown on Android ---
 // Android refuses `new Notification()` called from the page itself (throws "Illegal
@@ -1167,7 +1178,7 @@ function tickAllRunning(){
 // visible/focused again — covers cases where the interval was throttled or fully suspended.
 function resyncRunningPomos(){
   tickAllRunning();
-  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running)) acquireWakeLock();
+  if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running) || blockTimerState.running) acquireWakeLock();
   wrResumeAudioContexts();
 }
 document.addEventListener('visibilitychange', () => { if(!document.hidden) resyncRunningPomos(); });
@@ -2233,6 +2244,26 @@ function stopBlockTimer(){
   renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
   renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
 }
+// Lightweight per-tick update: patch just the countdown text on the running row instead of
+// tearing down and rebuilding the whole row list (which renderList does via innerHTML='').
+// Rebuilding every 250ms was destroying and recreating the Start/Stop button 4x/sec, which is
+// what made the button look jittery and — worse — could eat a click: if a mousedown/mouseup
+// straddled one of those rebuilds, the element the user pressed was already gone by the time
+// the click event would have fired, so the timer silently failed to start/stop.
+function updateRunningBlockRowTime(panel){
+  if(!blockTimerState.running || !blockTimerState.blockKey) return;
+  const sep = blockTimerState.blockKey.lastIndexOf(':');
+  if(sep < 0) return;
+  const dayKey = blockTimerState.blockKey.slice(0, sep);
+  if(!panel || panel.day.key !== dayKey) return;
+  const idx = Number(blockTimerState.blockKey.slice(sep+1));
+  const row = panel.listEl.children[idx];
+  if(!row) return;
+  const remainingEl = row.querySelector('.task-remaining');
+  if(!remainingEl) return;
+  const left = Math.max(0, Math.round((blockTimerState.endAt - Date.now())/1000));
+  remainingEl.textContent = `${ctClockFmt(left)} left`;
+}
 // Same endAt-based tick used by the interval below AND by the background heartbeat
 // (tickAllRunning), so a throttled/backgrounded tab still catches up and fires the alarm the
 // moment it's checked again, instead of drifting.
@@ -2248,7 +2279,7 @@ function blockTimerTick(){
   if(left<=0){ blockFinishSession(); return; }
   const dayKey = blockTimerState.blockKey ? blockTimerState.blockKey.split(':')[0] : null;
   const panel = dayKey ? dayPanels.find(p => p.day.key === dayKey) : null;
-  if(panel) renderList(panel);
+  if(panel) updateRunningBlockRowTime(panel);
   // Rail + the Productivity Time Left box used to only update once the block finished or was
   // stopped. Throttled to once per whole second (same pattern as pomo/ctTick below) so this
   // stays cheap even though the interval itself fires every 250ms.
