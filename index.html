@@ -1531,7 +1531,11 @@ function applyState(state, {rerenderMatrix} = {}){
     if(wasRinging && !r.pomo.ringing) silenceAcknowledgedAlarm(localAlarmId, gpEl, pomoAlarmKey);
     if(r.pomo.running && r.pomo.endAt){
       const left = Math.round((r.pomo.endAt - Date.now())/1000);
-      if(left <= 0){ r.pomo.running = false; r.pomo.remaining = 0; }
+      // Same fix as the block timer and custom timer below: a phase that finished while the app
+      // was closed/backgrounded used to just get marked not-running here, with nothing credited
+      // to the tracker/activity log and no alarm. Credit it up through its actual end time (not
+      // "now") and route it through the normal finish-and-ring path instead.
+      if(left <= 0){ pomoCreditElapsedFocus(r.pomo.endAt); pomoFinishPhase(r.pomo.endAt); }
       else { r.pomo.remaining = left; r.pomo.lastCredit = Date.now(); r.pomo.timerId = setInterval(r.tick, 250); acquireWakeLock(); }
     }
     r.render();
@@ -1550,7 +1554,11 @@ function applyState(state, {rerenderMatrix} = {}){
       const now = Date.now();
       if(ctState.mode === 'timer' && ctState.endAt){
         const left = Math.round((ctState.endAt - now)/1000);
-        if(left <= 0){ ctState.running = false; ctState.remaining = 0; }
+        // Same fix as the block timer above: a countdown that ran out while the app was closed/
+        // backgrounded used to just get marked not-running here, with nothing credited to the
+        // tracker/activity log or productivity bar, and no alarm. Credit it up through its actual
+        // end time (not "now") and route it through the normal finish-and-ring path instead.
+        if(left <= 0){ ctCreditElapsed(ctState.endAt); ctFinishSession(true); }
         else { ctState.remaining = left; ctState.lastCredit = now; ctState.timerId = setInterval(ctTick, 250); acquireWakeLock(); }
       } else if(ctState.mode === 'stopwatch'){
         ctState.lastCredit = now;
@@ -1573,7 +1581,13 @@ function applyState(state, {rerenderMatrix} = {}){
     if(blockTimerState.running && blockTimerState.endAt){
       const now = Date.now();
       const left = Math.round((blockTimerState.endAt - now)/1000);
-      if(left <= 0){ blockTimerState.running = false; }
+      // Previously this just flipped `running` to false with nothing else — so a block that
+      // finished while the app was closed/backgrounded never got logged to the tracker/activity
+      // log or the productivity bar, and never started ringing, until the very next live tick
+      // (which never came, since running was already false). Route it through the same
+      // finish-and-ring path a live tick would have taken, credited up through the moment it
+      // actually ended rather than "now" (which could be much later than the real end).
+      if(left <= 0){ blockFinishSession(blockTimerState.endAt); }
       else {
         // don't re-credit the gap between the sending device's last credit and now — that time
         // is already reflected in the focusLog snapshot applied above
@@ -2187,11 +2201,15 @@ function blockStopRinging(){
   dayPanels.forEach(renderList);
 }
 // countdown hit zero: log the completed time, then ring until the person hits "Stop alarm"
-function blockFinishSession(){
+// `asOf` defaults to right now (the normal live-tick path), but the state-restore path below
+// passes the timer's own endAt instead — so a block that finished while the app was closed/
+// backgrounded gets credited for its actual duration, not for however long it sat unopened.
+function blockFinishSession(asOf){
+  asOf = asOf || Date.now();
   // catch up any trailing partial second that hasn't been credited to the focus log yet — the
   // rest was already credited live, tick by tick, via blockCreditElapsedFocus
-  blockCreditElapsedFocus(Date.now());
-  const elapsed = Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000));
+  blockCreditElapsedFocus(asOf);
+  const elapsed = Math.max(0, Math.floor((asOf-blockTimerState.startedAt)/1000));
   const total = blockTimerState.elapsed + elapsed;
   const finishedInfo = findBlockByKey(blockTimerState.blockKey);
   if(finishedInfo){
@@ -2881,6 +2899,28 @@ function pomoCreditElapsedFocus(now){
   }
 }
 
+// phase (focus or break) hit zero: log it, flip to the next phase, then ring. Pulled out of
+// pomoTick so the state-restore path below can reuse the exact same logging/ringing behavior
+// for a phase that finished while the app was closed/backgrounded, instead of just marking it
+// not-running with nothing credited and no alarm.
+function pomoFinishPhase(asOf){
+  asOf = asOf || Date.now();
+  clearInterval(pomo.timerId);
+  pomo.running = false;
+  pomo.warned30 = false;
+  if(pomo.mode === 'focus'){
+    pomo.sessions++;
+    pomo.mode = 'break';
+    pomo.remaining = pomo.breakLen;
+    pomoFlushTracker(); // focus stretch just ended — log it to the rail now
+  } else {
+    pomo.mode = 'focus';
+    pomo.remaining = pomo.workLen;
+  }
+  pomoStartRinging();
+  persistLocal();
+  releaseWakeLockIfIdle();
+}
 function pomoTick(){
   if(!pomo.running) return;
   const now = Date.now();
@@ -2892,23 +2932,7 @@ function pomoTick(){
     notifyAlmostDone(pomo.mode === 'break' ? 'Break' : 'Focus session');
   }
 
-  if(pomo.remaining <= 0){
-    clearInterval(pomo.timerId);
-    pomo.running = false;
-    pomo.warned30 = false;
-    if(pomo.mode === 'focus'){
-      pomo.sessions++;
-      pomo.mode = 'break';
-      pomo.remaining = pomo.breakLen;
-      pomoFlushTracker(); // focus stretch just ended — log it to the rail now
-    } else {
-      pomo.mode = 'focus';
-      pomo.remaining = pomo.workLen;
-    }
-    pomoStartRinging();
-    persistLocal();
-    releaseWakeLockIfIdle();
-  }
+  if(pomo.remaining <= 0){ pomoFinishPhase(now); }
   renderPomo();
   const nowSec = Math.floor(now / 1000);
   if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderRail(); renderStats(); }
