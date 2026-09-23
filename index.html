@@ -1166,6 +1166,22 @@ window.addEventListener('beforeunload', () => {
   }catch(e){}
 });
 
+// Every running timer is driven by TWO independent 250ms clocks at once: its own setInterval
+// (started when it's launched/resumed) and the always-on worker heartbeat below (a deliberate
+// backup, since backgrounded tabs get their setInterval throttled or paused). Foregrounded and
+// not throttled, both fire on their own un-synchronized 250ms cadence, which interleaves into
+// roughly 8 renders a second instead of 4 — re-writing the Start/Pause button's text and
+// disabled state twice as often as needed. On a phone that's frequent enough to occasionally eat
+// a tap mid-render, which is what made the button feel jittery and hard to hit. This throttle
+// makes each timer's tick a no-op if it already ticked within the last 150ms, so only whichever
+// clock fires first in a given cycle actually does the work.
+function wrShouldTick(state){
+  const now = Date.now();
+  if(state._lastTickMs && (now - state._lastTickMs) < 150) return false;
+  state._lastTickMs = now;
+  return true;
+}
+
 // Tick every currently-running timer once. Shared by the visibility resync below and by the
 // background heartbeat further down, so both paths stay in sync instead of duplicating the loop.
 function tickAllRunning(){
@@ -1176,7 +1192,26 @@ function tickAllRunning(){
 
 // Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
 // visible/focused again — covers cases where the interval was throttled or fully suspended.
-function resyncRunningPomos(){
+//
+// This used to only re-tick this device's OWN local state, which is why stopping an alarm (or
+// pausing a running timer) on one device didn't stick on a second device: that second device,
+// while its screen was off, never received the realtime update (backgrounded tabs commonly drop
+// the websocket), and coming back to the foreground only replayed its own stale local numbers —
+// it never actually asked the cloud what the current truth was. If the alarm had already been
+// silenced elsewhere, this device kept right on beeping with no way to find that out short of a
+// full reload. Now, whenever we're signed in, pull the latest cloud state first and apply it
+// (which silences any alarm someone already acknowledged on another device, per
+// silenceAcknowledgedAlarm above) before falling back to ticking whatever's still running.
+let wrResyncInFlight = false;
+async function resyncRunningPomos(){
+  if(currentUser && !wrResyncInFlight){
+    wrResyncInFlight = true;
+    try{
+      const remote = await pullCloudState();
+      if(remote) applyState(remote, {rerenderMatrix: !matrixView.hidden});
+    }catch(e){ /* offline or request failed — fall through to the local-only resync below */ }
+    wrResyncInFlight = false;
+  }
   tickAllRunning();
   if(pomoRefs.some(r => r.pomo.running) || (ctState && ctState.running) || blockTimerState.running) acquireWakeLock();
   wrResumeAudioContexts();
@@ -1472,7 +1507,7 @@ function snapshotState(){
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
       sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, trackerSeconds:r.pomo.trackerSeconds,
-      ringing:r.pomo.ringing
+      ringing:r.pomo.ringing, phaseStartedAt:r.pomo.phaseStartedAt
     })),
     customTimer: ctState ? {
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
@@ -1501,9 +1536,45 @@ function silenceAcknowledgedAlarm(localAlarmId, ringingEl, cancelKey){
   wrCancelAlarm(cancelKey);
   if('vibrate' in navigator){ try{ navigator.vibrate(0); }catch(e){} }
 }
+// Merge an incoming focusLog (day -> total seconds) with what's already saved on this device,
+// instead of blindly overwriting. Two devices can each be independently crediting seconds (e.g.
+// a pomodoro running here while a block timer runs there) inside the same debounce window before
+// either side's push lands — applyState used to just stomp local totals with whatever the other
+// device's snapshot happened to contain at that moment, silently dropping this device's own
+// not-yet-pushed seconds. Since the total for a day only ever grows, taking the max per day is a
+// safe, order-independent merge that can't lose credited time either side already recorded.
+function mergeFocusLog(remote){
+  const local = loadFocusLog();
+  const merged = {...local};
+  Object.keys(remote || {}).forEach(k => { merged[k] = Math.max(merged[k] || 0, remote[k] || 0); });
+  return merged;
+}
+// Same idea for the tracker log (day -> array of individual session entries): union by entry id
+// instead of overwriting, so a session this device just logged locally (and hasn't pushed yet)
+// doesn't get silently erased by an incoming snapshot from another device that predates it.
+function mergeTrackerLog(remote){
+  const local = loadTrackerLog();
+  const merged = {...local};
+  Object.keys(remote || {}).forEach(k => {
+    const byId = new Map((merged[k] || []).map(e => [e.id, e]));
+    (remote[k] || []).forEach(e => { if(!byId.has(e.id)) byId.set(e.id, e); });
+    merged[k] = Array.from(byId.values()).sort((a,b) => (b.at||0) - (a.at||0));
+  });
+  return merged;
+}
 function applyState(state, {rerenderMatrix} = {}){
-  if(state.focusLog) saveFocusLog(state.focusLog);
-  if(state.trackerLog) saveTrackerLog(state.trackerLog);
+  // Guards the volatile, fully-overwritten pieces of state (customTimer/blockTimer/pomo) against
+  // an older or out-of-order snapshot resurrecting a session that's already been correctly
+  // stopped/updated from a newer one. focusLog/trackerLog/timerHistory don't need this — they're
+  // merged by id/max above, which is safe to apply regardless of arrival order — but
+  // customTimer/blockTimer/pomo are applied via a flat Object.assign further down, so without
+  // this check, a delayed pull or a slightly-stale realtime payload (e.g. this device's own
+  // earlier-in-flight push, or another device that hadn't yet learned about a stop that already
+  // landed) could silently un-stop a session that another device already finished and logged.
+  const incomingIsStaleForVolatile = typeof state.updatedAt === 'number' && state.updatedAt <= lastAppliedVolatileAt;
+  if(typeof state.updatedAt === 'number' && state.updatedAt > lastAppliedVolatileAt) lastAppliedVolatileAt = state.updatedAt;
+  if(state.focusLog) saveFocusLog(mergeFocusLog(state.focusLog));
+  if(state.trackerLog) saveTrackerLog(mergeTrackerLog(state.trackerLog));
   if(state.targetOverrides){
     targetOverrides = {...state.targetOverrides};
   }
@@ -1525,6 +1596,11 @@ function applyState(state, {rerenderMatrix} = {}){
   (state.pomo || []).forEach((s, i) => {
     const r = pomoRefs[i];
     if(!r) return;
+    // same staleness guard as customTimer/blockTimer below — don't let an old/out-of-order
+    // snapshot stomp a pomodoro phase that started locally after that snapshot was taken, or
+    // resurrect one that's already been stopped by a newer update.
+    if(incomingIsStaleForVolatile) return;
+    if(r.pomo.running && r.pomo.phaseStartedAt && state.updatedAt && r.pomo.phaseStartedAt > state.updatedAt) return;
     const wasRinging = r.pomo.ringing, localAlarmId = r.pomo.alarmId;
     if(r.pomo.running) { clearInterval(r.pomo.timerId); }
     Object.assign(r.pomo, s);
@@ -1541,11 +1617,29 @@ function applyState(state, {rerenderMatrix} = {}){
     r.render();
   });
   if(state.timerHistory){
-    timerHistory = (state.timerHistory.date === dateKey(new Date())) ? state.timerHistory : { date: dateKey(new Date()), entries: [] };
+    const today = dateKey(new Date());
+    if(state.timerHistory.date === today){
+      // Union by id with whatever's already recorded locally today, same reasoning as
+      // mergeFocusLog/mergeTrackerLog above — don't let an incoming snapshot erase a Timer/
+      // Stopwatch entry this device just logged but hasn't pushed to the cloud yet.
+      const byId = new Map((timerHistory.date === today ? timerHistory.entries : []).map(e => [e.id, e]));
+      (state.timerHistory.entries || []).forEach(e => { if(!byId.has(e.id)) byId.set(e.id, e); });
+      timerHistory = { date: today, entries: Array.from(byId.values()).sort((a,b) => (b.endedAt||0) - (a.endedAt||0)) };
+    } else if(timerHistory.date !== today){
+      timerHistory = { date: today, entries: [] };
+    }
     saveTimerHistoryLocal();
     renderCtHistory();
   }
-  if(state.customTimer && ctState){
+  // Guard against an incoming snapshot that predates a session already running on THIS device
+  // (e.g. a delayed/duplicate pull, or a realtime update that raced an in-flight local push).
+  // customTimer/blockTimer/pomo are applied via Object.assign further down — a full overwrite,
+  // not a merge like focusLog/trackerLog/timerHistory — so an out-of-date remote snapshot would
+  // otherwise silently reset an actively-ticking session (clearing its interval and zeroing its
+  // accumulated seconds) without ever routing through *FinishSession/addTimerHistoryEntry. That's
+  // the "started a timer and it just never showed up in history" failure mode.
+  const staleForCustomTimer = incomingIsStaleForVolatile || (ctState && ctState.sessionActive && ctState.sessionStartedAt && state.updatedAt && ctState.sessionStartedAt > state.updatedAt);
+  if(state.customTimer && ctState && !staleForCustomTimer){
     const wasRinging = ctState.ringing, localAlarmId = ctState.alarmId;
     if(ctState.running) clearInterval(ctState.timerId);
     Object.assign(ctState, state.customTimer);
@@ -1573,7 +1667,8 @@ function applyState(state, {rerenderMatrix} = {}){
   // captured in snapshotState() and pushed to the cloud, but nothing ever read it back, so
   // opening the site on a second device (or a fresh tab) never showed a task block as running —
   // unlike the Pomodoro and Timer/Stopwatch widgets, which already resumed correctly.
-  if(state.blockTimer){
+  const staleForBlockTimer = incomingIsStaleForVolatile || (blockTimerState.running && blockTimerState.startedAt && state.updatedAt && blockTimerState.startedAt > state.updatedAt);
+  if(state.blockTimer && !staleForBlockTimer){
     const wasRinging = blockTimerState.ringing, localAlarmId = blockTimerState.alarmId;
     if(blockTimerState.running) clearInterval(blockTimerState.timerId);
     Object.assign(blockTimerState, state.blockTimer);
@@ -1605,6 +1700,9 @@ function applyState(state, {rerenderMatrix} = {}){
 
 // --- cloud sync (Supabase) — active once signed in; local-only otherwise ---
 let lastPushedAt = 0, pushTimer = null, realtimeChannel = null;
+// Newest state.updatedAt so far applied to the volatile, fully-overwritten widgets
+// (customTimer/blockTimer/pomo) inside applyState — see the comment at the top of applyState.
+let lastAppliedVolatileAt = 0;
 const syncStatusEl = document.getElementById('syncStatus');
 
 // Drives the small corner dot: green (pulsing) while a save is in flight, solid green once
@@ -1619,16 +1717,35 @@ function setSyncStatus(state){
 function queueCloudPush(){
   if(!currentUser) return;
   clearTimeout(pushTimer);
-  pushTimer = setTimeout(async () => {
-    const state = snapshotState();
-    lastPushedAt = state.updatedAt;
-    setSyncStatus('syncing');
-    const { error } = await sb.from('progress_states').upsert({
-      user_id: currentUser.id, state, updated_at: new Date(state.updatedAt).toISOString()
-    });
-    if(syncStatusEl) setSyncStatus(error ? 'error' : 'synced');
-  }, 900);
+  pushTimer = setTimeout(doCloudPush, 900);
 }
+// The actual network write, factored out of the 900ms debounce so it can also be invoked
+// immediately (see flushCloudPush below) when there's a real risk the debounce timer will never
+// get to fire.
+async function doCloudPush(){
+  pushTimer = null;
+  const state = snapshotState();
+  lastPushedAt = state.updatedAt;
+  setSyncStatus('syncing');
+  const { error } = await sb.from('progress_states').upsert({
+    user_id: currentUser.id, state, updated_at: new Date(state.updatedAt).toISOString()
+  });
+  if(syncStatusEl) setSyncStatus(error ? 'error' : 'synced');
+}
+// Push RIGHT NOW instead of waiting out the debounce, and cancel the pending debounced push so it
+// doesn't fire twice. Without this, stopping a timer (or any other change) and then immediately
+// backgrounding the tab/app or closing it — extremely common right after pressing Stop — meant
+// the 900ms setTimeout in queueCloudPush() simply never ran, so that final state never reached
+// the cloud at all: the stop was saved to *this* device's own localStorage, but no other device,
+// and not even this device the next time it opened somewhere else, would ever learn it happened,
+// until this same device did some unrelated action later that happened to trigger another push.
+function flushCloudPush(){
+  if(!currentUser || pushTimer == null) return;
+  clearTimeout(pushTimer);
+  doCloudPush();
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') flushCloudPush(); });
+window.addEventListener('pagehide', flushCloudPush);
 
 async function pullCloudState(){
   const { data } = await sb.from('progress_states').select('state').eq('user_id', currentUser.id).maybeSingle();
@@ -1725,6 +1842,16 @@ async function onSignedIn(user){
     const remote = await pullCloudState();
     if(remote){
       applyState(remote, {rerenderMatrix:true});
+      // applyState() above merges focusLog/trackerLog/timerHistory rather than overwriting them,
+      // specifically so that anything this device recorded locally but never got around to
+      // pushing (e.g. a Stop that finished right before the tab was closed — see flushCloudPush's
+      // comment above for exactly how that happens) survives the merge instead of being silently
+      // dropped. But merging only fixes it HERE; without pushing the merged result back up,
+      // that recovered entry stays trapped on this one device and every other device — and the
+      // cloud copy itself — never finds out the session was ever stopped, until this device
+      // happens to make some unrelated change that triggers a push of its own. Push immediately
+      // so the fix actually propagates.
+      queueCloudPush();
     } else {
       const local = loadPomoState();
       if(local && local.ownerId === user.id && local.updatedAt){
@@ -1781,16 +1908,42 @@ document.getElementById('signUpBtn').addEventListener('click', async () => {
 document.getElementById('logoutBtn').addEventListener('click', () => sb.auth.signOut());
 
 sb.auth.onAuthStateChange((event, session) => {
-  if(session && session.user) onSignedIn(session.user);
-  else onSignedOut();
+  if(session && session.user){
+    // supabase-js fires this listener for far more than "the user just signed in" — it also
+    // fires on every silent access-token refresh (roughly hourly, or whenever a backgrounded/
+    // suspended tab reconnects), and again on things like updateUser(). onSignedIn() used to run
+    // unconditionally here, which meant a routine TOKEN_REFRESHED would re-pull the last-saved
+    // cloud snapshot and pass it through applyState() — and applyState() Object.assign()s the
+    // customTimer/blockTimer/pomo pieces of state wholesale rather than merging them (unlike
+    // focusLog/trackerLog/timerHistory, which are merged by id/max). If that cloud snapshot
+    // predated a session already running locally (e.g. it was pushed just before Start was
+    // pressed, or the push simply hadn't landed yet), the refresh would silently stomp the live,
+    // in-progress timer/stopwatch/pomodoro back to its old (usually not-running) state — clearing
+    // the interval and zeroing sessionSeconds — without ever routing through ctFinishSession/
+    // addTimerHistoryEntry. The countdown could keep animating for a tick before vanishing, so it
+    // looked like the timer "just didn't record" rather than like a sync bug. Only run the full
+    // pull-and-apply flow for an actual sign-in; for everything else just keep the user reference
+    // current and leave whatever's live on this device alone.
+    if(event === 'SIGNED_IN' || event === 'INITIAL_SESSION'){
+      onSignedIn(session.user);
+    } else {
+      currentUser = session.user;
+    }
+  } else {
+    onSignedOut();
+  }
 });
 
 function initSync(){
   const local = loadPomoState();
   if(local && local.pomo) applyState(local); // restore this device's own last state first
-  sb.auth.getSession().then(({data}) => {
-    if(data.session && data.session.user) onSignedIn(data.session.user);
-  });
+  // Sign-in itself is fully handled by the onAuthStateChange listener above (which fires with
+  // INITIAL_SESSION as soon as supabase-js finishes reading the cached session on startup, and
+  // with SIGNED_IN on an explicit login) — this used to ALSO call sb.auth.getSession().then(...)
+  // -> onSignedIn(), so a page load with an existing session ran the whole pull-cloud-state-and-
+  // applyState flow twice back to back (two pullCloudState() calls racing, two subscribeRealtime()
+  // calls). That redundant second pass is removed here; the listener above is the single source
+  // of truth for reacting to auth state.
 }
 
 // --- screen-off alarms: real Web Push, sent from the server (see
@@ -2183,6 +2336,10 @@ function blockBeep(){
   }catch(e){ /* audio unavailable — ignore */ }
 }
 function blockStartRinging(){
+  // Guard against a second overlapping beep loop being layered on top of one that's already
+  // running — this is what made the alarm sound "stacked"/doubled: nothing here used to check
+  // whether alarmId was already set before handing out a brand new setInterval.
+  if(blockTimerState.alarmId){ clearInterval(blockTimerState.alarmId); blockTimerState.alarmId = null; }
   blockTimerState.ringing = true;
   blockBeep();
   blockTimerState.alarmId = setInterval(blockBeep, 900);
@@ -2287,6 +2444,7 @@ function updateRunningBlockRowTime(panel){
 // moment it's checked again, instead of drifting.
 function blockTimerTick(){
   if(!blockTimerState.running) return;
+  if(!wrShouldTick(blockTimerState)) return;
   const now = Date.now();
   blockCreditElapsedFocus(now);
   const left=Math.max(0,Math.round((blockTimerState.endAt-now)/1000));
@@ -2786,6 +2944,11 @@ pomo = {
   ringing: false, alarmId: null, warned30: false,
   endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
   lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
+  phaseStartedAt: null, // when the CURRENT running phase began — used only to detect a stale
+                         // incoming cloud snapshot in applyState() (see staleForCustomTimer/
+                         // staleForBlockTimer); unlike lastCredit/endAt this never advances while
+                         // the phase is running, so it's a stable "did this start after that
+                         // snapshot was taken" marker.
   trackerSeconds: 0, // focus seconds accumulated since the last flush to the rail/tracker log
 };
 // Commits whatever focus time has piled up (since the last flush) to the rail/productivity-
@@ -2838,6 +3001,9 @@ function pomoBeep(){
 }
 
 function pomoStartRinging(){
+  // Same guard as blockStartRinging/ctStartRinging: never layer a second beep loop on top of
+  // one that's already going, or the alarm sounds "stacked"/doubled.
+  if(pomo.alarmId){ clearInterval(pomo.alarmId); pomo.alarmId = null; }
   pomo.ringing = true;
   gpEl.classList.add('ringing');
   pomoBeep();
@@ -2923,6 +3089,7 @@ function pomoFinishPhase(asOf){
 }
 function pomoTick(){
   if(!pomo.running) return;
+  if(!wrShouldTick(pomo)) return;
   const now = Date.now();
   pomoCreditElapsedFocus(now);
   pomo.remaining = Math.max(0, Math.round((pomo.endAt - now) / 1000));
@@ -2966,6 +3133,7 @@ gpStartBtn.addEventListener('click', () => {
     pomo.running = true;
     pomo.endAt = Date.now() + pomo.remaining * 1000;
     pomo.lastCredit = Date.now();
+    pomo.phaseStartedAt = Date.now();
     // Tick every 250ms so the visible countdown feels smooth; when foregrounded, throttling
     // has no effect on correctness since every tick re-derives remaining from endAt.
     pomo.timerId = setInterval(pomoTick, 250);
@@ -3158,6 +3326,9 @@ function ctBeep(){
   }catch(e){ /* audio unavailable — ignore */ }
 }
 function ctStartRinging(){
+  // Same guard as pomoStartRinging/blockStartRinging: never layer a second beep loop on top of
+  // one that's already going, or the alarm sounds "stacked"/doubled.
+  if(ctState.alarmId){ clearInterval(ctState.alarmId); ctState.alarmId = null; }
   ctState.ringing = true;
   ctPomodoroEl.classList.add('ringing');
   ctBeep();
@@ -3340,6 +3511,7 @@ function ctFinishSession(ring){
 }
 function ctTick(){
   if(!ctState.running) return;
+  if(!wrShouldTick(ctState)) return;
   const now = Date.now();
   ctCreditElapsed(now);
   if(ctState.mode === 'timer'){
