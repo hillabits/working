@@ -5,12 +5,35 @@
 // never resolves, so push subscriptions silently never get created — which is why alarms only
 // ever worked on the device with the tab open, and other devices never rang at all.
 
+// App-shell cache: makes the installed app open even with no connection. Network-first (below), so
+// you always get the newest version of the page when online. Bump CACHE when you change this list.
+const CACHE = 'weekly-rhythm-v1';
+const SHELL = ['./', 'manifest.webmanifest', 'icon-192.png'];
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => { /* never block install on caching */ }));
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+// Network-first for this site's own files; everything cross-origin (Supabase API, realtime, fonts,
+// the supabase-js CDN) is left completely alone so data is never served stale.
+self.addEventListener('fetch', (event) => {
+  const req = event.request, url = new URL(req.url);
+  if (req.method !== 'GET' || url.origin !== self.location.origin) return;
+  event.respondWith(
+    fetch(req).then((res) => {
+      if (res.ok && res.type === 'basic') { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); }
+      return res;
+    }).catch(() => caches.match(req).then((m) => m || (req.mode === 'navigate' ? caches.match('./') : undefined)))
+  );
 });
 
 // Fired when the server's push (supabase/functions/send-due-alarms) delivers an alarm.
@@ -32,7 +55,7 @@ self.addEventListener('push', (event) => {
     renotify: true,
     requireInteraction: true, // stays on screen until the user dismisses/taps it
     vibrate: [200, 100, 200, 100, 200],
-    data: { url: data.url || '/' }
+    data: { url: data.url || self.registration.scope }
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
@@ -41,7 +64,7 @@ self.addEventListener('push', (event) => {
 // Tapping the notification focuses (or opens) the app instead of just dismissing.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = (event.notification.data && event.notification.data.url) || '/';
+  const targetUrl = (event.notification.data && event.notification.data.url) || self.registration.scope;
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for(const client of clientList){
@@ -106,4 +129,15 @@ self.addEventListener('pushsubscriptionchange', (event) => {
       });
     }catch(e){ /* offline, or RLS rejected it — the page-side backstop above will catch it later */ }
   })());
+});
+
+// --- the "timer running" notification (tag wr-running, shown/updated by the page while a timer runs) ---
+// If the user swipes it away, tell the page so it stops re-posting it for that run. (Closing it from
+// the page itself does not fire this event, only a real dismissal does.)
+self.addEventListener('notificationclose', (event) => {
+  if (event.notification.tag !== 'wr-running') return;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((list) => list.forEach((c) => c.postMessage({ type: 'wr-running-dismissed' })))
+  );
 });
