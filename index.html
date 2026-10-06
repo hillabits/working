@@ -117,6 +117,10 @@
   }
   ::selection{background:var(--night-glow);}
   a, button{ font-family:inherit; }
+  /* no browser tap flash / selection box on touch */
+  *, *::before, *::after{ -webkit-tap-highlight-color:transparent; }
+  button, a, [role="button"], label, select, summary, .view-btn, .tab-btn, .iconbtn{ -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation; }
+  button:focus:not(:focus-visible), a:focus:not(:focus-visible), [tabindex]:focus:not(:focus-visible){ outline:none; }
   :focus-visible{ outline:2px solid var(--night); outline-offset:2px; border-radius:4px; }
 
   .wrap{ max-width:1180px; margin:0 auto; padding:28px 28px 0; }
@@ -897,6 +901,18 @@
     .pomo-btn:active, .add-task-btn:active, .task-start:active, .iconbtn:active{ transform:scale(.95); }
   }
 
+  /* ---------- mobile smoothness: blur layers + overlay scrollbars made the view switch stutter ---------- */
+  @media (max-width:720px){
+    html, body{ scrollbar-width:none; -ms-overflow-style:none; }
+    html::-webkit-scrollbar, body::-webkit-scrollbar{ display:none; }
+    .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap{
+      -webkit-backdrop-filter:none; backdrop-filter:none;
+      background:color-mix(in srgb, var(--surface) 94%, transparent);
+    }
+    .day, .focus-card, .pomodoro, .cat-manager, .ct-history{ will-change:transform, opacity; }
+    .ring-svg, .ring-fill{ filter:none; }
+  }
+
   /* ---------- motion: shared easing + view-transition for the theme toggle ---------- */
   :root{ --ease:cubic-bezier(.22,.9,.24,1); }
   button, input, select, textarea{
@@ -945,14 +961,16 @@
       box-shadow:0 26px 44px -30px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
     }
 
-    /* day tabs become the "100 | 200 | 300" picker: faint labels, the active one grows between two hairlines */
-    .tabs-row .tabs{ background:transparent; border-radius:0; padding:8px 0; gap:0; width:100%; overflow:visible; justify-content:space-between; }
+    /* day tabs: same look as desktop (active day = filled pill), but NO grey outer container behind the week */
+    .tabs-row .tabs{ background:transparent; border-radius:0; padding:4px 0; gap:2px; width:100%; overflow:visible; justify-content:space-between; }
     .tabs-row .tab-btn{
-      flex:1; justify-content:center; padding:6px 2px; font-size:15px; font-weight:300; color:var(--text-faint);
-      background:transparent; border:0; border-left:1px solid transparent; border-right:1px solid transparent; border-radius:0;
-      transition:transform .55s var(--spring), color .3s ease, border-color .3s ease, font-weight .3s ease;
+      flex:1 1 0; min-width:0; justify-content:center; padding:10px 2px; font-size:14px; font-weight:500; color:var(--pill-dim);
+      background:transparent; border:0; border-radius:100px;
+      transition:background-color .3s ease, color .3s ease;
     }
-    .tabs-row .tabs .tab-btn.active{ background:transparent; color:var(--text); font-weight:600; transform:scale(1.2); border-left-color:var(--line-strong); border-right-color:var(--line-strong); }
+    .tabs-row .tab-btn:hover{ background:transparent; color:var(--text); }
+    .tabs-row .tabs .tab-btn.active{ background:var(--pill-active); color:var(--pill-active-text); font-weight:600; transform:none; }
+    .tabs-row .tabs .tab-btn.active:hover{ background:var(--pill-active); color:var(--pill-active-text); }
 
     /* task rows as soft pills, Start as the filled action pill (like "Drink"), reset as the white pill */
     .list{ gap:10px; }
@@ -1553,9 +1571,9 @@
 </div>
 
 <div id="authBar" class="topnav" style="display:none;">
-  <div class="topnav-brand"><span class="brand-dot"></span><button type="button" id="themeToggleBtn" class="brand-dot brand-dot-2" aria-label="Toggle dark mode"></button>bitrhythm</div>
-  <button type="button" id="mobileMenuBtn" class="iconbtn mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="topnavCollapsible">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+  <div class="topnav-brand"><span class="brand-dot"></span><button type="button" id="themeToggleBtn" class="brand-dot brand-dot-2" aria-label="Toggle dark mode"></button><button type="button" id="brandMenuBtn" class="brand-name" aria-expanded="false" aria-controls="topnavCollapsible" aria-haspopup="true">bitrhythm<svg class="brand-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  <button type="button" id="mobileMenuBtn" class="iconbtn mobile-menu-btn" aria-label="Account" aria-expanded="false" aria-controls="topnavCollapsible">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
   </button>
   <nav class="topnav-links">
       <button class="view-btn active" id="showScheduleBtn" type="button" aria-label="Weekly Rhythm"><svg class="vb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="vb-text">Weekly Rhythm</span></button>
@@ -1565,8 +1583,10 @@
   <div class="dock-extras" id="dockExtras"></div>
   <div class="topnav-collapsible" id="topnavCollapsible">
     <div class="topnav-actions">
+      <span class="pf-label">Display name</span>
       <button id="editNameBtn" type="button" class="name-chip" title="Set a display name">
         <span id="userLabel"></span>
+        <svg class="pf-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
       </button>
       <span id="nameEditor" style="display:none;align-items:center;gap:6px;">
         <input id="nameInput" type="text" maxlength="40" placeholder="display name" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:inherit;font-size:inherit;width:140px;">
@@ -1725,7 +1745,16 @@
 :where(#pm-root) button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 #pm-root button:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 /* launcher */
-.pm-fab{position:fixed;right:var(--fr);bottom:var(--fb);width:58px;height:58px;border-radius:50%;background:var(--night);color:var(--on-night);display:grid;place-items:center;box-shadow:0 10px 28px rgba(0,0,0,.32);z-index:45;transition:transform .5s cubic-bezier(.22,.9,.24,1),background-color .45s ease,color .45s ease,box-shadow .45s ease}
+.pm-fab{position:fixed;right:var(--fr);bottom:var(--fb);width:58px;height:58px;border-radius:99px;background:var(--night);color:var(--on-night);display:grid;place-items:center;box-shadow:0 10px 28px rgba(0,0,0,.32);z-index:45;transition:transform .5s cubic-bezier(.22,.9,.24,1),background-color .45s ease,color .45s ease,box-shadow .45s ease}
+.pm-fab{display:flex;align-items:center;justify-content:flex-end;padding:0;overflow:hidden;will-change:transform;transition:transform .5s cubic-bezier(.22,.9,.24,1),width .5s cubic-bezier(.22,.9,.24,1),background-color .45s ease,color .45s ease,box-shadow .45s ease}
+.pm-knob{position:relative;flex:none;width:46px;height:46px;margin:6px;border-radius:50%;display:grid;place-items:center;transition:background-color .45s ease,color .45s ease,box-shadow .45s ease}
+.pm-live-time{position:absolute;left:18px;top:0;bottom:0;display:flex;align-items:center;font-family:'Hanken Grotesk',sans-serif;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em;white-space:nowrap;color:var(--on-night);opacity:0;transform:translateX(10px);pointer-events:none;transition:opacity .3s ease,transform .45s cubic-bezier(.22,.9,.24,1)}
+/* running: the launcher becomes a toggle switch (knob on the right, time on the track) */
+.pm-fab.live{width:118px;box-shadow:none}
+.pm-fab.live .pm-knob{background:#f4f4f2;color:var(--night);box-shadow:none}
+.pm-fab.live .pm-live-time{opacity:1;transform:none}
+.pm-fab.live:hover,.pm-fab.live:active{transform:none;box-shadow:none}
+.pm-fab.live.ringing{animation:none}
 .pm-fab svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s cubic-bezier(.22,.9,.24,1)}
 .pm-fab .pm-i-x{display:none}
 .pm-fab:hover{transform:scale(1.09);box-shadow:0 14px 34px rgba(0,0,0,.4)}
@@ -1736,7 +1765,7 @@
 .pm-fab.ringing{animation:pmFabRing 1s ease-in-out infinite}
 @keyframes pmFabRing{0%,100%{box-shadow:0 10px 28px rgba(0,0,0,.32),0 0 0 0 var(--tint-ring-glow-1)}50%{box-shadow:0 10px 28px rgba(0,0,0,.32),0 0 0 9px var(--tint-ring-glow-0)}}
 /* live time chip so a running session stays visible while the overlay is closed */
-.pm-badge{position:fixed;right:calc(var(--fr) + 40px);bottom:calc(var(--fb) + 40px);z-index:46;padding:5px 10px;border-radius:99px;background:var(--text);color:var(--bg);font-family:'Hanken Grotesk',sans-serif;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em;box-shadow:0 6px 16px rgba(0,0,0,.25);pointer-events:none;opacity:0;transform:translateY(6px) scale(.9);transition:opacity .25s ease,transform .3s cubic-bezier(.22,.9,.24,1)}
+.pm-badge{display:none!important;position:fixed;right:calc(var(--fr) + 40px);bottom:calc(var(--fb) + 40px);z-index:46;padding:5px 10px;border-radius:99px;background:var(--text);color:var(--bg);font-family:'Hanken Grotesk',sans-serif;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em;box-shadow:0 6px 16px rgba(0,0,0,.25);pointer-events:none;opacity:0;transform:translateY(6px) scale(.9);transition:opacity .25s ease,transform .3s cubic-bezier(.22,.9,.24,1)}
 .pm-badge.show{opacity:1;transform:none}
 .pm-fab.open ~ .pm-badge{opacity:0}
 /* overlay: covers the page area, top bar and side nav stay on top */
@@ -1775,9 +1804,13 @@
 @keyframes pmBtnPulse{0%,100%{box-shadow:0 0 0 0 var(--tint-ring-glow-0)}50%{box-shadow:0 0 0 7px var(--tint-ring-glow-1)}}
 #pm-root .pm-start:disabled{opacity:.4;cursor:not-allowed}
 .pm-x{width:38px;height:38px;flex:none;visibility:hidden;pointer-events:none}
-.pm-ghost{position:fixed;left:0;top:0;z-index:60;pointer-events:none;overflow:hidden;background:var(--night);border-radius:99px;box-shadow:0 10px 28px rgba(0,0,0,.32)}
+.pm-ghost{position:fixed;left:0;top:0;z-index:60;pointer-events:none;overflow:hidden;background:var(--night);will-change:clip-path,opacity}
+.pm-dock{will-change:clip-path}
 .pm-ghost[hidden]{display:none}
 @media(max-width:720px){
+ .pm-tile.is-running .pm-fill{filter:none}
+ .pm-bd{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+ #pm-root .pm-p,.pm-fab{-webkit-tap-highlight-color:transparent}
  #pm-root{--fr:18px;--fb:calc(108px + env(safe-area-inset-bottom,0px))}
  .pm-ov{border-radius:22px 22px 0 0}
  .pm-stage{padding-bottom:250px}
@@ -1786,11 +1819,90 @@
  .pm-ctl{order:2;flex:1}.pm-ctl button{flex:1}
  .pm-x{order:3}
 }
+
+  /* ================= Profile menu (mobile): tap "bitrhythm" -> name card slides down; top right = sync dot only ================= */
+  .brand-name{ background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; display:inline-flex; align-items:center; gap:6px; cursor:default; -webkit-tap-highlight-color:transparent; }
+  .brand-caret, .pf-label, .pf-pencil{ display:none; }
+  @media (max-width:720px){
+    #mobileMenuBtn{ display:none; }
+
+    /* brand name = the trigger */
+    .brand-name{ cursor:pointer; padding:6px 4px 6px 0; transition:transform .5s var(--spring); }
+    .brand-name:active{ transform:scale(.96); }
+    .brand-caret{ display:block; width:14px; height:14px; color:var(--text-faint); transition:transform .45s var(--spring), color .25s ease; }
+    #authBar.menu-open .brand-caret{ transform:rotate(180deg); color:var(--text); }
+
+    /* sync dot: alone at the top right */
+    #authBar > .sync-dot{ margin:0 2px 0 auto; width:9px; height:9px; align-self:center; }
+    #authBar > .sync-dot.synced{ box-shadow:0 0 0 4px var(--night-glow); }
+    #authBar > .sync-dot.syncing{ box-shadow:0 0 0 4px var(--night-glow); }
+
+    /* soft scrim */
+    #authBar::before{
+      content:''; position:fixed; inset:0; z-index:25; background:rgba(8,8,10,.28);
+      -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+      opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s linear .3s;
+    }
+    #authBar.menu-open::before{ opacity:1; visibility:visible; transition:opacity .3s ease; }
+
+    /* dropdown: slides + fades down from the brand */
+    #authBar .topnav-collapsible{
+      display:flex; flex-direction:column; align-items:stretch; gap:0;
+      position:absolute; top:calc(100% + 6px); left:18px; right:auto; width:min(300px, calc(100vw - 36px));
+      padding:16px; max-height:none; overflow:visible; z-index:30;
+      background:color-mix(in srgb, var(--surface) 92%, transparent);
+      -webkit-backdrop-filter:blur(22px) saturate(1.2); backdrop-filter:blur(22px) saturate(1.2);
+      border:1px solid var(--line); border-radius:26px;
+      box-shadow:0 30px 56px -26px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+      transform-origin:24px 0;
+      opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-14px);
+      transition:transform .35s var(--ease), opacity .22s ease, visibility 0s linear .35s;
+    }
+    #authBar.menu-open .topnav-collapsible{
+      opacity:1; visibility:visible; pointer-events:auto; transform:none;
+      transition:transform .5s var(--ease), opacity .3s ease, visibility 0s;
+    }
+
+    /* name field */
+    #authBar .topnav-actions{ display:flex; flex-direction:column; align-items:stretch; gap:8px; margin:0; }
+    .pf-label{ display:block; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); padding:0 4px; }
+    #authBar .name-chip{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;
+      padding:0 16px; height:50px; border:1px solid var(--line); border-radius:18px; background:var(--bg);
+      font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:17px; color:var(--text); text-align:left;
+    }
+    #authBar .name-chip:hover{ background:var(--bg); border-color:var(--line-strong); }
+    #authBar .name-chip:active{ transform:scale(.98); }
+    #authBar .name-chip #userLabel{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+    .pf-pencil{ display:block; width:16px; height:16px; flex:none; color:var(--text-faint); }
+
+    #nameEditor{ width:100%; gap:8px !important; animation:pfEdit .45s var(--ease); }
+    @keyframes pfEdit{ from{ opacity:0; transform:translateY(-6px); } }
+    #nameEditor input{
+      flex:1; min-width:0; width:auto !important; height:50px; padding:0 16px !important; border-radius:18px !important;
+      background:var(--bg) !important; border:1px solid var(--night) !important; color:var(--text) !important;
+      font-family:'Doto','Hanken Grotesk',sans-serif !important; font-weight:600; font-size:17px !important; outline:0;
+      box-shadow:0 0 0 4px var(--night-glow);
+    }
+    #nameEditor input::placeholder{ color:var(--text-faint); font-weight:400; }
+    #nameEditor #saveNameBtn{
+      height:50px; padding:0 20px !important; border-radius:100px !important; flex:none;
+      background:var(--night) !important; color:var(--on-night) !important; font-weight:600 !important; font-size:14px !important;
+    }
+    #nameEditor #saveNameBtn:disabled{ opacity:.6; }
+  }
+  @media (max-width:720px) and (prefers-reduced-motion:reduce){
+    #authBar .topnav-collapsible, #authBar::before{ transition:opacity .15s linear !important; transform:none !important; }
+    #nameEditor{ animation:none !important; }
+  }
 </style>
 <div id="pm-root" hidden>
   <button class="pm-fab" type="button" aria-label="Open Pomodoro" title="Pomodoro">
-    <svg class="pm-i-timer" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>
-    <svg class="pm-i-x" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" transform="rotate(45 12 12)"/></svg>
+    <span class="pm-live-time" id="pmLiveTime" aria-hidden="true"></span>
+    <span class="pm-knob">
+      <svg class="pm-i-timer" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>
+      <svg class="pm-i-x" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" transform="rotate(45 12 12)"/></svg>
+    </span>
   </button>
   <span class="pm-badge" id="pmBadge" aria-hidden="true"></span>
   <div class="pm-ov" hidden>
@@ -1827,6 +1939,7 @@
 <script>
 (() => {
   const root = document.getElementById('pm-root'), $ = s => root.querySelector(s);
+  const timeEl = document.getElementById('gpTimeEl'), startBtn = document.getElementById('gpStartBtn'), liveEl = document.getElementById('pmLiveTime');
   const fab = $('.pm-fab'), ov = $('.pm-ov'), bd = $('.pm-bd'), panel = $('.pm-panel'),
         tile = $('.pm-tile'), dock = $('.pm-dock'), xbtn = $('.pm-x'), ghost = $('.pm-ghost'), badge = $('#pmBadge');
   const EASE = 'cubic-bezier(.22,.9,.24,1)', RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1834,46 +1947,54 @@
   const A = (el, kf, o = {}) => el.animate(kf, { duration:520, easing:EASE, fill:'backwards', ...o });
   const cv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const rk = r => ({ left:r.left+'px', top:r.top+'px', width:r.width+'px', height:r.height+'px' });
-  const fabBox = () => { const r = fab.getBoundingClientRect(), w = fab.offsetWidth, cx = r.left + r.width/2, cy = r.top + r.height/2; return { left:cx-w/2, top:cy-w/2, width:w, height:w }; };
+  const isLive = () => startBtn.classList.contains('running') || tile.classList.contains('ringing');
+  const fabBox = () => { // computed from the CSS anchor, so it never reads a half-animated/scaled rect
+    const cs = getComputedStyle(root), fr = parseFloat(cs.getPropertyValue('--fr')) || 28, fb = parseFloat(cs.getPropertyValue('--fb')) || 28,
+          w = isLive() ? 118 : 58, h = 58, de = document.documentElement;
+    return { left:de.clientWidth - fr - w, top:innerHeight - fb - h, width:w, height:h }; };
+  const clipOf = (f, d) => `inset(${f.top-d.top}px ${(d.left+d.width)-(f.left+f.width)}px ${(d.top+d.height)-(f.top+f.height)}px ${f.left-d.left}px round ${Math.min(f.width,f.height)/2}px)`;
   const killGhost = () => ghost.getAnimations({ subtree:true }).forEach(a => a.cancel());
   const setTop = () => { const tb = document.getElementById('authBar'); root.style.setProperty('--pm-top', (tb ? Math.round(tb.getBoundingClientRect().bottom) : 60) + 'px'); };
 
+  const DUR = 780, OUT = 'cubic-bezier(.55,0,.75,.2)';
   async function openP(){
     if(isOpen || closing) return; isOpen = true; setTop();
     prevOv = document.body.style.overflow; document.body.style.overflow = 'hidden';
-    const fr = fabBox(); killGhost(); ov.hidden = false; fab.classList.add('open'); fab.setAttribute('aria-label', 'Close Pomodoro');
-    bd.animate([{ opacity:0 }, { opacity:1 }], { duration:560, easing:'ease-out' });
+    const fr = fabBox(); killGhost(); ov.hidden = false; fab.classList.remove('live'); fab.classList.add('open'); fab.setAttribute('aria-label', 'Close Pomodoro');
+    bd.animate([{ opacity:0 }, { opacity:1 }], { duration:640, easing:'ease-out' });
     A(tile, [{ opacity:0, transform:'translateY(40px) scale(.96)' }, { opacity:1, transform:'none' }], { delay:120, duration:640 });
-    if(!RM){ // the ring draws itself and the dot sweeps round, like the day-pulse dial
+    if(!RM){
       const rf = $('.pm-fill');
       if(rf){ const full = parseFloat(rf.getAttribute('stroke-dasharray')), to = parseFloat(rf.style.strokeDashoffset) || 0;
-        rf.animate([{ strokeDashoffset:full }, { strokeDashoffset:to }], { duration:1100, delay:260, easing:EASE, fill:'backwards' }); }
+        rf.animate([{ strokeDashoffset:full }, { strokeDashoffset:to }], { duration:1100, delay:200, easing:EASE, fill:'backwards' }); }
     }
     if(RM){ dock.animate([{ opacity:0 }, { opacity:1 }], { duration:300 }); }
     else{
-      const dr = dock.getBoundingClientRect(), br = getComputedStyle(dock).borderTopLeftRadius, ease = 'cubic-bezier(.45,.05,.15,1)';
-      Object.assign(ghost.style, rk(fr)); ghost.hidden = false;
-      ghost.animate([{ ...rk(fr), borderRadius:'99px', backgroundColor:cv('--night'), opacity:1, easing:ease },
-                     { ...rk(dr), borderRadius:br, backgroundColor:cv('--surface'), opacity:1, offset:.55 },
-                     { ...rk(dr), borderRadius:br, backgroundColor:cv('--surface'), opacity:0 }], { duration:900, fill:'both' })
+      // ONE shape: the dock itself unfolds from the launcher's pill; an orange skin on top fades away with it
+      const dr = dock.getBoundingClientRect(), br = parseFloat(getComputedStyle(dock).borderTopLeftRadius) || 29,
+            c0 = clipOf(fr, dr), c1 = `inset(0px round ${br}px)`;
+      Object.assign(ghost.style, rk(dr), { borderRadius:'0' }); ghost.hidden = false;
+      dock.animate([{ clipPath:c0 }, { clipPath:c1 }], { duration:DUR, easing:EASE, fill:'backwards' });
+      ghost.animate([{ clipPath:c0, opacity:1 }, { clipPath:c1, opacity:1, offset:.2 }, { clipPath:c1, opacity:0 }], { duration:DUR, easing:EASE, fill:'both' })
            .finished.then(() => { if(!closing) ghost.hidden = true; }).catch(() => {});
-      dock.animate([{ opacity:0 }, { opacity:1 }], { duration:320, delay:380, fill:'backwards', easing:'ease-out' });
-      [...dock.children].filter(c => c !== xbtn).forEach((c, i) => A(c, [{ opacity:0 }, { opacity:1 }], { delay:460 + i*60, duration:420, easing:'ease-out' }));
+      [...dock.children].filter(c => c !== xbtn).forEach((c, i) => A(c, [{ opacity:0, transform:'scale(.92)' }, { opacity:1, transform:'none' }], { delay:240 + i*70, duration:460 }));
     }
     panel.focus({ preventScroll:true }); syncFab();
   }
   async function closeP(){
     if(!isOpen || closing) return; closing = true; killGhost(); fab.classList.remove('open'); fab.setAttribute('aria-label', 'Open Pomodoro');
-    const fr = fabBox(), dr = dock.getBoundingClientRect(), br = getComputedStyle(dock).borderTopLeftRadius, an = [];
+    fab.classList.toggle('live', isLive());   // launcher starts turning back into the switch while the dock folds into it
+    const fr = fabBox(), dr = dock.getBoundingClientRect(), br = parseFloat(getComputedStyle(dock).borderTopLeftRadius) || 29, an = [];
     an.push(tile.animate([{ opacity:1, transform:'none' }, { opacity:0, transform:'translateY(36px) scale(.985)' }], { duration:340, easing:'cubic-bezier(.55,0,.8,.4)', fill:'forwards' }));
-    an.push(bd.animate([{ opacity:1 }, { opacity:0 }], { duration:RM?260:520, delay:RM?0:140, easing:'ease-in', fill:'forwards' }));
+    an.push(bd.animate([{ opacity:1 }, { opacity:0 }], { duration:RM?260:560, delay:RM?0:120, easing:'ease-in-out', fill:'forwards' }));
     if(RM) an.push(dock.animate([{ opacity:1 }, { opacity:0 }], { duration:200, fill:'forwards' }));
     else{
-      Object.assign(ghost.style, rk(dr)); ghost.hidden = false;
-      an.push(dock.animate([{ opacity:1 }, { opacity:0 }], { duration:180, fill:'forwards' }));
-      an.push(ghost.animate([{ ...rk(dr), borderRadius:br, backgroundColor:cv('--surface'), opacity:0 },
-                             { ...rk(dr), borderRadius:br, backgroundColor:cv('--surface'), opacity:1, offset:.12, easing:'cubic-bezier(.5,0,.2,1)' },
-                             { ...rk(fr), borderRadius:'99px', backgroundColor:cv('--night'), opacity:1 }], { duration:620, delay:60, fill:'both' }));
+      const c0 = `inset(0px round ${br}px)`, c1 = clipOf(fr, dr);
+      Object.assign(ghost.style, rk(dr), { borderRadius:'0' }); ghost.hidden = false;
+      [...dock.children].filter(c => c !== xbtn).forEach(c => an.push(c.animate([{ opacity:1 }, { opacity:0 }], { duration:160, fill:'forwards' })));
+      an.push(dock.animate([{ clipPath:c0 }, { clipPath:c1 }], { duration:DUR - 80, delay:40, easing:EASE, fill:'both' }));
+      an.push(ghost.animate([{ clipPath:c0, opacity:0 }, { clipPath:c0, opacity:1, offset:.25 }, { clipPath:c1, opacity:1, offset:.8 }, { clipPath:c1, opacity:0 }],
+                            { duration:DUR + 60, delay:40, easing:EASE, fill:'both' }));
     }
     try{ await Promise.all(an.map(a => a.finished)); }catch(e){}
     ghost.hidden = true; killGhost(); ov.hidden = true; an.forEach(a => a.cancel());
@@ -1886,12 +2007,11 @@
   addEventListener('resize', () => { if(isOpen) setTop(); });
 
   // keep the launcher in step with the (unchanged) Pomodoro logic: live time chip + ringing pulse
-  const timeEl = document.getElementById('gpTimeEl'), startBtn = document.getElementById('gpStartBtn');
   const syncFab = () => {
     const running = startBtn.classList.contains('running'), ringing = tile.classList.contains('ringing');
     const d = (timeEl.textContent || '').replace(/\D/g, '');
-    badge.textContent = ringing ? 'Time\u2019s up' : (d.length >= 3 ? d.slice(0, -2) + ':' + d.slice(-2) : '');
-    badge.classList.toggle('show', (running || ringing) && !isOpen);
+    liveEl.textContent = ringing ? 'Done' : (d.length >= 3 ? d.slice(0, -2) + ':' + d.slice(-2) : '');
+    fab.classList.toggle('live', (running || ringing) && (!isOpen || closing));
     fab.classList.toggle('ringing', ringing && !isOpen);
   };
   new MutationObserver(syncFab).observe(timeEl, { childList:true, subtree:true, characterData:true });
@@ -2302,6 +2422,7 @@ function showView(which){
     if(id !== viewSwitchId) return;
     if(exitAnim){ exitAnim.cancel(); exitAnim = null; }
     Object.entries(views).forEach(([key, el]) => { if(el) el.hidden = key !== which; });
+    if(nextEl !== current) window.scrollTo({ top:0, left:0, behavior:'instant' });
     const gt = document.getElementById('globalTracker'); if(gt) gt.hidden = which === 'log'; // Activity Log shows the log only
     if(which === 'timer') renderCtHistory();
     if(which === 'log') renderActivityLog();
@@ -4908,7 +5029,7 @@ function renderFocusSidebar(panel){
     </div>`;
 }
 (function initMobileMenu(){
-  const btn = document.getElementById('mobileMenuBtn');
+  const btn = document.getElementById('brandMenuBtn');
   const bar = document.getElementById('authBar');
   const panel = document.getElementById('topnavCollapsible');
   if(!btn || !bar || !panel) return;
@@ -4920,11 +5041,15 @@ function renderFocusSidebar(panel){
     const open = bar.classList.toggle('menu-open');
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
-  btn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+  btn.addEventListener('click', (e) => { e.stopPropagation(); if(window.innerWidth > 720) return; toggleMenu(); });
   document.addEventListener('click', (e) => {
     if(!bar.classList.contains('menu-open')) return;
-    if(bar.contains(e.target)) return;
+    // the dimmed scrim is the bar's own ::before, so a tap on it targets the bar itself
+    if(bar.contains(e.target) && e.target !== bar) return;
     closeMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && bar.classList.contains('menu-open')){ closeMenu(); btn.focus(); }
   });
   // Navigating to a different view closes the menu; logging out does too.
   bar.querySelectorAll('.view-btn, #logoutBtn').forEach(el => {
@@ -4933,6 +5058,17 @@ function renderFocusSidebar(panel){
   window.addEventListener('resize', () => {
     if(window.innerWidth > 720) closeMenu();
   });
+})();
+(function initSyncSlot(){
+  // Mobile: the sync dot sits alone at the top right. Desktop: back with the other actions.
+  const bar = document.getElementById('authBar');
+  const sync = document.getElementById('syncStatus');
+  const actions = document.querySelector('#authBar .topnav-actions');
+  if(!bar || !sync || !actions) return;
+  const mq = window.matchMedia('(max-width:720px)');
+  function place(){ (mq.matches ? bar : actions).appendChild(sync); }
+  place();
+  if(mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
 })();
 (function initDockExtras(){
   // Desktop: notifications + log out sit at the bottom of the left dock.
