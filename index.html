@@ -2280,6 +2280,119 @@ if(navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', 
   wrRunShown = false; wrRunLastText = '';
 });
 
+// ============================================================================
+// RUN REGISTRY — makes "Stop on device 1" reliably stop device 2, and keeps it from being logged twice.
+//
+// Every time a timer is started/resumed it gets a unique runId (synced with the rest of the state).
+// When a run ends (stop / pause / finish / reset) the runId goes into `wrEndedRuns`, which is part of
+// every synced snapshot and is merged as a UNION (it only ever grows), so no device can overwrite or
+// "un-stop" it. Any device still running that runId stops itself silently (the device that ended the
+// run already logged it). While a timer runs we also check the cloud every ~1.5s (on the worker
+// heartbeat, so it works in background tabs too) instead of relying only on the realtime websocket.
+// Logged sessions use deterministic ids, so even a late manual Stop on the other device can't create
+// a second copy: the two entries share one id and are merged into one.
+// ============================================================================
+const WR_ENDED_KEY = 'wr_ended_runs_v1';
+const WR_ENDED_TTL_MS = 24*60*60*1000;
+let wrEndedRuns = (function(){ try{ return JSON.parse(localStorage.getItem(WR_ENDED_KEY) || '{}') || {}; }catch(e){ return {}; } })();
+function wrSaveEnded(){
+  const cutoff = Date.now() - WR_ENDED_TTL_MS;
+  Object.keys(wrEndedRuns).forEach(k => { if((wrEndedRuns[k]||0) < cutoff) delete wrEndedRuns[k]; });
+  try{ localStorage.setItem(WR_ENDED_KEY, JSON.stringify(wrEndedRuns)); }catch(e){}
+}
+function wrNewRunId(){ return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function wrMergeEnded(remote){
+  let changed = false;
+  if(remote && typeof remote === 'object'){
+    Object.keys(remote).forEach(k => { if(!wrEndedRuns[k]){ wrEndedRuns[k] = remote[k] || Date.now(); changed = true; } });
+  }
+  if(changed) wrSaveEnded();
+  return changed;
+}
+function wrAnyRunning(){
+  try{
+    return !!(blockTimerState.running || (ctState && ctState.running) || pomoRefs.some(r => r.pomo.running));
+  }catch(e){ return false; }
+}
+// Called by every place that ends a run. Pushes to the cloud IMMEDIATELY (no 900ms debounce) and
+// then double-checks the cloud really received it (another device's in-flight push could have
+// overwritten it in the meantime).
+function wrMarkRunEnded(runId){
+  if(!runId) return;
+  wrEndedRuns[runId] = Date.now();
+  wrSaveEnded();
+  setTimeout(async () => { // after the caller finished updating its state, so the snapshot is the stopped one
+    if(!currentUser) return;
+    try{
+      clearTimeout(pushTimer); pushTimer = null;
+      await doCloudPush();
+      setTimeout(async () => {
+        try{
+          if(!currentUser) return;
+          const { data, error } = await sb.from('progress_states').select('ended:state->endedRuns').eq('user_id', currentUser.id).maybeSingle();
+          if(!error && !(data && data.ended && data.ended[runId])) doCloudPush();
+        }catch(e){}
+      }, 1200);
+    }catch(e){}
+  }, 0);
+}
+// Stops (WITHOUT logging — the device that ended the run already did) any timer that is still
+// running here although its run has been ended somewhere else. Returns true if anything stopped.
+function wrStopEndedLocally(){
+  let any = false;
+  try{
+    if(blockTimerState.running && blockTimerState.runId && wrEndedRuns[blockTimerState.runId]){
+      clearInterval(blockTimerState.timerId);
+      Object.assign(blockTimerState, { running:false, elapsed:0, endAt:null, startedAt:null, warned30:false, lastCredit:null, runId:null });
+      wrCancelAlarm('block');
+      any = true;
+    }
+    pomoRefs.forEach(r => {
+      const pm = r.pomo;
+      if(pm.running && pm.runId && wrEndedRuns[pm.runId]){
+        clearInterval(pm.timerId);
+        pm.running = false; pm.warned30 = false; pm.trackerSeconds = 0; pm.runId = null;
+        if(pm.endAt) pm.remaining = Math.max(0, Math.round((pm.endAt - Date.now())/1000));
+        wrCancelAlarm(pomoAlarmKey);
+        any = true;
+      }
+    });
+    if(ctState && ctState.running && ctState.runId && wrEndedRuns[ctState.runId]){
+      clearInterval(ctState.timerId);
+      ctState.running = false; ctState.warned30 = false; ctState.runId = null;
+      wrCancelAlarm('ct');
+      any = true;
+    }
+    if(any){
+      releaseWakeLockIfIdle();
+      dayPanels.forEach(renderList); renderRail(); renderStats(); renderPomo(); renderCt();
+    }
+  }catch(e){ console.error('wrStopEndedLocally', e); }
+  return any;
+}
+let wrCheckBusy = false, wrCheckLast = 0;
+async function wrCheckEndedFromCloud(fromPush){
+  if(!currentUser || !wrAnyRunning()) return;
+  const now = Date.now();
+  if(wrCheckBusy && now - wrCheckLast < 8000) return;
+  if(!fromPush && now - wrCheckLast < 1500) return;
+  wrCheckLast = now; wrCheckBusy = true;
+  try{
+    const { data, error } = await sb.from('progress_states').select('ended:state->endedRuns').eq('user_id', currentUser.id).maybeSingle();
+    if(error){
+      const remote = await pullCloudState();
+      if(remote) applyState(remote, { rerenderMatrix: !matrixView.hidden });
+    } else if(data && data.ended){
+      wrMergeEnded(data.ended);
+      if(wrStopEndedLocally()){
+        const remote = await pullCloudState(); // pick up the finished/paused state the other device saved
+        if(remote) applyState(remote, { rerenderMatrix: !matrixView.hidden });
+      }
+    }
+  }catch(e){ /* offline — try again next tick */ }
+  finally{ wrCheckBusy = false; }
+}
+
 // Tick every currently-running timer once. Shared by the visibility resync below and by the
 // background heartbeat further down, so both paths stay in sync instead of duplicating the loop.
 function tickAllRunning(){
@@ -2287,6 +2400,7 @@ function tickAllRunning(){
   if(ctState && ctState.running) ctTick();
   if(blockTimerState.running) blockTimerTick();
   wrOngoingTick();
+  try{ wrCheckEndedFromCloud(false); }catch(e){} // pick up a Stop done on another device within ~1.5s
 }
 
 // Re-sync every running pomodoro (and the custom timer/stopwatch) the moment the page becomes
@@ -2656,6 +2770,7 @@ function snapshotState(){
   return {
     updatedAt: Date.now(),
     ownerId: currentUser ? currentUser.id : null,
+    endedRuns: {...wrEndedRuns},
     focusLog: loadFocusLog(),
     trackerLog: loadTrackerLog(),
     blockTimer: {...blockTimerState},
@@ -2666,13 +2781,13 @@ function snapshotState(){
       workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
       sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, trackerSeconds:r.pomo.trackerSeconds,
-      ringing:r.pomo.ringing, phaseStartedAt:r.pomo.phaseStartedAt
+      ringing:r.pomo.ringing, phaseStartedAt:r.pomo.phaseStartedAt, runId:r.pomo.runId
     })),
     customTimer: ctState ? {
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
       targetSeconds:ctState.targetSeconds, remaining:ctState.remaining, elapsedStopwatch:ctState.elapsedStopwatch,
       endAt:ctState.endAt, runStartedAt:ctState.runStartedAt, sessionStartedAt:ctState.sessionStartedAt,
-      sessionSeconds:ctState.sessionSeconds, ringing:ctState.ringing
+      sessionSeconds:ctState.sessionSeconds, ringing:ctState.ringing, runId:ctState.runId
     } : null,
     // history resets every day, so this never accumulates more than one day's worth of entries
     timerHistory: pruneTimerHistoryToToday()
@@ -2716,7 +2831,7 @@ function mergeTrackerLog(remote){
   const merged = {...local};
   Object.keys(remote || {}).forEach(k => {
     const byId = new Map((merged[k] || []).map(e => [e.id, e]));
-    (remote[k] || []).forEach(e => { if(!byId.has(e.id)) byId.set(e.id, e); });
+    (remote[k] || []).forEach(e => { const cur = byId.get(e.id); if(!cur || (e.seconds||0) < (cur.seconds||0)) byId.set(e.id, e); });
     merged[k] = Array.from(byId.values()).sort((a,b) => (b.at||0) - (a.at||0));
   });
   return merged;
@@ -2730,6 +2845,12 @@ function applyState(state, {rerenderMatrix} = {}){
   // this check, a delayed pull or a slightly-stale realtime payload (e.g. this device's own
   // earlier-in-flight push, or another device that hadn't yet learned about a stop that already
   // landed) could silently un-stop a session that another device already finished and logged.
+  // A run that was ended on any device must stay ended everywhere: learn the ended list first, stop
+  // anything of ours that's still running it, and never let a stale snapshot restart it.
+  if(state.endedRuns) wrMergeEnded(state.endedRuns);
+  wrStopEndedLocally();
+  let wrNeedReassert = false;
+  const wrDead = x => !!(x && x.running && x.runId && wrEndedRuns[x.runId]);
   const incomingIsStaleForVolatile = typeof state.updatedAt === 'number' && state.updatedAt <= lastAppliedVolatileAt;
   if(typeof state.updatedAt === 'number' && state.updatedAt > lastAppliedVolatileAt) lastAppliedVolatileAt = state.updatedAt;
   if(state.focusLog) saveFocusLog(mergeFocusLog(state.focusLog));
@@ -2759,6 +2880,7 @@ function applyState(state, {rerenderMatrix} = {}){
     // snapshot stomp a pomodoro phase that started locally after that snapshot was taken, or
     // resurrect one that's already been stopped by a newer update.
     if(incomingIsStaleForVolatile) return;
+    if(wrDead(s)){ wrNeedReassert = true; return; }
     if(r.pomo.running && r.pomo.phaseStartedAt && state.updatedAt && r.pomo.phaseStartedAt > state.updatedAt) return;
     const wasRinging = r.pomo.ringing, localAlarmId = r.pomo.alarmId;
     if(r.pomo.running) { clearInterval(r.pomo.timerId); }
@@ -2782,7 +2904,7 @@ function applyState(state, {rerenderMatrix} = {}){
       // mergeFocusLog/mergeTrackerLog above — don't let an incoming snapshot erase a Timer/
       // Stopwatch entry this device just logged but hasn't pushed to the cloud yet.
       const byId = new Map((timerHistory.date === today ? timerHistory.entries : []).map(e => [e.id, e]));
-      (state.timerHistory.entries || []).forEach(e => { if(!byId.has(e.id)) byId.set(e.id, e); });
+      (state.timerHistory.entries || []).forEach(e => { const cur = byId.get(e.id); if(!cur || (e.seconds||0) < (cur.seconds||0)) byId.set(e.id, e); });
       timerHistory = { date: today, entries: Array.from(byId.values()).sort((a,b) => (b.endedAt||0) - (a.endedAt||0)) };
     } else if(timerHistory.date !== today){
       timerHistory = { date: today, entries: [] };
@@ -2798,7 +2920,8 @@ function applyState(state, {rerenderMatrix} = {}){
   // accumulated seconds) without ever routing through *FinishSession/addTimerHistoryEntry. That's
   // the "started a timer and it just never showed up in history" failure mode.
   const staleForCustomTimer = incomingIsStaleForVolatile || (ctState && ctState.sessionActive && ctState.sessionStartedAt && state.updatedAt && ctState.sessionStartedAt > state.updatedAt);
-  if(state.customTimer && ctState && !staleForCustomTimer){
+  if(wrDead(state.customTimer)) wrNeedReassert = true;
+  if(state.customTimer && ctState && !staleForCustomTimer && !wrDead(state.customTimer)){
     const wasRinging = ctState.ringing, localAlarmId = ctState.alarmId;
     if(ctState.running) clearInterval(ctState.timerId);
     Object.assign(ctState, state.customTimer);
@@ -2827,7 +2950,8 @@ function applyState(state, {rerenderMatrix} = {}){
   // opening the site on a second device (or a fresh tab) never showed a task block as running —
   // unlike the Pomodoro and Timer/Stopwatch widgets, which already resumed correctly.
   const staleForBlockTimer = incomingIsStaleForVolatile || (blockTimerState.running && blockTimerState.startedAt && state.updatedAt && blockTimerState.startedAt > state.updatedAt);
-  if(state.blockTimer && !staleForBlockTimer){
+  if(wrDead(state.blockTimer)) wrNeedReassert = true;
+  if(state.blockTimer && !staleForBlockTimer && !wrDead(state.blockTimer)){
     const wasRinging = blockTimerState.ringing, localAlarmId = blockTimerState.alarmId;
     if(blockTimerState.running) clearInterval(blockTimerState.timerId);
     Object.assign(blockTimerState, state.blockTimer);
@@ -2855,6 +2979,9 @@ function applyState(state, {rerenderMatrix} = {}){
   renderStats();
   renderRail();
   if(rerenderMatrix && !matrixView.hidden) renderMatrix();
+  // the snapshot we just received still showed an already-ended run as running (it overwrote our
+  // stop in the cloud) — push again so every device sees the stop
+  if(wrNeedReassert && currentUser) queueCloudPush();
 }
 
 // --- cloud sync (Supabase) — active once signed in; local-only otherwise ---
@@ -2883,6 +3010,9 @@ function queueCloudPush(){
 // get to fire.
 async function doCloudPush(){
   pushTimer = null;
+  // While a timer runs here, first read the cloud's ended-run list: if another device already ended
+  // this run we stop it locally instead of pushing a 'still running' snapshot over their Stop.
+  try{ await wrCheckEndedFromCloud(true); }catch(e){}
   const state = snapshotState();
   lastPushedAt = state.updatedAt;
   setSyncStatus('syncing');
@@ -3462,7 +3592,7 @@ function deleteActivitySession(dayKey, id){
   persistLocal();
 }
 
-const blockTimerState={running:false,blockKey:null,startedAt:null,elapsed:0,endAt:null,timerId:null,label:'',category:'day-soft',warned30:false,ringing:false,alarmId:null,lastCredit:null};
+const blockTimerState={running:false,runId:null,blockKey:null,startedAt:null,elapsed:0,endAt:null,timerId:null,label:'',category:'day-soft',warned30:false,ringing:false,alarmId:null,lastCredit:null};
 // Credit any focus-seconds that elapsed since the last credit, in one lump sum — same live-
 // crediting pattern as ctCreditElapsed/pomoCreditElapsedFocus below. Without this, a running
 // block timer never touched the focus log until it finished or was stopped, so the Productivity
@@ -3544,6 +3674,7 @@ function blockStopRinging(){
 // backgrounded gets credited for its actual duration, not for however long it sat unopened.
 function blockFinishSession(asOf){
   asOf = asOf || Date.now();
+  const endedRunId = blockTimerState.runId, trackId = 'b' + blockTimerState.startedAt; // same id on every device => logged once
   // catch up any trailing partial second that hasn't been credited to the focus log yet — the
   // rest was already credited live, tick by tick, via blockCreditElapsedFocus
   blockCreditElapsedFocus(asOf);
@@ -3559,13 +3690,14 @@ function blockFinishSession(asOf){
   clearInterval(blockTimerState.timerId);
   blockTimerState.running = false;
   blockTimerState.elapsed = 0; blockTimerState.endAt = null; blockTimerState.startedAt = null; blockTimerState.warned30 = false;
-  blockTimerState.lastCredit = null;
+  blockTimerState.lastCredit = null; blockTimerState.runId = null;
   // focus log was already credited live above — only the rail/history still need this lump sum
-  if(total>0){ addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
+  if(total>0){ addTrackerSession('block',total,blockTimerState.label,blockTimerState.category,trackId); }
   blockStartRinging();
   releaseWakeLockIfIdle();
   renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
   renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
+  wrMarkRunEnded(endedRunId);
 }
 // manual Stop (mid-countdown) or dismissing an alarm that's already ringing
 function stopBlockTimer(){
@@ -3577,6 +3709,7 @@ function stopBlockTimer(){
     return;
   }
   if(!blockTimerState.running) return;
+  const endedRunId = blockTimerState.runId, trackId = 'b' + blockTimerState.startedAt;
   // catch up any trailing partial second not yet credited — see blockFinishSession
   blockCreditElapsedFocus(Date.now());
   const elapsed=Math.max(0,Math.floor((Date.now()-blockTimerState.startedAt)/1000));
@@ -3592,13 +3725,14 @@ function stopBlockTimer(){
   clearInterval(blockTimerState.timerId);
   blockTimerState.running=false;
   blockTimerState.elapsed=0; blockTimerState.endAt=null; blockTimerState.startedAt=null; blockTimerState.warned30=false;
-  blockTimerState.lastCredit=null;
+  blockTimerState.lastCredit=null; blockTimerState.runId=null;
   wrCancelAlarm('block');
   // focus log was already credited live above — only the rail/history still need this lump sum
-  if(total>0){ addTrackerSession('block',total,blockTimerState.label,blockTimerState.category); }
+  if(total>0){ addTrackerSession('block',total,blockTimerState.label,blockTimerState.category,trackId); }
   releaseWakeLockIfIdle();
   renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
   renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
+  wrMarkRunEnded(endedRunId);
 }
 // Lightweight per-tick update: patch just the countdown text on the running row instead of
 // tearing down and rebuilding the whole row list (which renderList does via innerHTML='').
@@ -3678,7 +3812,7 @@ function toggleBlockTimer(panel,idx){
   const resumable = b.remainingSec != null && b.remainingSec > 0 && b.remainingDate === today;
   const duration = resumable ? b.remainingSec : fullDurationSec;
   delete b.doneDate; // (re)starting means it's no longer sitting in the "Done" state
-  blockTimerState.running=true; blockTimerState.blockKey=key; blockTimerState.startedAt=Date.now();
+  blockTimerState.running=true; blockTimerState.runId=wrNewRunId(); blockTimerState.blockKey=key; blockTimerState.startedAt=Date.now();
   blockTimerState.elapsed=0; blockTimerState.endAt=Date.now()+duration*1000; blockTimerState.label=b.label;
   blockTimerState.category=b.type; blockTimerState.warned30=false; blockTimerState.lastCredit=Date.now();
   blockTimerState.timerId=setInterval(blockTimerTick,250);
@@ -4105,7 +4239,7 @@ days.forEach((day, i) => {
 pomo = {
   workLen: 25*60, breakLen: 5*60,
   mode: 'focus', remaining: 25*60,
-  running: false, timerId: null,
+  running: false, runId: null, timerId: null,
   sessions: 0, focusSeconds: 0,
   ringing: false, alarmId: null, warned30: false,
   endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
@@ -4122,7 +4256,7 @@ pomo = {
 // continuous focus stretch ends: pause, reset, or a focus period completing into a break.
 function pomoFlushTracker(){
   if(pomo.trackerSeconds > 0){
-    addTrackerSession('pomodoro', pomo.trackerSeconds, SOURCE_CATEGORIES.pomodoro.name, SOURCE_CATEGORIES.pomodoro.id);
+    addTrackerSession('pomodoro', pomo.trackerSeconds, SOURCE_CATEGORIES.pomodoro.name, SOURCE_CATEGORIES.pomodoro.id, pomo.phaseStartedAt ? 'p' + pomo.phaseStartedAt : undefined);
     pomo.trackerSeconds = 0;
   }
 }
@@ -4260,6 +4394,7 @@ function pomoCreditElapsedFocus(now){
 function pomoFinishPhase(asOf){
   asOf = asOf || Date.now();
   clearInterval(pomo.timerId);
+  const endedRunId = pomo.runId; pomo.runId = null;
   pomo.running = false;
   pomo.warned30 = false;
   if(pomo.mode === 'focus'){
@@ -4274,6 +4409,7 @@ function pomoFinishPhase(asOf){
   pomoStartRinging();
   persistLocal();
   releaseWakeLockIfIdle();
+  wrMarkRunEnded(endedRunId);
 }
 function pomoTick(){
   if(!pomo.running) return;
@@ -4311,6 +4447,7 @@ gpStartBtn.addEventListener('click', () => {
     releaseWakeLockIfIdle();
     wrCancelAlarm(pomoAlarmKey);
     pomoFlushTracker(); // log the focus stretch so far to the rail now that it's paused
+    { const rid = pomo.runId; pomo.runId = null; wrMarkRunEnded(rid); }
   } else if(isBlockTimerBusy() || isCtBusy()){
     return; // a block timer or the custom timer/stopwatch is already running
   } else {
@@ -4320,6 +4457,7 @@ gpStartBtn.addEventListener('click', () => {
     if(!pomoAudioCtx){ pomoAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => pomoAudioCtx); }
     if(pomoAudioCtx.state === 'suspended') pomoAudioCtx.resume();
     pomo.running = true;
+    pomo.runId = wrNewRunId();
     pomo.endAt = Date.now() + pomo.remaining * 1000;
     pomo.lastCredit = Date.now();
     pomo.phaseStartedAt = Date.now();
@@ -4341,6 +4479,7 @@ gpStartBtn.addEventListener('click', () => {
 gpResetBtn.addEventListener('click', () => {
   if(pomo.ringing) pomoStopRinging();
   pomoFlushTracker(); // log whatever focus time had accumulated before wiping the countdown
+  { const rid = pomo.runId; pomo.runId = null; wrMarkRunEnded(rid); }
   pomo.running = false;
   pomo.warned30 = false;
   clearInterval(pomo.timerId);
@@ -4465,7 +4604,7 @@ function buildCtHistory(){
 
 // --- the timer/stopwatch engine itself — same endAt-based, background-safe pattern as the pomodoro ---
 ctState = {
-  mode: 'timer', running: false, sessionActive: false,
+  mode: 'timer', running: false, runId: null, sessionActive: false,
   targetSeconds: 15*60, remaining: 15*60, elapsedStopwatch: 0,
   endAt: null, runStartedAt: null, sessionStartedAt: null, sessionSeconds: 0,
   lastCredit: null, timerId: null,
@@ -4700,9 +4839,11 @@ function ctCreditElapsed(now){
 }
 function ctFinishSession(ring){
   clearInterval(ctState.timerId);
+  const endedRunId = ctState.runId; ctState.runId = null;
   ctState.running = false;
   if(ctState.sessionActive && ctState.sessionSeconds > 0){
-    const entryId = Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+    // deterministic (same on every device for this session) so a second device's late Stop merges into this one entry instead of adding another
+    const entryId = ctState.sessionStartedAt ? 'c' + ctState.sessionStartedAt : Date.now().toString(36) + Math.random().toString(36).slice(2,7);
     addTimerHistoryEntry({
       id: entryId,
       type: ctState.mode,
@@ -4728,6 +4869,7 @@ function ctFinishSession(ring){
   renderCt();
   renderStats();
   persistLocal();
+  wrMarkRunEnded(endedRunId);
 }
 function ctTick(){
   if(!ctState.running) return;
@@ -4825,6 +4967,7 @@ function ctToggle(mode){
     clearInterval(ctState.timerId);
     releaseWakeLockIfIdle();
     wrCancelAlarm('ct');
+    { const rid = ctState.runId; ctState.runId = null; wrMarkRunEnded(rid); }
   } else if(isBlockTimerBusy() || isPomoBusy()){
     return; // a block timer or the pomodoro is already running
   } else {
@@ -4841,6 +4984,7 @@ function ctToggle(mode){
       ctState.sessionStartedAt = Date.now();
     }
     ctState.running = true;
+    ctState.runId = wrNewRunId();
     ctState.lastCredit = Date.now();
     if(ctState.mode === 'timer'){
       ctState.endAt = Date.now() + ctState.remaining * 1000;
