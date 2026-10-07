@@ -663,6 +663,8 @@
   }
   .mx-btn:hover{ color:var(--text); border-color:var(--line-strong); }
   .mx-btn.active{ color:var(--text); border-color:var(--accent); background:var(--surface-2); }
+  .mx-play{ display:inline-flex; align-items:center; justify-content:center; padding:8px 14px; }
+  .mx-play svg{ display:block; }
   .mx-period{ font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:var(--text); font-weight:600; min-width:56px; text-align:center; }
 
   .mx-note{ font-family:'Hanken Grotesk',sans-serif; font-size:12px; color:var(--text-faint); margin:-14px 0 22px; }
@@ -692,6 +694,56 @@
 
   @media (max-width:560px){
     .mx-matrix{ gap:4px; }
+  }
+
+  /* ================= DUST PROJECTOR (fullscreen, opened from the matrix "Today" button) ================= */
+  #dustOverlay{
+    position:fixed; inset:0; z-index:2000; display:none; overflow:hidden;
+    background:var(--bg); color:var(--text); touch-action:none; cursor:crosshair;
+    -webkit-user-select:none; user-select:none;
+  }
+  #dustOverlay.open{ display:block; animation:dustIn .35s ease-out; }
+  @keyframes dustIn{ from{ opacity:0; } to{ opacity:1; } }
+  #dustCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  #dustCam{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); opacity:.10; filter:grayscale(1) contrast(1.1); pointer-events:none; display:none; }
+  /* analog-bits finish: dot grid + scanlines + vignette, all driven by the site's own line colour */
+  .dust-dots{ position:absolute; inset:0; pointer-events:none; opacity:.55;
+    background-image:radial-gradient(circle, var(--line-strong) 0.9px, transparent 1.3px); background-size:20px 20px; background-position:10px 10px; }
+  .dust-scan{ position:absolute; inset:0; pointer-events:none; opacity:.35;
+    background:repeating-linear-gradient(0deg, transparent 0 2px, var(--bg) 2px 3px); mix-blend-mode:multiply; }
+  .dust-vig{ position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(ellipse at center, transparent 55%, var(--bg) 120%); }
+  .dust-corner{ position:absolute; width:18px; height:18px; border:1.5px solid var(--text-faint); pointer-events:none; opacity:.7; }
+  .dust-corner.tl{ top:12px; left:12px; border-right:0; border-bottom:0; }
+  .dust-corner.tr{ top:12px; right:12px; border-left:0; border-bottom:0; }
+  .dust-corner.bl{ bottom:12px; left:12px; border-right:0; border-top:0; }
+  .dust-corner.br{ bottom:12px; right:12px; border-left:0; border-top:0; }
+
+  .dust-hud{ position:absolute; left:0; right:0; z-index:3; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:0 34px; pointer-events:none; }
+  .dust-hud > *{ pointer-events:auto; }
+  .dust-top{ top:28px; align-items:flex-start; }
+  .dust-bot{ bottom:28px; align-items:flex-end; }
+  .dust-title{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:.14em; text-transform:uppercase; color:var(--text); line-height:1.1; }
+  .dust-sub{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-faint); margin-top:6px; display:flex; align-items:center; gap:8px; }
+  .dust-led{ width:7px; height:7px; border-radius:50%; background:var(--text-faint); display:inline-block; }
+  .dust-led.on{ background:var(--night); box-shadow:0 0 8px var(--night); animation:dustBlink 1.4s steps(2,end) infinite; }
+  @keyframes dustBlink{ 50%{ opacity:.25; } }
+  .dust-btns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .dust-readout{ display:flex; gap:26px; flex-wrap:wrap; }
+  .dust-stat b{ display:block; font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:900; font-size:30px; line-height:1; color:var(--text); letter-spacing:.04em; }
+  .dust-stat span{ display:block; margin-top:5px; font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-faint); }
+  .dust-right{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; text-align:right; }
+  .dust-legend{ display:flex; align-items:center; gap:8px; font-family:'Hanken Grotesk',sans-serif; font-size:12px; color:var(--text-dim); }
+  .dust-legend i{ width:11px; height:11px; border-radius:2px; display:inline-block; }
+  .dust-keys{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-faint); line-height:1.7; }
+  .dust-keys kbd{ font:inherit; color:var(--text-dim); border:1px solid var(--line-strong); border-radius:4px; padding:0 5px; margin-right:3px; }
+  .dust-msg{ font-family:'Hanken Grotesk',sans-serif; font-size:12px; color:var(--pending-text); min-height:1em; }
+  @media (max-width:640px){
+    .dust-hud{ padding:0 22px; }
+    .dust-top{ top:22px; } .dust-bot{ bottom:22px; flex-direction:column; align-items:flex-start; }
+    .dust-title{ font-size:17px; } .dust-stat b{ font-size:24px; }
+    .dust-readout{ gap:18px; } .dust-right{ align-items:flex-start; text-align:left; }
+    .dust-keys{ display:none; }
   }
 
   /* ---------------- view switcher (legacy, kept for other pages) ---------------- */
@@ -1551,6 +1603,52 @@
     }
     .topnav-links .iconbtn:focus-visible{ outline-offset:-4px; border-radius:16px; }
   }
+
+  /* ================= RETRO SKIN: same look as the dust projector (cosmetic only, no layout/JS hooks) =================
+     Doto dot-matrix type in upper-case with wide tracking, a dot-grid page, faint scanlines on the cards. */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 2px, var(--bg) 2px 3px),
+      radial-gradient(circle, var(--line-strong) .9px, transparent 1.3px);
+    background-size:auto, 20px 20px; background-position:0 0, 10px 10px;
+    opacity:.55;
+  }
+  .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap, .stats-edit-popover{
+    background-image:repeating-linear-gradient(0deg, transparent 0 2px, rgba(128,128,136,.05) 2px 3px);
+  }
+
+  /* titles + section heads: dot-matrix, caps, tracked out */
+  h1, header.hero h1, .day-name, .matrix-title, .ct-title, .topnav-brand{
+    font-family:'Doto','Hanken Grotesk',sans-serif; text-transform:uppercase; letter-spacing:.12em; font-weight:700;
+  }
+  h1{ letter-spacing:.08em; font-weight:900; }
+  .day-name{ font-size:28px; letter-spacing:.08em; font-weight:900; }
+  .matrix-title, .ct-title{ font-size:22px; }
+  .topnav-brand{ font-size:15px; letter-spacing:.14em; }
+  .focus-title, .list-header-title, .stats-heading, .ct-history-head, .eyebrow, .day-eyebrow{
+    font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.16em; font-size:12.5px;
+  }
+  .stats-right-label, .ring-sub, .stats-caption{ text-transform:uppercase; letter-spacing:.1em; font-size:10.5px; }
+
+  /* readouts / numbers */
+  .ring-time, .stats-right-frac, .pomo-time, .mx-period{
+    font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:900; letter-spacing:.06em;
+  }
+  .ring-time{ font-size:20px; }
+  .stats-right-frac{ font-size:15px; }
+  .mx-period{ font-size:15px; }
+
+  /* controls: pills stay pills, but the label is dot-matrix caps */
+  .view-btn, .tab-btn, .mx-btn, .ct-btn, .ct-chip, .today-pill{
+    font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.1em; font-size:12px;
+  }
+  .tab-btn{ letter-spacing:.08em; }
+  .mx-btn{ font-size:12px; }
+  @media (max-width:560px){
+    .tab-btn{ letter-spacing:.04em; padding:9px 13px; }
+    .day-name{ font-size:24px; }
+  }
 </style>
 </head>
 <body>
@@ -1651,7 +1749,7 @@
         <button class="mx-btn" id="mxPrev" type="button">←</button>
         <span class="mx-period" id="mxPeriodLabel"></span>
         <button class="mx-btn" id="mxNext" type="button">→</button>
-        <button class="mx-btn" id="mxToday" type="button">Today</button>
+        <button class="mx-btn mx-play" id="mxToday" type="button" title="Play dust projector" aria-label="Play dust projector"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg></button>
       </div>
     </div>
     <div class="mx-legend" aria-label="Legend: from off to on target">
@@ -3373,7 +3471,7 @@ const mxMatrixEl = document.getElementById('mxMatrix');
 
 mxPrevBtn.addEventListener('click', () => { mxYear -= 1; renderMatrix(); });
 mxNextBtn.addEventListener('click', () => { mxYear += 1; renderMatrix(); });
-mxTodayBtn.addEventListener('click', () => { mxYear = new Date().getFullYear(); renderMatrix(); });
+mxTodayBtn.addEventListener('click', () => { mxYear = new Date().getFullYear(); renderMatrix(); if(typeof window.openDustProjector === 'function') window.openDustProjector(); });
 
 function renderMatrix(){
   mxPeriodLabel.textContent = String(mxYear);
@@ -5324,5 +5422,352 @@ setInterval(() => {
 }, 30000);
 </script>
 </div>
+<div id="dustOverlay" role="dialog" aria-modal="true" aria-label="Dust projector">
+  <video id="dustCam" playsinline muted></video>
+  <canvas id="dustCanvas"></canvas>
+  <div class="dust-dots"></div><div class="dust-scan"></div><div class="dust-vig"></div>
+  <span class="dust-corner tl"></span><span class="dust-corner tr"></span><span class="dust-corner bl"></span><span class="dust-corner br"></span>
+
+  <div class="dust-hud dust-top">
+    <div>
+      <div class="dust-title">Productivity Matrix</div>
+      <div class="dust-sub"><span class="dust-led" id="dustLed"></span><span id="dustYear">2026</span><span>·</span><span id="dustInput">Pointer</span></div>
+    </div>
+    <div class="dust-btns">
+      <button type="button" class="mx-btn" id="dustModeBtn">Color: Theme</button>
+      <button type="button" class="mx-btn" id="dustCamBtn">Hand camera</button>
+      <button type="button" class="mx-btn" id="dustFsBtn">Fullscreen</button>
+      <button type="button" class="mx-btn" id="dustCloseBtn" aria-label="Close">Close ✕</button>
+    </div>
+  </div>
+
+  <div class="dust-hud dust-bot">
+    <div class="dust-readout">
+      <div class="dust-stat"><b id="dxDays">0</b><span>Days</span></div>
+      <div class="dust-stat"><b id="dxOn">0</b><span>On target</span></div>
+      <div class="dust-stat"><b id="dxOff">0</b><span>Off days</span></div>
+      <div class="dust-stat"><b id="dxStreak">0</b><span>Streak</span></div>
+    </div>
+    <div class="dust-right">
+      <div class="dust-msg" id="dustMsg"></div>
+      <div class="dust-legend" id="dustLegend"></div>
+      <div class="dust-keys"><kbd>C</kbd>color <kbd>V</kbd>cam view <kbd>Space</kbd>burst <kbd>Esc</kbd>close<br>move / flick the pointer, or show your hand</div>
+    </div>
+  </div>
+</div>
+<script>
+/* ============ Dust Projector: the matrix, as a living 3D ring. ============
+   One ring = the year. Angle around the ring = day of the year, tube thickness = how close that
+   day got to its target, particle colour = that day's matrix class. Interaction logic (whole-hand
+   attractor, flick-to-throw, burst, pointer fallback) is the original Dust Projector's. */
+(function(){
+  const ov = document.getElementById('dustOverlay'), cv = document.getElementById('dustCanvas'),
+        ctx = cv.getContext('2d'), video = document.getElementById('dustCam');
+  const $ = id => document.getElementById(id);
+  const MP_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/';
+
+  // matrix classes -> particle colours (same hues as the matrix cells / legend, a touch brighter for glow)
+  const CLS = {
+    'mx-off':[214,84,72], 'mx-d2':[122,152,132], 'mx-d1':[72,172,118], 'mx-bright':[70,222,132], 'mx-future':[120,120,128]
+  };
+  const MODES = ['Theme','Matrix','Accent']; let mode = 0;
+
+  let running=false, raf=0, W=0, H=0, DPR=1, N=0, P=[], last=0, idleK=1;
+  let days=[], LUT=new Float32Array(720).fill(.5);
+  let light=false, bg=[15,15,17], accent=[240,87,44], ink=[241,241,243];
+  let tips={}, throwEv=null, mouse=null, lastMouseThrow=0;
+  let hands=null, stream=null, camOn=false, busy=false;
+
+  // ---------- theme: read the site's own tokens ----------
+  function rgbOf(name, fb){
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    let m = v.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if(m){ let h=m[1]; if(h.length===3) h=h.split('').map(c=>c+c).join(''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+    m = v.match(/rgba?\(([^)]+)\)/); if(m){ const a=m[1].split(',').map(Number); return [a[0],a[1],a[2]]; }
+    return fb;
+  }
+  function readTheme(){
+    light = document.documentElement.getAttribute('data-theme') !== 'dark';
+    bg = rgbOf('--bg',[15,15,17]); accent = rgbOf('--night',[240,87,44]); ink = rgbOf('--text',[241,241,243]);
+    // in light theme the glowing "lighter" blend can't work, so colours get deepened and multiplied instead
+    ctx.fillStyle = `rgb(${bg})`; ctx.fillRect(0,0,W,H);
+    paintColours(); buildLegend();
+  }
+
+  // ---------- matrix data (same sources + rules as renderMatrix) ----------
+  function buildData(){
+    const trackerLog = loadTrackerLog(), focusLog = loadFocusLog(), todayKey = dateKey(new Date()), live = getLiveTracking();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const start = (mxYear === TRACK_START.getFullYear()) ? new Date(mxYear, TRACK_START.getMonth(), 1) : new Date(mxYear, 0, 1);
+    days = [];
+    for(const c = new Date(start); c.getFullYear() === mxYear; c.setDate(c.getDate()+1)){
+      if(c < TRACK_START || c > today) continue;
+      const key = dateKey(c), sessions = trackerLog[key] || [];
+      let secs = sessions.reduce((a,x) => a + (Number(x.seconds)||0), 0);
+      if(key === todayKey && live) secs += live.seconds;
+      const actual = Math.max(secs, Number(focusLog[key])||0) / 60, target = targetMinutesFor(c);
+      const cls = classifyDay(actual, target, false);
+      days.push({ cls, level: target > 0 ? Math.min(1.3, actual/target) : (actual > 0 ? 1 : 0), isToday: c.getTime() === today.getTime() });
+    }
+    const n = days.length, M = LUT.length;
+    if(!n){ LUT.fill(.45); }
+    else for(let k=0;k<M;k++){                      // smooth, circular thickness profile around the ring
+      const pos = (k+.5)/M*n - .5, i0 = Math.floor(pos), t = pos - i0, s = t*t*(3-2*t);
+      const a = days[((i0%n)+n)%n].level, b = days[(((i0+1)%n)+n)%n].level;
+      LUT[k] = a + (b-a)*s;
+    }
+    // readouts
+    let on=0, off=0, streak=0;
+    days.forEach(d => { if(d.cls==='mx-bright') on++; else if(d.cls==='mx-off') off++; });
+    let i = n-1; if(i>=0 && days[i].isToday && days[i].cls!=='mx-bright') i--;
+    while(i>=0 && days[i].cls==='mx-bright'){ streak++; i--; }
+    $('dxDays').textContent = n; $('dxOn').textContent = on; $('dxOff').textContent = off; $('dxStreak').textContent = streak;
+    $('dustYear').textContent = mxYear;
+    $('dustMsg').textContent = n ? '' : 'No tracked days in this year yet — showing an empty ring.';
+  }
+
+  // ---------- particles ----------
+  function initParticles(){
+    N = Math.min(6500, Math.floor(W*H/240)); P = [];
+    const n = days.length;
+    for(let i=0;i<N;i++){
+      const uf = Math.random();
+      P.push({ x:Math.random()*W, y:Math.random()*H, vx:0, vy:0,
+        k:Math.random()*1.1+.3, o:(Math.random()-.5)*50, sw:(Math.random()<.5?-1:1)*(Math.random()*.7+.3),
+        ph:Math.random()*6.28, l:Math.random()*.8+.4, s:.25+Math.pow(Math.random(),2)*2.9, free:0,
+        uf, u:uf*Math.PI*2, v:Math.random()*6.2832, q:Math.random(), dz:1, r:255,g:255,b:255,
+        di: n ? Math.min(n-1, Math.floor(uf*n)) : -1 });
+    }
+    paintColours();
+  }
+  const mixBg = (c,f) => [bg[0]+(c[0]-bg[0])*f, bg[1]+(c[1]-bg[1])*f, bg[2]+(c[2]-bg[2])*f];
+  // Theme: the site's own greys + orange (orange = off day), like the progress ring. Matrix: the cell greens/reds.
+  function colourFor(cls, lv){
+    if(mode === 1) return CLS[cls] || CLS['mx-future'];
+    if(mode === 2) return mixBg(accent, .4 + .6*Math.min(1,lv));
+    switch(cls){
+      case 'mx-bright': return mixBg(ink, 1);
+      case 'mx-d1':     return mixBg(ink, .68);
+      case 'mx-d2':     return mixBg(ink, .42);
+      case 'mx-off':    return accent;
+      default:          return mixBg(ink, .3);
+    }
+  }
+  function paintColours(){
+    for(const p of P){
+      const d = p.di >= 0 ? days[p.di] : null;
+      const c = colourFor(d ? d.cls : 'mx-future', d ? d.level : .4);
+      p.r = c[0]; p.g = c[1]; p.b = c[2];
+    }
+  }
+  function buildLegend(){
+    const sw = cls => `<i style="background:rgb(${colourFor(cls,1).map(Math.round)})"></i>`;
+    $('dustLegend').innerHTML = mode === 2
+      ? 'Ring angle = day of year · thickness = progress to target'
+      : `Less ${sw('mx-off')}${sw('mx-d2')}${sw('mx-d1')}${sw('mx-bright')} More`;
+    $('dustModeBtn').textContent = 'Color: ' + MODES[mode];
+  }
+
+  // ---------- sizing ----------
+  function resize(){
+    DPR = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight;
+    cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.fillStyle = `rgb(${bg})`; ctx.fillRect(0,0,W,H);
+    if(running) initParticles();
+  }
+
+  // ---------- hand tracking (loaded only when the camera button is used) ----------
+  const PALM = [0,5,9,13,17];
+  function onResults(r){
+    const seen = {}, now = performance.now();
+    (r.multiHandLandmarks||[]).forEach((hand,hi)=>{
+      let cx=0, cy=0; PALM.forEach(i=>{ cx+=hand[i].x; cy+=hand[i].y; });
+      cx = (1 - cx/PALM.length)*W; cy = cy/PALM.length*H;
+      const sz = Math.hypot((hand[12].x-hand[0].x)*W, (hand[12].y-hand[0].y)*H);
+      const k='h'+hi, s=tips[k];
+      if(s){
+        const rvx=cx-s.px, rvy=cy-s.py;
+        s.rvx=s.rvx*.5+rvx*.5; s.rvy=s.rvy*.5+rvy*.5; s.sp=Math.hypot(s.rvx,s.rvy);
+        const nx=s.x+(cx-s.x)*.35, ny=s.y+(cy-s.y)*.35;
+        s.vx=nx-s.x; s.vy=ny-s.y; s.x=nx; s.y=ny; s.r+=(sz*.55-s.r)*.2; s.age=0;
+        if(s.sp > Math.max(26, s.r*.3) && now-s.lastThrow > 900){
+          throwEv = {x:s.x,y:s.y,dx:s.rvx/s.sp,dy:s.rvy/s.sp,sp:Math.min(s.sp,60),r:s.r}; s.lastThrow = now;
+        }
+      } else tips[k]={x:cx,y:cy,vx:0,vy:0,rvx:0,rvy:0,sp:0,r:sz*.55,age:0,lastThrow:0};
+      tips[k].px=cx; tips[k].py=cy; seen[k]=1;
+    });
+    for(const k in tips) if(!seen[k] && ++tips[k].age>4) delete tips[k];
+  }
+  function loadMP(){
+    return new Promise((res,rej)=>{
+      if(window.Hands) return res();
+      const s = document.createElement('script'); s.src = MP_BASE + 'hands.js'; s.crossOrigin = 'anonymous';
+      s.onload = res; s.onerror = () => rej(new Error('could not load the hand-tracking library (offline?)'));
+      document.head.appendChild(s);
+    });
+  }
+  async function startCam(){
+    const msg = $('dustMsg'); msg.textContent = 'Loading hand tracking…';
+    try{
+      await loadMP();
+      if(!hands){
+        hands = new Hands({locateFile: f => MP_BASE + f});
+        hands.setOptions({maxNumHands:2, modelComplexity:1, minDetectionConfidence:.6, minTrackingConfidence:.5});
+        hands.onResults(onResults);
+      }
+      stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
+      video.srcObject = stream; await video.play(); video.style.display = 'block';
+      camOn = true; msg.textContent = '';
+      $('dustCamBtn').textContent = 'Camera off'; $('dustInput').textContent = 'Hand'; $('dustLed').classList.add('on');
+      (async function loop(){
+        if(!camOn || !running) return;
+        if(!busy && video.readyState>=2){ busy=true; try{ await hands.send({image:video}); }catch(e){} busy=false; }
+        requestAnimationFrame(loop);
+      })();
+    }catch(e){ msg.textContent = 'Camera unavailable: ' + (e.message||e) + ' (needs https or localhost)'; stopCam(true); }
+  }
+  function stopCam(keepMsg){
+    camOn = false; tips = {};
+    if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; }
+    video.srcObject = null; video.style.display = 'none';
+    $('dustCamBtn').textContent = 'Hand camera'; $('dustInput').textContent = 'Pointer'; $('dustLed').classList.remove('on');
+    if(!keepMsg && days.length) $('dustMsg').textContent = '';
+  }
+
+  // ---------- input ----------
+  ov.addEventListener('pointermove', e=>{
+    mouse = {x:e.clientX,y:e.clientY,vx:e.movementX*.5,vy:e.movementY*.5,t:performance.now()};
+    const sp = Math.hypot(e.movementX,e.movementY), n = performance.now();
+    if(sp>30 && n-lastMouseThrow>900 && !Object.keys(tips).length){
+      throwEv = {x:e.clientX,y:e.clientY,dx:e.movementX/sp,dy:e.movementY/sp,sp:Math.min(sp*1.3,60),r:90}; lastMouseThrow = n;
+    }
+  });
+  ov.addEventListener('pointerdown', e=>{ if(e.target.closest('.dust-hud button')) return; mouse = {x:e.clientX,y:e.clientY,vx:0,vy:0,t:performance.now()}; });
+  ov.addEventListener('pointerleave', ()=>{ mouse = null; });
+  function burst(){
+    const t = performance.now()*.001;
+    P.forEach(p=>{ p.free = t+.8+p.s*.6; const a=Math.random()*6.28, f=Math.random()*14; p.vx+=Math.cos(a)*f; p.vy+=Math.sin(a)*f; });
+  }
+  function setMode(){ mode = (mode+1) % MODES.length; paintColours(); buildLegend(); }
+  addEventListener('keydown', e=>{
+    if(!running) return;
+    if(e.key === 'Escape'){ e.stopPropagation(); close(); return; }
+    if(e.key==='c'||e.key==='C') setMode();
+    if(e.key==='v'||e.key==='V') video.style.opacity = video.style.opacity==='0' ? .10 : 0;
+    if(e.code==='Space'){ e.preventDefault(); burst(); }
+  }, true);
+  $('dustModeBtn').onclick = setMode;
+  $('dustCamBtn').onclick = () => camOn ? stopCam() : startCam();
+  $('dustCloseBtn').onclick = () => close();
+  const fsBtn = $('dustFsBtn');
+  if(!document.fullscreenEnabled) fsBtn.style.display = 'none';
+  fsBtn.onclick = () => { document.fullscreenElement ? document.exitFullscreen() : ov.requestFullscreen().catch(()=>{}); };
+  addEventListener('resize', ()=>{ if(running) resize(); });
+  new MutationObserver(()=>{ if(running) readTheme(); }).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+
+  // ---------- main loop ----------
+  function frame(now){
+    if(!running) return;
+    raf = requestAnimationFrame(frame);
+    const dt = Math.min(2, (now-last)/16.67); last = now;
+    const T = Object.values(tips);
+    if(!T.length && mouse && now-mouse.t<2500) T.push({x:mouse.x,y:mouse.y,vx:mouse.vx||0,vy:mouse.vy||0,r:90});
+    idleK += ((T.length?0:1) - idleK)*.03*dt;
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = `rgba(${bg[0]},${bg[1]},${bg[2]},${light?.22:.16})`;
+    ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = 'source-over';   // crisp pixels, no additive glow
+    const CELL = W<640 ? 3 : 4, PX = CELL-1;          // dot-matrix lattice, 1px gap like the matrix cells
+
+    const R = Math.min(W,H)*.75, tt = now*.001, M = LUT.length;
+    const wind = tt*.05 + Math.sin(tt*.07)*.8, ux = Math.cos(wind), uy = Math.sin(wind);
+    const sc0 = Math.min(W,H)*.21*(W<640?1.15:1);
+    for(let i=0;i<N;i++){
+      const p = P[i];
+      const perp = p.x*-uy + p.y*ux, along = p.x*ux + p.y*uy;
+      const shear = .55 + .45*Math.sin(perp*.006 + tt*.15) * Math.cos(along*.002 - tt*.1);
+      const thrust = .07*p.s*shear*(1-idleK)*dt;
+      p.vx += ux*thrust; p.vy += uy*thrust;
+
+      if(throwEv){
+        const dx=p.x-throwEv.x, dy=p.y-throwEv.y, d=Math.hypot(dx,dy)+.001, rr=throwEv.r*2.6+120;
+        if(d<rr){
+          const w=1-d/rr*.6, bst=6*p.s*w, push=throwEv.sp*.16*p.s*w;
+          p.vx += throwEv.dx*push + dx/d*bst; p.vy += throwEv.dy*push + dy/d*bst;
+          p.free = tt + .8 + p.s*.9;
+        }
+      }
+
+      // IDLE SHAPE: the year as a twisted torus. Tube thickness follows that day's progress to target.
+      if(idleK>.001 && tt>=p.free){
+        const u=p.u, lv = LUT[(p.uf*M)|0];
+        const rr=(.3+.7*p.q)*(.34+.1*Math.sin(2*u-tt*.5))*(.42+.78*lv);
+        const R0=1+.28*Math.sin(3*u+tt*.6)+.1*(lv-.6), vv=p.v+2*u+tt*.4;
+        const ring=R0+rr*Math.cos(vv);
+        const x=ring*Math.cos(u), y=ring*Math.sin(u), z=rr*Math.sin(vv)*1.5+.35*Math.sin(2*u+tt*.4);
+        const ay=tt*.25, ax=.6+Math.sin(tt*.13)*.5, cay=Math.cos(ay), say=Math.sin(ay), cax=Math.cos(ax), sax=Math.sin(ax);
+        const x1=x*cay+z*say, z1=-x*say+z*cay, y1=y*cax-z1*sax, z2=y*sax+z1*cax;
+        const pr=2.6/(2.6-z2);
+        const tx=W/2+x1*sc0*pr+Math.sin(tt*1.3+p.ph)*5, ty=H/2+y1*sc0*pr+Math.cos(tt*1.1+p.ph)*5;
+        p.dz=pr;
+        const c=.08*Math.min(1.6,.5+.5*p.s);
+        p.vx += ((tx-p.x)*c - p.vx)*.1*idleK*dt;
+        p.vy += ((ty-p.y)*c - p.vy)*.1*idleK*dt;
+      }
+
+      let best=null, bd=1e9;
+      for(const t of T){ const d=Math.hypot(t.x-p.x,t.y-p.y); if(d<bd){bd=d;best=t;} }
+      let heat = 0;
+      if(best && bd<R && tt>=p.free){
+        const d=bd+.001, nx=(best.x-p.x)/d, ny=(best.y-p.y)/d;
+        const core = Math.max(50, best.r), f = Math.pow(1-d/R, 1.6);
+        heat = f;
+        const radial = d>core ? f*1.1 : (d/core)*.35;
+        const wob = Math.sin(tt*3+p.ph+d*.03)*f*.7*Math.min(1,d/200);
+        const swirl = p.sw*f*.25*Math.min(1,core/d);
+        p.vx += (nx*radial - ny*(swirl+wob))*p.k*dt;
+        p.vy += (ny*radial + nx*(swirl+wob))*p.k*dt;
+        p.vx += best.vx*f*.18*p.k*dt; p.vy += best.vy*f*.18*p.k*dt;
+        if(d<core){ const br=Math.sin(tt*(1+p.s)*2+p.ph)*.3*p.s*dt; p.vx -= nx*br; p.vy -= ny*br; }
+      }
+      const damp = Math.pow(tt<p.free ? .965 : .935, dt);
+      p.vx *= damp; p.vy *= damp;
+      p.x += p.vx*dt; p.y += p.vy*dt;
+      if(p.x<-20) p.x+=W+40; else if(p.x>W+20) p.x-=W+40;
+      if(p.y<-20) p.y+=H+40; else if(p.y>H+20) p.y-=H+40;
+
+      // draw as a square pixel snapped to the lattice; fast dust is brighter, far-side dust dimmer
+      const sp = Math.hypot(p.vx,p.vy);
+      let a = (.3 + Math.min(.55, sp*.07) + heat*.2) * ((1-idleK) + idleK*Math.min(1.2, p.dz*p.dz*.8));
+      a = Math.min(1, a);
+      ctx.fillStyle = `rgba(${p.r|0},${p.g|0},${p.b|0},${a.toFixed(2)})`;
+      ctx.fillRect(Math.round(p.x/CELL)*CELL, Math.round(p.y/CELL)*CELL, PX, PX);
+    }
+    throwEv = null;
+  }
+
+  // ---------- open / close ----------
+  let prevOverflow = '';
+  function open(){
+    if(running) return;
+    prevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden';
+    ov.classList.add('open'); running = true;
+    DPR = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight;
+    cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    idleK = 1; mouse = null; tips = {};
+    buildData(); readTheme(); initParticles();
+    last = performance.now(); raf = requestAnimationFrame(frame);
+    $('dustCloseBtn').focus({preventScroll:true});
+  }
+  function close(){
+    if(!running) return;
+    running = false; cancelAnimationFrame(raf); stopCam();
+    if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    ov.classList.remove('open'); document.body.style.overflow = prevOverflow;
+  }
+  window.openDustProjector = open; window.closeDustProjector = close;
+})();
+</script>
 </body>
 </html>
