@@ -124,7 +124,7 @@
   :focus-visible{ outline:2px solid var(--night); outline-offset:2px; border-radius:4px; }
 
   .wrap{ max-width:1180px; margin:0 auto; padding:28px 28px 0; }
-  @media (max-width:640px){ .wrap{ padding:18px 16px 0; } }
+  @media (max-width:640px){ .wrap{ padding:18px 16px 0; }}
 
   /* ---------------- top nav ---------------- */
   #authBar.topnav{
@@ -219,26 +219,7 @@
     }
     .iconbtn-label{ display:inline; font-size:13px; font-weight:500; color:var(--text-dim); }
     .topnav-actions .iconbtn.enabled .iconbtn-label{ color:var(--night); }
-    .sync-dot{ align-self:flex-start; margin-left:2px; }
-  }
-
-  /* ---------------- hero ---------------- */
-  header.hero{
-    display:flex; align-items:center; justify-content:space-between; gap:24px;
-    margin:40px 0 36px; flex-wrap:wrap;
-  }
-  .eyebrow{
-    font-family:'Hanken Grotesk',sans-serif;
-    font-size:11.5px;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--text-faint);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:14px;
-  }
-  .eyebrow::before{ content:""; width:16px; height:1px; background:var(--line-strong); display:inline-block; }
+    .sync-dot{ align-self:flex-start; margin-left:2px; }}
   h1{
     font-family:'Doto','Hanken Grotesk',sans-serif;
     font-weight:600;
@@ -275,7 +256,7 @@
 
   /* ---------------- dashboard grid ---------------- */
   .dashboard-grid{ display:grid; grid-template-columns:minmax(0,2.15fr) minmax(240px,1fr); gap:22px; align-items:start; }
-  @media (max-width:920px){ .dashboard-grid{ grid-template-columns:1fr; } }
+  @media (max-width:920px){ .dashboard-grid{ grid-template-columns:minmax(0,1fr); }}
 
   /* day card */
   .day{
@@ -299,8 +280,6 @@
     font-size:12px; color:var(--text-dim); font-family:'Hanken Grotesk',sans-serif; font-weight:500;
     background:var(--surface-2); border:1px solid var(--line); border-radius:100px; padding:5px 13px;
   }
-  .day-head-right{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-  .day-tag{ font-size:13px; color:var(--text-dim); font-family:'Hanken Grotesk',sans-serif; }
 
   .day-target-save, .day-target-auto{
     background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
@@ -346,25 +325,6 @@
     background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md);
     padding:20px 24px; margin-bottom:24px;
   }
-  .ring-wrap{ position:relative; width:104px; height:104px; flex:none; }
-  .ring-svg{ width:100%; height:100%; transform:rotate(-90deg); }
-  .ring-track{ fill:none; stroke:var(--line); stroke-width:9; }
-  .ring-fill{ fill:none; stroke:var(--night); stroke-width:9; stroke-linecap:round; transition:stroke-dashoffset .4s ease; }
-  .ring-center{
-    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  }
-  .ring-time{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:19px; color:var(--text); line-height:1.1; }
-  .ring-sub{ font-family:'Hanken Grotesk',sans-serif; font-size:10.5px; color:var(--text-faint); }
-  .stats-mid{ flex:1; min-width:180px; display:flex; flex-direction:column; gap:8px; }
-  .stats-heading{ font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:15px; color:var(--text); }
-  .stats-caption{ font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--text-dim); }
-  .pbar{ width:100%; height:7px; border-radius:4px; background:var(--line); overflow:hidden; margin-top:2px; }
-  .pbar-fill{ height:100%; background:var(--night); border-radius:4px; transition:width .3s ease; }
-  .stats-right{ display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex:none; text-align:right; }
-  .stats-right-info{ display:flex; flex-direction:column; gap:3px; }
-  .stats-right-label{ font-family:'Hanken Grotesk',sans-serif; font-size:11.5px; color:var(--text-faint); }
-  .stats-right-frac{ font-family:'Hanken Grotesk',sans-serif; font-size:14px; font-weight:600; color:var(--text); }
-  .stats-right-pct{ font-family:'Hanken Grotesk',sans-serif; font-size:11.5px; color:var(--text-dim); }
 
   /* On phones the card gets a deliberate, compact layout instead of the
      desktop row wrapping mid-sentence: ring+heading share the top line,
@@ -454,6 +414,21 @@
   }
   .edit-del:hover{ color:var(--danger); border-color:var(--danger); }
   .row.editing{ align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--line); }
+  .edit-dur-wrap{ display:inline-flex; align-items:center; gap:6px; }
+  .edit-dur-wrap .task-duration{ min-width:0; }
+  /* phones: the name gets its own full-width line (it was squeezed and cut off), then minutes · category · remove */
+  @media (max-width:720px){
+    .row.editing{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; grid-template-areas:"label label label" "dur type del"; gap:10px 8px; padding:14px 0; }
+    .row.editing .edit-label{ grid-area:label; width:100%; min-width:0; box-sizing:border-box; }
+    .row.editing .edit-dur-wrap{ grid-area:dur; }
+    .row.editing .edit-type{ grid-area:type; width:100%; min-width:0; box-sizing:border-box; }
+    .row.editing .edit-del{ grid-area:del; width:40px; height:40px; }
+    .edit-time, .edit-label, .edit-type{ min-height:40px; box-sizing:border-box; }
+  }
+  /* iOS Safari zooms the whole page when a field under 16px gets focus — keep every text field at 16px on phones */
+  @media (max-width:720px){
+    .edit-time, .edit-label, .edit-type, .cat-name-input, .stats-edit-popover input, #authGate input{ font-size:16px !important; }
+  }
   .add-block-btn{
     background:none; border:1px dashed var(--line-strong); color:var(--text-dim);
     font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; padding:10px 14px;
@@ -461,33 +436,17 @@
   }
   .add-block-btn:hover{ color:var(--text); border-color:var(--text-faint); background:var(--surface-2); }
 
-  /* ---------------- timeline ---------------- */
-  .timeline-block[hidden]{ display:none; }
-  .timeline-block{ margin-top:26px; padding-top:20px; border-top:1px solid var(--line); }
-
   /* ---------------- global productivity tracker (page-level, persists across views) ---------------- */
   #globalTracker{ margin-bottom:8px; }
   #globalTimelineBlock{ margin-top:0; padding-top:0; border-top:none; margin-bottom:32px; }
   .rail{ position:relative; height:30px; margin-bottom:10px; }
-  .track{ position:absolute; inset:0; border-radius:8px; background:var(--surface-3); }
-  .seg{ position:absolute; top:0; bottom:0; border-radius:7px; }
-  .seg.day-strong{ background:var(--day-strong); }
-  .seg.day-soft{ background:var(--day-soft); }
-  .seg.night{ background:var(--night); }
-  .seg.rest{ background:transparent; border:1.4px dashed var(--rest-line); }
   .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:var(--accent); }
-  .tracker-now-line{ position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--accent); border-radius:1px; pointer-events:none; }
-  .tracker-empty{font-family:'Hanken Grotesk',sans-serif;font-size:11px;color:var(--text-faint);display:flex;align-items:center;justify-content:center;height:100%;}
-  .tracker-seg{position:absolute;top:0;bottom:0;border-radius:0;min-width:2px;transition:left .25s,width .25s;}
-  .tracker-seg.cat-rest{ background:transparent !important; border:1.4px dashed var(--rest-line); }
-  .tracker-seg.live{ animation:tracker-live-glow 1.6s ease-in-out infinite; }
   @keyframes tracker-live-glow{
     0%,100%{ box-shadow:0 0 4px 1px currentColor; opacity:.9; }
     50%{ box-shadow:0 0 8px 2px currentColor; opacity:1; }
   }
   .ticks{ position:relative; height:16px; }
   .tick{ position:absolute; transform:translateX(-50%); font-family:'Hanken Grotesk',sans-serif; font-size:10.5px; color:var(--text-faint); }
-  .tracker-legend{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px; }
 
   /* ---------------- sidebar ---------------- */
   .sidebar{ display:flex; flex-direction:column; gap:16px; position:sticky; top:78px; }
@@ -506,8 +465,7 @@
   .focus-empty{ font-size:12.5px; color:var(--text-faint); }
 
   @media (max-width:720px){
-    .stats{ gap:16px; }
-  }
+    .stats{ gap:16px; }}
 
   /* ---------------- task rows on mobile ----------------
      Below ~640px there isn't room for dot / label / time / reset / button
@@ -550,31 +508,12 @@
   }
   .pomo-mode.break{ background:var(--tint-break); color:var(--day-soft); }
   .pomo-time{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:36px; letter-spacing:-.01em; min-width:110px; color:var(--text); }
-  .pomo-controls{ display:flex; gap:8px; }
-  .pomo-btn{
-    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
-    font-family:'Hanken Grotesk',sans-serif; font-size:13px; font-weight:500;
-    padding:10px 18px; border-radius:100px; cursor:pointer; transition:border-color .15s, background .15s;
-  }
-  .pomo-btn:hover{ border-color:var(--line-strong); background:var(--surface-3); }
-  .pomo-btn:disabled{ opacity:.4; cursor:not-allowed; }
-  .pomo-btn.start{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
-  .pomo-btn.start.running{ background:var(--surface-2); color:var(--text); border-color:var(--line-strong); }
-  .pomo-presets{ display:flex; gap:6px; margin-left:auto; }
   .pomo-preset-btn{
     background:transparent; border:1px solid var(--line); color:var(--text-dim);
     font-family:'Hanken Grotesk',sans-serif; font-size:12px; padding:7px 12px; border-radius:100px; cursor:pointer;
   }
   .pomo-preset-btn.active{ border-color:var(--accent); color:var(--text); background:var(--surface-2); }
   .pomo-preset-btn:disabled{ opacity:.4; cursor:not-allowed; }
-  .pomo-meta{
-    width:100%; display:flex; gap:22px; flex-wrap:wrap;
-    font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--text-dim);
-  }
-  .pomo-meta b{ color:var(--text); font-weight:600; }
-  @media (max-width:560px){
-    .pomo-presets{ margin-left:0; width:100%; }
-  }
 
   .pomodoro.ringing{ border-color:var(--health); animation: pomo-flash 1s ease-in-out infinite; }
   @keyframes pomo-flash{
@@ -604,13 +543,11 @@
   }
   @media (max-width:560px){
     .wr-toast-wrap{ left:14px; right:14px; top:14px; align-items:stretch; }
-    .wr-toast{ max-width:none; }
-  }
+    .wr-toast{ max-width:none; }}
 
   /* ---------------- custom timer / stopwatch page ---------------- */
   .ct-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
   .ct-title{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:24px; }
-  .ct-note{ font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--text-faint); line-height:1.6; margin-bottom:20px; }
 
   .ct-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
   .ct-btn{
@@ -633,29 +570,14 @@
   @keyframes ctPulse{ 0%,100%{ transform:none; } 50%{ transform:scale(1.04); } }
 
   .ct-history{ margin-top:28px; }
-  .ct-history-head{ font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin-bottom:12px; }
-  .ct-history-list{ display:flex; flex-direction:column; gap:8px; }
   .ct-history-empty{ font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--text-faint); }
   .ct-row{
     display:flex; align-items:center; gap:14px;
     background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:11px 14px;
   }
-  .ct-row-type{
-    font-family:'Hanken Grotesk',sans-serif; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em;
-    color:var(--text-faint); border:1px solid var(--line); border-radius:100px; padding:3px 9px; flex:none;
-  }
-  .ct-row-dur{ font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--text-dim); flex:none; margin-left:auto; }
-  .ct-row-time{ font-family:'Hanken Grotesk',sans-serif; font-size:11px; color:var(--text-faint); flex:none; white-space:nowrap; }
-  .ct-row-label{ color:var(--text); font-size:13px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .ct-row-del{
-    background:none; border:1px solid var(--line); color:var(--text-faint);
-    border-radius:6px; width:24px; height:24px; cursor:pointer; flex:none; font-size:12px; line-height:1;
-  }
-  .ct-row-del:hover{ color:var(--danger-2); border-color:var(--danger-2); }
 
   /* ---------------- productivity matrix ---------------- */
   .matrix-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:26px; }
-  .matrix-title{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:23px; letter-spacing:-.01em; }
   .matrix-controls{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .mx-btn{
     background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
@@ -667,10 +589,7 @@
   .mx-play svg{ display:block; }
   .mx-period{ font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:var(--text); font-weight:600; min-width:56px; text-align:center; }
 
-  .mx-note{ font-family:'Hanken Grotesk',sans-serif; font-size:12px; color:var(--text-faint); margin:-14px 0 22px; }
-
   .mx-legend{ display:flex; flex-wrap:wrap; gap:18px; margin:0 0 26px; font-family:'Hanken Grotesk',sans-serif; font-size:12px; color:var(--text-dim); }
-  .mx-legend-item{ display:flex; align-items:center; gap:7px; }
   .mx-swatch{ width:10px; height:10px; border-radius:2px; flex:none; }
 
   .mx-matrix-wrap{
@@ -693,8 +612,7 @@
   .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--accent); }
 
   @media (max-width:560px){
-    .mx-matrix{ gap:4px; }
-  }
+    .mx-matrix{ gap:4px; }}
 
   /* ================= DUST PROJECTOR (fullscreen, opened from the matrix "Today" button) ================= */
   #dustOverlay{
@@ -702,15 +620,25 @@
     background:var(--bg); color:var(--text); touch-action:none; cursor:crosshair;
     -webkit-user-select:none; user-select:none;
   }
-  #dustOverlay.open{ display:block; animation:dustIn .35s ease-out; }
+  #dustOverlay.open{ display:block; }
   @keyframes dustIn{ from{ opacity:0; } to{ opacity:1; } }
   #dustCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  /* soft bloom: the same particles drawn again at 1/4 resolution, blurred by the compositor.
+     Dark theme = phosphor (screen blend, light adds to light). Light theme = ink bleed / highlighter
+     (normal blend, only the coloured dust glows, so grey dust never turns into a smudge). */
+  #dustGlow{ position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none;
+    filter:blur(7px) saturate(1.5); mix-blend-mode:screen; opacity:.95; }
+  html:not([data-theme="dark"]) #dustGlow{ mix-blend-mode:normal; opacity:.8; filter:blur(7px) saturate(1.6); }
+  #dustOverlay:focus{ outline:none; }
   #dustCam{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); opacity:.10; filter:grayscale(1) contrast(1.1); pointer-events:none; display:none; }
   /* analog-bits finish: dot grid + scanlines + vignette, all driven by the site's own line colour */
+  /* identical to the page's body::before grid (same layers, size, offset, opacity) so open/close never shifts or changes the dots */
   .dust-dots{ position:absolute; inset:0; pointer-events:none; opacity:.55;
-    background-image:radial-gradient(circle, var(--line-strong) 0.9px, transparent 1.3px); background-size:20px 20px; background-position:10px 10px; }
-  .dust-scan{ position:absolute; inset:0; pointer-events:none; opacity:.35;
-    background:repeating-linear-gradient(0deg, transparent 0 2px, var(--bg) 2px 3px); mix-blend-mode:multiply; }
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 2px, var(--bg) 2px 3px),
+      radial-gradient(circle, var(--line-strong) .9px, transparent 1.3px);
+    background-size:auto, 20px 20px; background-position:0 0, 10px 10px; }
+  .dust-scan{ display:none; }
   .dust-vig{ position:absolute; inset:0; pointer-events:none;
     background:radial-gradient(ellipse at center, transparent 55%, var(--bg) 120%); }
   .dust-corner{ position:absolute; width:18px; height:18px; border:1.5px solid var(--text-faint); pointer-events:none; opacity:.7; }
@@ -740,11 +668,17 @@
   .dust-msg{ font-family:'Hanken Grotesk',sans-serif; font-size:12px; color:var(--pending-text); min-height:1em; }
   @media (max-width:640px){
     .dust-hud{ padding:0 22px; }
-    .dust-top{ top:22px; } .dust-bot{ bottom:22px; flex-direction:column; align-items:flex-start; }
+    .dust-top{ top:calc(18px + env(safe-area-inset-top,0px)); flex-wrap:wrap; row-gap:12px; }
+    .dust-bot{ bottom:calc(22px + env(safe-area-inset-bottom,0px)); flex-direction:column; align-items:flex-start; }
+    .dust-top > div:first-child{ max-width:calc(100% - 56px); }
+    /* controls become one compact row under the title; Close is a round icon button top-right (was a stack of 4 big pills) */
+    .dust-btns{ width:100%; justify-content:flex-start; gap:6px; }
+    .dust-btns .mx-btn{ padding:7px 12px; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; }
+    #dustCloseBtn{ position:absolute; top:0; right:22px; width:42px; height:42px; padding:0; font-size:0; display:grid; place-items:center; }
+    #dustCloseBtn::before{ content:'\2715'; font-size:15px; letter-spacing:0; }
     .dust-title{ font-size:17px; } .dust-stat b{ font-size:24px; }
     .dust-readout{ gap:18px; } .dust-right{ align-items:flex-start; text-align:left; }
-    .dust-keys{ display:none; }
-  }
+    .dust-keys{ display:none; }}
 
   /* ---------------- view switcher (legacy, kept for other pages) ---------------- */
 
@@ -815,12 +749,10 @@
   h1{ font-size:clamp(48px,10vw,88px); }
   .day-name{ font-size:clamp(30px,6vw,44px); }
   .pomo-time{ font-size:52px; min-width:0; }
-  .ring-time{ font-family:'Hanken Grotesk',sans-serif; font-weight:300; font-size:22px; }
-  .eyebrow::before{ display:none; }
-  .eyebrow, .day-eyebrow, .stats-right-label, .list-header-title, .focus-title, .pomo-mode, .ct-title, .matrix-title{
+  .day-eyebrow, .list-header-title, .focus-title, .pomo-mode, .ct-title{
     text-transform:uppercase; letter-spacing:.08em; font-weight:600; font-size:11px; color:var(--text-dim);
   }
-  .sub, .stats-caption, .ring-sub{ font-weight:300; }
+  .sub{ font-weight:300; }
 
   /* tiles */
   .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap, .stats-edit-popover{
@@ -846,8 +778,8 @@
 
   /* round, flat controls */
   .iconbtn{ background:var(--surface); border-color:transparent; }
-  .pomo-btn, .pomo-preset-btn, .mx-btn, .add-task-btn, .add-block-btn, .cat-add-btn, .cat-edit-toggle{ border-radius:100px; }
-  .pomo-btn.start, .pomo-preset-btn.active, .mx-btn.active{ background:var(--night); border-color:var(--night); color:var(--on-night); }
+  .pomo-preset-btn, .mx-btn, .add-task-btn, .add-block-btn, .cat-add-btn, .cat-edit-toggle{ border-radius:100px; }
+  .pomo-preset-btn.active, .mx-btn.active{ background:var(--night); border-color:var(--night); color:var(--on-night); }
 
   /* ---------- mobile: dark pill dock at the bottom, like the reference ---------- */
   @media (max-width:720px){
@@ -890,8 +822,7 @@
   }
   @media (min-width:721px) and (max-height:520px){
     #authBar > .topnav-links{ top:76px; gap:4px; padding:6px; }
-    .topnav-links .view-btn{ width:40px; height:40px; }
-  }
+    .topnav-links .view-btn{ width:40px; height:40px; }}
 
   /* ================= Mobile layer: airy gradient, oversized ring, pill controls, white tab bar ================= */
   @media (max-width:720px){
@@ -970,8 +901,6 @@
   button, input, select, textarea{
     transition:background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .25s ease, transform .2s ease;
   }
-  .pbar-fill{ transition:width .7s var(--ease); }
-  .ring-fill{ transition:stroke-dashoffset .8s var(--ease); }
   .stats-edit-popover:not([hidden]), .cat-palette.open{ animation:popIn .3s var(--ease); }
   @keyframes popIn{ from{ opacity:0; transform:translateY(-6px) scale(.97); } }
   .vt-theme::view-transition-old(root), .vt-theme::view-transition-new(root){ animation:none; mix-blend-mode:normal; }
@@ -996,11 +925,7 @@
       background-attachment:fixed;
     }
 
-    /* ring: deeper track, soft glow under the arc */
-    .ring-svg{ filter:drop-shadow(0 16px 20px rgba(0,0,0,.10)); }
-    .ring-fill{ filter:drop-shadow(0 6px 10px var(--tint-ring-glow-1)); }
-    .stats-right-frac{ font-weight:500; letter-spacing:-.02em; }
-    .stats-right-pct{ font-weight:400; }
+    /* ring: deeper track{ filter:drop-shadow(0 16px 20px rgba(0,0,0,.10)); }
 
     /* frosted tiles instead of flat boxes */
     .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap{
@@ -1052,38 +977,20 @@
       display:block; position:absolute; left:0; top:0; width:6px; height:6px; border-radius:50%; pointer-events:none;
       background:var(--night); box-shadow:0 0 10px var(--night); opacity:0;
       transition:transform .6s var(--spring), opacity .3s ease;
-    }
-  }
+    }}
 
   /* ================= Stats tile + 24h rail, redesigned to match the minimal system =================
-     One tile (no outline), a dot-matrix progress bar echoing the Doto display type, a calmer ring,
-     and a capsule-segment timeline with a single accent "now" marker. */
-  .pbar{
+     One tile (no outline), a dot-matrix progress bar echoing the Doto display type, a calmer ring{
     height:8px; border-radius:0; background:color-mix(in srgb, var(--text) 14%, transparent); margin-top:6px;
     -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 0 3px, transparent 3.6px);
             mask-image:radial-gradient(circle at 50% 50%, #000 0 3px, transparent 3.6px);
     -webkit-mask-size:8px 8px; mask-size:8px 8px; -webkit-mask-repeat:repeat-x; mask-repeat:repeat-x;
   }
-  .pbar-fill{ border-radius:0; background:var(--night); }
 
   .rail{ height:36px; margin-bottom:8px; }
-  .track{
-    border-radius:100px; background-color:var(--surface);
-    /* faint 3-hour guides, aligned with the tick labels underneath */
-    background-image:linear-gradient(to right, transparent calc(100% - 1px), var(--line) 0);
-    background-size:12.5% 100%;
-  }
-  .tracker-seg{ top:5px; bottom:5px; min-width:6px; border-radius:100px; }
-  .tracker-now-line{ top:-6px; bottom:-6px; width:2px; border-radius:2px; background:var(--night); box-shadow:0 0 12px var(--tint-ring-glow-1); }
-  .tracker-now-line::before{
-    content:''; position:absolute; top:-4px; left:50%; width:9px; height:9px; margin-left:-4.5px; border-radius:50%;
-    background:var(--night); box-shadow:0 0 0 3px var(--bg);
-  }
   .ticks{ height:30px; }
   .tick{ font-size:10.5px; letter-spacing:.06em; font-variant-numeric:tabular-nums; color:var(--text-faint); }
   .tick::before{ content:''; display:block; width:1px; height:5px; margin:0 auto 5px; background:var(--line-strong); }
-  .tracker-empty{ letter-spacing:.04em; }
-  header.hero h1{ margin-bottom:0; }
   .ct-head{ margin-bottom:18px; }
   .matrix-head{ margin-bottom:22px; }
 
@@ -1181,16 +1088,14 @@
     .pulse-tracker{ flex-direction:column; text-align:center; gap:20px; padding:22px; }
     .pulse-matrix-slot{ padding:22px; }
     .pulse-dial{ --dial:200px; }
-    .pulse-metrics{ align-items:center; }
-  }
+    .pulse-metrics{ align-items:center; }}
   @media (max-width:720px){
     .pulse{ grid-template-columns:1fr; gap:14px; margin-bottom:14px; }
     .pulse-tracker{ flex-direction:column; text-align:center; gap:20px; background:transparent; padding:8px 0 0; }
     .pulse-dial{ --dial:min(64vw,240px); }
     .pulse-metrics{ align-items:center; }
     .pulse-matrix-slot{ padding:20px; --mx-h:230px; }
-    .stats-edit-btn{ top:4px; right:4px; }
-  }
+    .stats-edit-btn{ top:4px; right:4px; }}
 
   /* ================= v2 layout: no boxes around tracker + matrix, truly centred ================= */
   @media (min-width:721px){
@@ -1222,12 +1127,10 @@
   .pulse-dial .stats-edit-popover{ top:30px; right:-10px; }
   @media (max-width:1020px){
     .pulse-tracker{ flex-direction:column; text-align:center; }
-    .pulse-info, .pulse-metrics{ align-items:center; }
-  }
+    .pulse-info, .pulse-metrics{ align-items:center; }}
   @media (max-width:720px){
     .pulse{ gap:28px; margin-bottom:20px; }
-    .pulse-matrix-slot{ flex-basis:100%; --mx-h:200px; }
-  }
+    .pulse-matrix-slot{ flex-basis:100%; --mx-h:200px; }}
 
   /* ================= v2 timer + stopwatch: stacked rulers (scale + window), no side-by-side ================= */
   #viewTimer .ct-head{ display:none; }
@@ -1291,9 +1194,8 @@
     #viewTimer .ct-duo{ gap:56px; }
     .ct-ruler{ height:176px; }
     .ct-pill{ margin-top:34px; font-size:15px; padding:11px 24px; }
-    .ct-tick em{ font-size:16px; }
-  }
-  @media (prefers-reduced-motion:reduce){ .ct-ruler-track{ transition:none; } }
+    .ct-tick em{ font-size:16px; }}
+  @media (prefers-reduced-motion:reduce){ .ct-ruler-track{ transition:none; }}
 
   /* ================= v3: compact, one panel at a time, side arrows / swipe ================= */
   .ct-pill{ display:none !important; }
@@ -1330,8 +1232,7 @@
   @media (max-width:560px){
     #viewTimer .ct-slider{ max-width:100%; }
     .ct-arrow{ width:34px; height:34px; } .ct-arrow.prev{ left:0; } .ct-arrow.next{ right:0; }
-    .ct-ruler{ height:120px; }
-  }
+    .ct-ruler{ height:120px; }}
 
   /* ================= v4: wider, fade between panels, arrows live beside the ruler ================= */
   #viewTimer .ct-slider{ max-width:min(860px,100%); padding:8px 0 4px; }
@@ -1366,9 +1267,8 @@
   @media (max-width:560px){
     .ct-arrow, .ct-arrow-spacer{ width:36px; height:36px; } .ct-arrow svg{ width:18px; height:18px; }
     .ct-rulerrow{ gap:4px; }
-    .ct-rulerrow .ct-ruler{ height:124px; }
-  }
-  @media (prefers-reduced-motion:reduce){ #viewTimer .ct-knob, #viewTimer .ct-knob.is-current{ transition:none; } }
+    .ct-rulerrow .ct-ruler{ height:124px; }}
+  @media (prefers-reduced-motion:reduce){ #viewTimer .ct-knob, #viewTimer .ct-knob.is-current{ transition:none; }}
 
   /* ================= v6: panel switch is driven by the same JS motion engine as the page views (exit fade/slide, then staggered rise) ================= */
   #viewTimer .ct-knob, #viewTimer .ct-knob.is-current, #viewTimer #ctKnobSw, #viewTimer #ctKnobSw.is-current,
@@ -1401,8 +1301,7 @@
     #viewLog .log-row .label-wrap{ flex:1; min-width:0; }
     #viewLog .log-row .task-sub{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #viewLog .list{ gap:8px; }
-    #viewLog .log-del{ opacity:1; }
-  }
+    #viewLog .log-del{ opacity:1; }}
 
   /* ================= MOBILE ONLY: "Oasis" tracker — oversized ring cropped off the left edge, stats on the right,
      and a swipe pager (tracker <-> matrix) so both share one slot ================= */
@@ -1445,13 +1344,15 @@
     .pulse-dots{ display:flex; justify-content:center; gap:7px; margin:10px 0 18px; }
     .pulse-dots button{ width:7px; height:7px; padding:0; border:0; border-radius:50%; background:var(--line-strong); cursor:pointer;
       transition:width .45s cubic-bezier(.22,.9,.24,1), background-color .3s ease; }
-    .pulse-dots button.active{ width:20px; border-radius:6px; background:var(--night); }
-  }
+    .pulse-dots button.active{ width:20px; border-radius:6px; background:var(--night); }}
 
   /* ===== mobile v2: ring fully visible (no more half-cropped dial), time stacks inside it ===== */
   @media (max-width:720px){
     .pulse .pulse-tracker{ overflow:visible; padding:6px 20px !important; gap:12px; min-height:0; justify-content:space-between; }
-    .pulse .pulse-dial{ --dial:min(54vw,230px); margin-left:0; }
+    /* Optical balance: the SVG viewBox leaves ~6.5/280 of empty space around the visible outer ring, so the ring
+       looked inset further from the left edge than the text is from the right. Pull the dial left by exactly that
+       amount so left gap (ring) == right gap (text) == 20px. Pure CSS, no markup/JS touched. */
+    .pulse .pulse-dial{ --dial:min(54vw,230px); margin-left:calc(var(--dial) * -.023); }
     .pulse .dial-center{ padding:0 22%; }
     .pulse .dial-time{
       width:min-content; max-width:100%; text-align:center; white-space:normal; word-break:keep-all;
@@ -1459,6 +1360,7 @@
     }
     .pulse .dial-sub{ margin-top:3px; font-size:11px; }
     .pulse .pulse-info{ padding-left:0; }
+    .pulse .pulse-caption{ text-wrap:balance; } /* no lonely trailing word on the right-aligned caption */
     .pulse .pulse-dial .stats-edit-btn{ top:-8px; right:-8px; }
     .pulse .pulse-dial .stats-edit-popover{ top:26px; right:-8px; }
     .pulse .pulse-pct-num{ font-size:clamp(42px,12.5vw,54px); }
@@ -1550,8 +1452,7 @@
   .add-task-btn:focus-visible, .cat-edit-toggle:focus-visible, .task-start:focus-visible{ outline:2px solid var(--night); outline-offset:3px; border-radius:100px; }
   @media (prefers-reduced-motion:reduce){
     button{ transition-duration:.01ms !important; }
-    .task-start:hover, .task-reset:hover{ transform:none; }
-  }
+    .task-start:hover, .task-reset:hover{ transform:none; }}
   /* ===== Top bar: just name + sync dot. Notifications + log out live in the left dock (desktop). ===== */
   .name-chip{
     font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:600; font-size:16px; letter-spacing:0;
@@ -1578,12 +1479,10 @@
       opacity:0; pointer-events:none; transition:opacity .15s ease, transform .15s ease; box-shadow:0 6px 18px rgba(0,0,0,.18);
     }
     .dock-extras .iconbtn:hover .iconbtn-label, .dock-extras .iconbtn:focus-visible .iconbtn-label{ opacity:1; transform:translate(0,-50%); }
-    .dock-extras .iconbtn.enabled .iconbtn-label{ color:var(--bg); }
-  }
+    .dock-extras .iconbtn.enabled .iconbtn-label{ color:var(--bg); }}
   @media (min-width:721px) and (max-height:520px){
     .dock-extras{ top:226px; gap:4px; padding:6px; }
-    .dock-extras .iconbtn{ width:40px; height:40px; }
-  }
+    .dock-extras .iconbtn{ width:40px; height:40px; }}
 
   /* ===== Mobile: notifications + log out live in the bottom dock, same rhythm as the tabs ===== */
   @media (max-width:720px){
@@ -1606,6 +1505,7 @@
 
   /* ================= RETRO SKIN: same look as the dust projector (cosmetic only, no layout/JS hooks) =================
      Doto dot-matrix type in upper-case with wide tracking, a dot-grid page, faint scanlines on the cards. */
+  /* dotted grid lives on the page background only (same look as the Dust Projector); cards stay clean */
   body::before{
     content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
     background-image:
@@ -1614,29 +1514,23 @@
     background-size:auto, 20px 20px; background-position:0 0, 10px 10px;
     opacity:.55;
   }
-  .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap, .stats-edit-popover{
-    background-image:repeating-linear-gradient(0deg, transparent 0 2px, rgba(128,128,136,.05) 2px 3px);
-  }
+  .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap, .stats-edit-popover{ background-image:none; }
 
   /* titles + section heads: dot-matrix, caps, tracked out */
-  h1, header.hero h1, .day-name, .matrix-title, .ct-title, .topnav-brand{
+  h1, .day-name, .ct-title, .topnav-brand{
     font-family:'Doto','Hanken Grotesk',sans-serif; text-transform:uppercase; letter-spacing:.12em; font-weight:700;
   }
   h1{ letter-spacing:.08em; font-weight:900; }
   .day-name{ font-size:28px; letter-spacing:.08em; font-weight:900; }
-  .matrix-title, .ct-title{ font-size:22px; }
+  .ct-title{ font-size:22px; }
   .topnav-brand{ font-size:15px; letter-spacing:.14em; }
-  .focus-title, .list-header-title, .stats-heading, .ct-history-head, .eyebrow, .day-eyebrow{
+  .focus-title, .list-header-title, .day-eyebrow{
     font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.16em; font-size:12.5px;
   }
-  .stats-right-label, .ring-sub, .stats-caption{ text-transform:uppercase; letter-spacing:.1em; font-size:10.5px; }
 
-  /* readouts / numbers */
-  .ring-time, .stats-right-frac, .pomo-time, .mx-period{
+  .pomo-time, .mx-period{
     font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:900; letter-spacing:.06em;
   }
-  .ring-time{ font-size:20px; }
-  .stats-right-frac{ font-size:15px; }
   .mx-period{ font-size:15px; }
 
   /* controls: pills stay pills, but the label is dot-matrix caps */
@@ -1647,7 +1541,59 @@
   .mx-btn{ font-size:12px; }
   @media (max-width:560px){
     .tab-btn{ letter-spacing:.04em; padding:9px 13px; }
-    .day-name{ font-size:24px; }
+    .day-name{ font-size:24px; }}
+  html, body{ overflow-x:clip; }
+  .mx-readout{ min-height:18px; margin:10px 0 0; text-align:center; font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--text-dim); }
+  .mx-cell.mx-picked{ outline:1.5px solid var(--text); outline-offset:1px; }
+  .sidebar, #catManagerMount, .cat-manager{ min-width:0; max-width:100%; }
+
+  /* top bar: fully transparent, no frosted band / seam over the content */
+  /* ================= Mobile refresh: same language as the web UI =================
+     solid tiles, one-line task rows (dot · name · time · Start), calm dark Start pill, no glow / plus badge */
+  @media (max-width:720px){
+    .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap{
+      background:var(--surface); -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:none;
+      border-radius:var(--radius-lg); padding:22px 18px 18px;
+    }
+    .dashboard-grid{ gap:14px; }
+    .sidebar{ gap:14px; position:static; }
+    .day-head{ margin-bottom:14px; }
+    .day-heading-row{ gap:8px; }
+    .day-name{ font-size:26px; }
+    .list-header{ margin-bottom:2px; }
+
+    .list{ gap:0; }
+    .row:not(.editing){
+      display:flex; flex-wrap:nowrap; align-items:center; gap:12px;
+      background:transparent; border-radius:0; margin:0; padding:14px 0; border-bottom:1px solid var(--line);
+    }
+    .row:not(.editing) .dot, .row:not(.editing) .dot-done{ flex:none; margin:0; }
+    .row:not(.editing) .label-wrap{ flex:1 1 auto; min-width:0; width:auto; }
+    .row .label{ font-size:15px; line-height:1.3; overflow-wrap:anywhere; }
+    .row:not(.editing) .task-duration, .row:not(.editing) .task-remaining{
+      flex:none; min-width:0; justify-self:auto; text-align:right; font-size:12.5px;
+    }
+    .row:not(.editing) .task-reset{ flex:none; justify-self:auto; width:34px; height:34px; background:transparent; border:1px solid var(--line); box-shadow:none; }
+    .row:not(.editing) .task-start{
+      flex:none; justify-self:auto; min-width:0; height:36px; padding:0 18px; font-size:12.5px;
+      background:var(--accent); border:1px solid var(--accent); color:var(--on-accent); box-shadow:none;
+    }
+    .task-start:not(.running):not(.ringing)::before{ content:none; }
+    .row:not(.editing) .task-start.running{ background:var(--surface-2); border-color:var(--line-strong); color:var(--text); }
+    .row:not(.editing) .task-start.ringing{ background:var(--health); border-color:var(--health); color:#fff; }
+    .row:not(.editing) .task-start.again{ background:transparent; border-color:var(--line-strong); color:var(--text-dim); }
+    .row.block-ringing{ border-radius:12px; }
+
+    .focus-card, .cat-manager{ padding:20px 18px; }
+    .focus-title{ margin-bottom:14px; }
+    .focus-foot{ margin-top:2px; }
+    .add-task-btn, .cat-edit-toggle{ height:32px; padding:0 14px; }
+  }
+
+  #authBar.topnav{
+    z-index:50; /* above the Pomodoro overlay (40): top bar + side dock stay crisp, never blurred */
+    background:transparent !important; border-bottom:0 !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
   }
 </style>
 </head>
@@ -1659,8 +1605,8 @@
     <h1 style="font-family:'Doto','Hanken Grotesk',sans-serif;font-weight:600;font-size:clamp(32px,7vw,44px);line-height:1.1;margin:0 0 10px;letter-spacing:-.02em;">Bitrhythm</h1>
     <p class="sub" style="margin:0 auto 28px;">Plan your week. Track what you actually do.</p>
     <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
-      <input id="authEmail" type="email" placeholder="Email" autocomplete="email" aria-label="Email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
-      <input id="authPass" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
+      <input id="authEmail" type="email" placeholder="Email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" aria-label="Email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
+      <input id="authPass" type="password" placeholder="Password" autocomplete="current-password" enterkeyhint="go" aria-label="Password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
       <button id="signInBtn" type="button" style="background:var(--accent);border:none;color:var(--on-accent);padding:12px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
       <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:'Hanken Grotesk',sans-serif;font-size:12px;padding-top:4px;">Create account</button>
     </div>
@@ -1744,7 +1690,6 @@
 
   <div id="viewMatrix" hidden>
     <div class="matrix-head">
-      <div class="matrix-title" id="matrixTitle">Productivity Matrix</div>
       <div class="matrix-controls">
         <button class="mx-btn" id="mxPrev" type="button">←</button>
         <span class="mx-period" id="mxPeriodLabel"></span>
@@ -1832,13 +1777,13 @@
         <span class="log-count" id="logCountPill">0 sessions</span>
       </div>
       <div class="list" id="activityLogList"></div>
-      <div class="ct-history-empty log-empty" id="activityLogEmpty">Nothing logged today.</div>
+      <div class="ct-history-empty log-empty" id="activityLogEmpty">Nothing logged today.<br><span style="opacity:.7">Start a block, the timer or a Pomodoro and it will show up here.</span></div>
     </div>
   </div>
 
 <!-- ============ Pomodoro: floating launcher + blurred overlay (same pattern as the sticky-notes feature) ============ -->
 <style id="pm-style">
-#pm-root{position:relative;z-index:19;--fr:28px;--fb:28px;--pm-ink:#2b2a26}
+#pm-root{--fr:28px;--fb:28px;--pm-ink:#2b2a26}
 #pm-root[hidden]{display:none}
 :where(#pm-root) button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 #pm-root button:focus-visible{outline:2px solid var(--text);outline-offset:2px}
@@ -1867,56 +1812,68 @@
 .pm-badge.show{opacity:1;transform:none}
 .pm-fab.open ~ .pm-badge{opacity:0}
 /* overlay: covers the page area, top bar and side nav stay on top */
-.pm-ov{position:fixed;top:var(--pm-top,60px);left:0;right:0;bottom:0;z-index:1;overflow:hidden;border-radius:28px 0 0 0}
+.pm-ov{position:fixed;inset:0;z-index:40;overflow:hidden;overscroll-behavior:contain}
 .pm-ov[hidden]{display:none}
-.pm-bd{position:absolute;inset:0;background:color-mix(in srgb,var(--bg) 58%,transparent);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
+.pm-bd{position:absolute;inset:0;background:color-mix(in srgb,var(--bg) 22%,transparent);-webkit-backdrop-filter:blur(12px) saturate(1.25);backdrop-filter:blur(12px) saturate(1.25)}
 .pm-panel{--pm-px:max(clamp(16px,3vw,40px),calc((100% - 1180px)/2 + 28px));position:absolute;inset:0;color:var(--text);display:grid;grid-template-rows:minmax(0,1fr);outline:0}
-.pm-stage{display:grid;place-items:center;padding:24px var(--pm-px) 130px;overflow-y:auto}
-/* ring dial: thin outer ring, thick progress ring, one dot, just the number in the middle */
-.pm-tile{--pm-c:var(--night);--pm-c-soft:var(--tint-ring);--pm-glow:var(--tint-ring-glow-1);--dial:min(360px,78vw,58vh);position:relative;width:var(--dial);height:var(--dial);flex:none;color:var(--text)}
-.pm-tile.is-break{--pm-c:#2BB3B3;--pm-c-soft:rgba(43,179,179,.20);--pm-glow:rgba(43,179,179,.32)}
-.pm-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
-.pm-track{fill:none;stroke:var(--pm-c-soft);stroke-width:24;transition:stroke .45s ease}
-.pm-fill{fill:none;stroke:var(--pm-c);stroke-width:24;stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease),opacity .3s ease,stroke .45s ease}
-.pm-tile.is-running .pm-fill{transition:stroke-dashoffset 1s linear,opacity .3s ease,stroke .45s ease;filter:drop-shadow(0 0 8px var(--pm-glow))}
-.pm-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-#pm-root .pomo-time{display:block;text-align:center;width:auto;min-width:0;font-size:calc(var(--dial) * .2);font-weight:300;letter-spacing:-.02em;line-height:1;color:var(--text)}
+.pm-stage{display:grid;place-items:center;padding:calc(env(safe-area-inset-top,0px) + 64px) var(--pm-px) 130px;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+/* pie dial (clock-face style): a filled disc whose remaining time is a conic-shaded wedge, readout + mono label underneath */
+.pm-tile{--pm-hi:var(--night);--pm-c-soft:var(--tint-ring);--dial:min(340px,78vw,max(180px,calc(100vh - 340px)));position:relative;width:var(--dial);flex:none;display:flex;flex-direction:column;align-items:center;gap:22px;color:var(--text)}
+.pm-tile.is-break{--pm-hi:#3FD0D0;--pm-c-soft:rgba(43,179,179,.20)}
+.pm-tile{--pm-lo:color-mix(in srgb,var(--pm-hi) 74%,#000)}
+.pm-svg{position:relative;width:var(--dial);height:var(--dial);display:block;overflow:visible;flex:none}
+.pm-track{fill:var(--pm-c-soft);stroke:none;transition:fill .45s ease}
+.pm-pie path{stroke-width:.5}
+.pm-rim{fill:none;stroke:rgba(255,255,255,.07);stroke-width:1}
+.pm-fill{fill:none;stroke:#fff;stroke-width:100;stroke-linecap:butt;transition:stroke-dashoffset .8s var(--ease),opacity .3s ease}
+.pm-tile.is-running .pm-fill{transition:stroke-dashoffset 1s linear,opacity .3s ease}
+.pm-tile.is-running .pm-svg{filter:drop-shadow(0 12px 28px color-mix(in srgb,var(--pm-hi) 30%,transparent))}
+.pm-center{position:static;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#pm-root .pomo-time{display:block;text-align:center;width:auto;min-width:0;font-size:clamp(44px,calc(var(--dial) * .2),68px);font-weight:300;letter-spacing:-.02em;line-height:1;color:var(--text)}
+.pm-tile::after{content:'focus';font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:13px;letter-spacing:.22em;text-transform:lowercase;color:var(--text-dim);margin-top:-6px}
+.pm-tile.is-break::after{content:'break'}
 .pm-tile.ringing{animation:pmTile 1s ease-in-out infinite}
-.pm-tile.ringing .pm-fill{filter:drop-shadow(0 0 14px var(--pm-glow))}
+.pm-tile.ringing .pm-svg{filter:drop-shadow(0 0 22px color-mix(in srgb,var(--pm-hi) 55%,transparent))}
 @keyframes pmTile{0%,100%{transform:none}50%{transform:scale(1.03)}}
-/* floating control bar, bottom right: presets | reset + start | (launcher sits here when open) */
-.pm-dock{position:fixed;right:var(--fr);bottom:var(--fb);z-index:3;display:flex;align-items:center;gap:8px;padding:9px;box-sizing:border-box;max-width:calc(100vw - 2*var(--fr));border-radius:99px;background:color-mix(in srgb,var(--surface) 84%,transparent);border:1px solid var(--line);box-shadow:0 18px 44px rgba(0,0,0,.16);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4)}
-.pm-f{display:flex;align-items:center;gap:2px;padding:0 8px;margin:0 2px;border-inline:1px solid var(--line)}
-#pm-root .pm-p{height:34px;padding:0 13px;border:0;border-radius:99px;background:transparent;color:var(--text-dim);font-family:'Hanken Grotesk',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;transform:none;transition:background .2s,color .2s}
-#pm-root .pm-p:hover:not(:disabled){background:var(--bg);color:var(--text)}
-#pm-root .pm-p.active{background:var(--night);color:var(--on-night)}
+/* floating control bar, bottom right — same capsule language as the side dock: dark pill, dim labels, light active chip */
+.pm-dock{position:fixed;right:var(--fr);bottom:var(--fb);z-index:3;display:flex;align-items:center;gap:4px;padding:6px;box-sizing:border-box;max-width:calc(100vw - 2*var(--fr));border-radius:99px;background:var(--pill);box-shadow:0 10px 28px -12px rgba(0,0,0,.45)}
+.pm-f{display:flex;align-items:center;gap:2px;padding:0;margin:0}
+#pm-root .pm-p{height:46px;padding:0 17px;border:0;border-radius:99px;background:transparent;color:var(--pill-dim);font-family:'Hanken Grotesk',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;transform:none;transition:background-color .15s ease,color .15s ease}
+#pm-root .pm-p:hover:not(:disabled):not(.active){background:transparent;color:#fff}
+#pm-root .pm-p.active{background:var(--pill-active);color:var(--pill-active-text);border:0}
 #pm-root .pm-p:disabled{opacity:.4;cursor:not-allowed}
-.pm-ctl{display:flex;gap:8px}
-#pm-root .pm-reset,#pm-root .pm-start{height:38px;padding:0 20px;border-radius:99px;font-family:'Hanken Grotesk',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;transition:transform .2s ease,box-shadow .2s ease,background .2s}
-#pm-root .pm-reset{background:var(--bg);color:var(--text)}
-#pm-root .pm-reset:hover{background:var(--surface-3)}
-#pm-root .pm-start{background:var(--night);color:var(--on-night);min-width:84px}
-#pm-root .pm-start:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.22)}
-#pm-root .pm-start.running{background:var(--text);color:var(--bg)}
+.pm-ctl{display:flex;align-items:center;gap:4px;margin-left:4px;padding-left:8px;border-left:1px solid rgba(255,255,255,.09)}
+#pm-root .pm-reset{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:50%;background:transparent;color:var(--pill-dim);transition:color .15s ease,background-color .15s ease}
+#pm-root .pm-reset svg{width:21px;height:21px;display:block;transition:transform .55s var(--spring,cubic-bezier(.34,1.56,.64,1))}
+#pm-root .pm-reset:hover{color:#fff}
+#pm-root .pm-reset:hover svg{transform:rotate(-120deg)}
+#pm-root .pm-reset:active svg{transform:rotate(-120deg) scale(.86)}
+#pm-root .pm-start{height:46px;min-width:96px;padding:0 24px;border-radius:99px;background:var(--pill-active);color:var(--pill-active-text);font-family:'Hanken Grotesk',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;transition:background-color .2s ease,color .2s ease,transform .2s ease}
+#pm-root .pm-start:hover:not(:disabled){transform:translateY(-1px)}
+#pm-root .pm-start.running{background:var(--night);color:var(--on-night)}
 #pm-root .pm-start.ringing{background:var(--night);color:var(--on-night);animation:pmBtnPulse 1s ease-in-out infinite}
 @keyframes pmBtnPulse{0%,100%{box-shadow:0 0 0 0 var(--tint-ring-glow-0)}50%{box-shadow:0 0 0 7px var(--tint-ring-glow-1)}}
 #pm-root .pm-start:disabled{opacity:.4;cursor:not-allowed}
-.pm-x{width:38px;height:38px;flex:none;visibility:hidden;pointer-events:none}
+.pm-x{width:46px;height:46px;flex:none;visibility:hidden;pointer-events:none}
 .pm-ghost{position:fixed;left:0;top:0;z-index:60;pointer-events:none;overflow:hidden;background:var(--night);will-change:clip-path,opacity}
 .pm-dock{will-change:clip-path}
 .pm-ghost[hidden]{display:none}
+@supports (height:1dvh){.pm-tile{--dial:min(340px,78vw,max(180px,calc(100dvh - 340px)))}}
 @media(max-width:720px){
- .pm-tile.is-running .pm-fill{filter:none}
- .pm-bd{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+ .pm-bd{-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2)}
  #pm-root .pm-p,.pm-fab{-webkit-tap-highlight-color:transparent}
  #pm-root{--fr:18px;--fb:calc(108px + env(safe-area-inset-bottom,0px))}
- .pm-ov{border-radius:22px 22px 0 0}
- .pm-stage{padding-bottom:250px}
- .pm-dock{left:10px;max-width:none;flex-wrap:wrap;border-radius:29px}
- .pm-f{order:1;flex:1 0 100%;margin:0;padding:0 0 6px;border-inline:0;border-bottom:1px solid var(--line);justify-content:center}
- .pm-ctl{order:2;flex:1}.pm-ctl button{flex:1}
- .pm-x{order:3}
-}
+ .pm-stage{padding-bottom:calc(250px + env(safe-area-inset-bottom,0px))}
+ .pm-tile{--dial:min(320px,76vw,max(170px,calc(100vh - 470px)))}
+ @supports (height:1dvh){.pm-tile{--dial:min(320px,76vw,max(170px,calc(100dvh - 470px)))}}
+ .pm-tile.is-running .pm-svg{filter:none}
+ .pm-dock{left:10px;max-width:none;flex-wrap:wrap;gap:6px;border-radius:32px}
+ .pm-f{order:1;flex:1 0 100%;gap:4px}
+ #pm-root .pm-p{flex:1;height:48px;font-size:14px}
+ .pm-ctl{order:2;flex:1;margin:0;padding:0;border-left:0;gap:6px}
+ #pm-root .pm-start{flex:1;height:48px}
+ #pm-root .pm-reset{width:48px;height:48px}
+ .pm-x{order:3;width:48px;height:48px}}
 
   /* ================= Profile menu (mobile): tap "bitrhythm" -> name card slides down; top right = sync dot only ================= */
   .brand-name{ background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; display:inline-flex; align-items:center; gap:6px; cursor:default; -webkit-tap-highlight-color:transparent; }
@@ -1987,13 +1944,10 @@
       height:50px; padding:0 20px !important; border-radius:100px !important; flex:none;
       background:var(--night) !important; color:var(--on-night) !important; font-weight:600 !important; font-size:14px !important;
     }
-    #nameEditor #saveNameBtn:disabled{ opacity:.6; }
-  }
+    #nameEditor #saveNameBtn:disabled{ opacity:.6; }}
   @media (max-width:720px) and (prefers-reduced-motion:reduce){
     #authBar .topnav-collapsible, #authBar::before{ transition:opacity .15s linear !important; transform:none !important; }
-    #nameEditor{ animation:none !important; }
-  }
-</style>
+    #nameEditor{ animation:none !important; }}</style>
 <div id="pm-root" hidden>
   <button class="pm-fab" type="button" aria-label="Open Pomodoro" title="Pomodoro">
     <span class="pm-live-time" id="pmLiveTime" aria-hidden="true"></span>
@@ -2008,9 +1962,13 @@
     <section class="pm-panel" role="dialog" aria-modal="true" aria-label="Pomodoro" tabindex="-1">
       <div class="pm-stage">
         <div class="pm-tile" id="globalPomodoro">
-          <svg class="pm-svg" viewBox="28 28 224 224" aria-hidden="true">
-            <circle class="pm-track" cx="140" cy="140" r="96"></circle>
-            <circle class="pm-fill" cx="140" cy="140" r="96" transform="rotate(-90 140 140)" stroke-dasharray="603.19" stroke-dashoffset="0"></circle>
+          <svg class="pm-svg" viewBox="0 0 200 200" aria-hidden="true">
+            <defs><mask id="pmPieMask" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
+              <circle class="pm-fill" cx="100" cy="100" r="50" transform="rotate(-90 100 100)" pathLength="603.19" stroke-dasharray="603.19" stroke-dashoffset="0"></circle>
+            </mask></defs>
+            <circle class="pm-track" cx="100" cy="100" r="100"></circle>
+            <g class="pm-pie" mask="url(#pmPieMask)"><path d="M100 100L100.00 0.00A100 100 0 0 1 108.54 0.37Z" style="fill:color-mix(in srgb,var(--pm-lo) 100%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 100%,var(--pm-hi))"/><path d="M100 100L106.98 0.24A100 100 0 0 1 115.47 1.20Z" style="fill:color-mix(in srgb,var(--pm-lo) 99%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 99%,var(--pm-hi))"/><path d="M100 100L113.92 0.97A100 100 0 0 1 122.33 2.52Z" style="fill:color-mix(in srgb,var(--pm-lo) 98%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 98%,var(--pm-hi))"/><path d="M100 100L120.79 2.19A100 100 0 0 1 129.07 4.32Z" style="fill:color-mix(in srgb,var(--pm-lo) 97%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 97%,var(--pm-hi))"/><path d="M100 100L127.56 3.87A100 100 0 0 1 135.67 6.58Z" style="fill:color-mix(in srgb,var(--pm-lo) 96%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 96%,var(--pm-hi))"/><path d="M100 100L134.20 6.03A100 100 0 0 1 142.10 9.30Z" style="fill:color-mix(in srgb,var(--pm-lo) 94%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 94%,var(--pm-hi))"/><path d="M100 100L140.67 8.65A100 100 0 0 1 148.33 12.45Z" style="fill:color-mix(in srgb,var(--pm-lo) 93%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 93%,var(--pm-hi))"/><path d="M100 100L146.95 11.71A100 100 0 0 1 154.32 16.04Z" style="fill:color-mix(in srgb,var(--pm-lo) 92%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 92%,var(--pm-hi))"/><path d="M100 100L152.99 15.20A100 100 0 0 1 160.04 20.03Z" style="fill:color-mix(in srgb,var(--pm-lo) 91%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 91%,var(--pm-hi))"/><path d="M100 100L158.78 19.10A100 100 0 0 1 165.47 24.41Z" style="fill:color-mix(in srgb,var(--pm-lo) 90%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 90%,var(--pm-hi))"/><path d="M100 100L164.28 23.40A100 100 0 0 1 170.59 29.17Z" style="fill:color-mix(in srgb,var(--pm-lo) 89%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 89%,var(--pm-hi))"/><path d="M100 100L169.47 28.07A100 100 0 0 1 175.36 34.26Z" style="fill:color-mix(in srgb,var(--pm-lo) 88%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 88%,var(--pm-hi))"/><path d="M100 100L174.31 33.09A100 100 0 0 1 179.76 39.68Z" style="fill:color-mix(in srgb,var(--pm-lo) 87%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 87%,var(--pm-hi))"/><path d="M100 100L178.80 38.43A100 100 0 0 1 183.77 45.39Z" style="fill:color-mix(in srgb,var(--pm-lo) 85%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 85%,var(--pm-hi))"/><path d="M100 100L182.90 44.08A100 100 0 0 1 187.38 51.37Z" style="fill:color-mix(in srgb,var(--pm-lo) 84%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 84%,var(--pm-hi))"/><path d="M100 100L186.60 50.00A100 100 0 0 1 190.56 57.58Z" style="fill:color-mix(in srgb,var(--pm-lo) 83%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 83%,var(--pm-hi))"/><path d="M100 100L189.88 56.16A100 100 0 0 1 193.30 64.00Z" style="fill:color-mix(in srgb,var(--pm-lo) 82%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 82%,var(--pm-hi))"/><path d="M100 100L192.72 62.54A100 100 0 0 1 195.58 70.60Z" style="fill:color-mix(in srgb,var(--pm-lo) 81%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 81%,var(--pm-hi))"/><path d="M100 100L195.11 69.10A100 100 0 0 1 197.40 77.33Z" style="fill:color-mix(in srgb,var(--pm-lo) 80%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 80%,var(--pm-hi))"/><path d="M100 100L197.03 75.81A100 100 0 0 1 198.74 84.18Z" style="fill:color-mix(in srgb,var(--pm-lo) 79%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 79%,var(--pm-hi))"/><path d="M100 100L198.48 82.64A100 100 0 0 1 199.60 91.11Z" style="fill:color-mix(in srgb,var(--pm-lo) 78%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 78%,var(--pm-hi))"/><path d="M100 100L199.45 89.55A100 100 0 0 1 199.98 98.08Z" style="fill:color-mix(in srgb,var(--pm-lo) 76%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 76%,var(--pm-hi))"/><path d="M100 100L199.94 96.51A100 100 0 0 1 199.87 105.06Z" style="fill:color-mix(in srgb,var(--pm-lo) 75%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 75%,var(--pm-hi))"/><path d="M100 100L199.94 103.49A100 100 0 0 1 199.28 112.01Z" style="fill:color-mix(in srgb,var(--pm-lo) 74%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 74%,var(--pm-hi))"/><path d="M100 100L199.45 110.45A100 100 0 0 1 198.20 118.91Z" style="fill:color-mix(in srgb,var(--pm-lo) 73%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 73%,var(--pm-hi))"/><path d="M100 100L198.48 117.36A100 100 0 0 1 196.64 125.71Z" style="fill:color-mix(in srgb,var(--pm-lo) 72%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 72%,var(--pm-hi))"/><path d="M100 100L197.03 124.19A100 100 0 0 1 194.61 132.39Z" style="fill:color-mix(in srgb,var(--pm-lo) 71%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 71%,var(--pm-hi))"/><path d="M100 100L195.11 130.90A100 100 0 0 1 192.12 138.91Z" style="fill:color-mix(in srgb,var(--pm-lo) 70%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 70%,var(--pm-hi))"/><path d="M100 100L192.72 137.46A100 100 0 0 1 189.18 145.24Z" style="fill:color-mix(in srgb,var(--pm-lo) 69%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 69%,var(--pm-hi))"/><path d="M100 100L189.88 143.84A100 100 0 0 1 185.81 151.35Z" style="fill:color-mix(in srgb,var(--pm-lo) 67%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 67%,var(--pm-hi))"/><path d="M100 100L186.60 150.00A100 100 0 0 1 182.02 157.21Z" style="fill:color-mix(in srgb,var(--pm-lo) 66%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 66%,var(--pm-hi))"/><path d="M100 100L182.90 155.92A100 100 0 0 1 177.82 162.80Z" style="fill:color-mix(in srgb,var(--pm-lo) 65%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 65%,var(--pm-hi))"/><path d="M100 100L178.80 161.57A100 100 0 0 1 173.25 168.07Z" style="fill:color-mix(in srgb,var(--pm-lo) 64%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 64%,var(--pm-hi))"/><path d="M100 100L174.31 166.91A100 100 0 0 1 168.33 173.02Z" style="fill:color-mix(in srgb,var(--pm-lo) 63%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 63%,var(--pm-hi))"/><path d="M100 100L169.47 171.93A100 100 0 0 1 163.07 177.60Z" style="fill:color-mix(in srgb,var(--pm-lo) 62%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 62%,var(--pm-hi))"/><path d="M100 100L164.28 176.60A100 100 0 0 1 157.50 181.81Z" style="fill:color-mix(in srgb,var(--pm-lo) 61%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 61%,var(--pm-hi))"/><path d="M100 100L158.78 180.90A100 100 0 0 1 151.65 185.63Z" style="fill:color-mix(in srgb,var(--pm-lo) 60%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 60%,var(--pm-hi))"/><path d="M100 100L152.99 184.80A100 100 0 0 1 145.55 189.02Z" style="fill:color-mix(in srgb,var(--pm-lo) 58%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 58%,var(--pm-hi))"/><path d="M100 100L146.95 188.29A100 100 0 0 1 139.23 191.98Z" style="fill:color-mix(in srgb,var(--pm-lo) 57%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 57%,var(--pm-hi))"/><path d="M100 100L140.67 191.35A100 100 0 0 1 132.72 194.49Z" style="fill:color-mix(in srgb,var(--pm-lo) 56%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 56%,var(--pm-hi))"/><path d="M100 100L134.20 193.97A100 100 0 0 1 126.05 196.55Z" style="fill:color-mix(in srgb,var(--pm-lo) 55%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 55%,var(--pm-hi))"/><path d="M100 100L127.56 196.13A100 100 0 0 1 119.25 198.13Z" style="fill:color-mix(in srgb,var(--pm-lo) 54%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 54%,var(--pm-hi))"/><path d="M100 100L120.79 197.81A100 100 0 0 1 112.36 199.23Z" style="fill:color-mix(in srgb,var(--pm-lo) 53%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 53%,var(--pm-hi))"/><path d="M100 100L113.92 199.03A100 100 0 0 1 105.41 199.85Z" style="fill:color-mix(in srgb,var(--pm-lo) 52%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 52%,var(--pm-hi))"/><path d="M100 100L106.98 199.76A100 100 0 0 1 98.43 199.99Z" style="fill:color-mix(in srgb,var(--pm-lo) 51%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 51%,var(--pm-hi))"/><path d="M100 100L100.00 200.00A100 100 0 0 1 91.46 199.63Z" style="fill:color-mix(in srgb,var(--pm-lo) 49%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 49%,var(--pm-hi))"/><path d="M100 100L93.02 199.76A100 100 0 0 1 84.53 198.80Z" style="fill:color-mix(in srgb,var(--pm-lo) 48%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 48%,var(--pm-hi))"/><path d="M100 100L86.08 199.03A100 100 0 0 1 77.67 197.48Z" style="fill:color-mix(in srgb,var(--pm-lo) 47%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 47%,var(--pm-hi))"/><path d="M100 100L79.21 197.81A100 100 0 0 1 70.93 195.68Z" style="fill:color-mix(in srgb,var(--pm-lo) 46%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 46%,var(--pm-hi))"/><path d="M100 100L72.44 196.13A100 100 0 0 1 64.33 193.42Z" style="fill:color-mix(in srgb,var(--pm-lo) 45%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 45%,var(--pm-hi))"/><path d="M100 100L65.80 193.97A100 100 0 0 1 57.90 190.70Z" style="fill:color-mix(in srgb,var(--pm-lo) 44%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 44%,var(--pm-hi))"/><path d="M100 100L59.33 191.35A100 100 0 0 1 51.67 187.55Z" style="fill:color-mix(in srgb,var(--pm-lo) 43%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 43%,var(--pm-hi))"/><path d="M100 100L53.05 188.29A100 100 0 0 1 45.68 183.96Z" style="fill:color-mix(in srgb,var(--pm-lo) 42%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 42%,var(--pm-hi))"/><path d="M100 100L47.01 184.80A100 100 0 0 1 39.96 179.97Z" style="fill:color-mix(in srgb,var(--pm-lo) 40%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 40%,var(--pm-hi))"/><path d="M100 100L41.22 180.90A100 100 0 0 1 34.53 175.59Z" style="fill:color-mix(in srgb,var(--pm-lo) 39%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 39%,var(--pm-hi))"/><path d="M100 100L35.72 176.60A100 100 0 0 1 29.41 170.83Z" style="fill:color-mix(in srgb,var(--pm-lo) 38%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 38%,var(--pm-hi))"/><path d="M100 100L30.53 171.93A100 100 0 0 1 24.64 165.74Z" style="fill:color-mix(in srgb,var(--pm-lo) 37%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 37%,var(--pm-hi))"/><path d="M100 100L25.69 166.91A100 100 0 0 1 20.24 160.32Z" style="fill:color-mix(in srgb,var(--pm-lo) 36%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 36%,var(--pm-hi))"/><path d="M100 100L21.20 161.57A100 100 0 0 1 16.23 154.61Z" style="fill:color-mix(in srgb,var(--pm-lo) 35%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 35%,var(--pm-hi))"/><path d="M100 100L17.10 155.92A100 100 0 0 1 12.62 148.63Z" style="fill:color-mix(in srgb,var(--pm-lo) 34%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 34%,var(--pm-hi))"/><path d="M100 100L13.40 150.00A100 100 0 0 1 9.44 142.42Z" style="fill:color-mix(in srgb,var(--pm-lo) 33%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 33%,var(--pm-hi))"/><path d="M100 100L10.12 143.84A100 100 0 0 1 6.70 136.00Z" style="fill:color-mix(in srgb,var(--pm-lo) 31%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 31%,var(--pm-hi))"/><path d="M100 100L7.28 137.46A100 100 0 0 1 4.42 129.40Z" style="fill:color-mix(in srgb,var(--pm-lo) 30%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 30%,var(--pm-hi))"/><path d="M100 100L4.89 130.90A100 100 0 0 1 2.60 122.67Z" style="fill:color-mix(in srgb,var(--pm-lo) 29%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 29%,var(--pm-hi))"/><path d="M100 100L2.97 124.19A100 100 0 0 1 1.26 115.82Z" style="fill:color-mix(in srgb,var(--pm-lo) 28%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 28%,var(--pm-hi))"/><path d="M100 100L1.52 117.36A100 100 0 0 1 0.40 108.89Z" style="fill:color-mix(in srgb,var(--pm-lo) 27%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 27%,var(--pm-hi))"/><path d="M100 100L0.55 110.45A100 100 0 0 1 0.02 101.92Z" style="fill:color-mix(in srgb,var(--pm-lo) 26%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 26%,var(--pm-hi))"/><path d="M100 100L0.06 103.49A100 100 0 0 1 0.13 94.94Z" style="fill:color-mix(in srgb,var(--pm-lo) 25%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 25%,var(--pm-hi))"/><path d="M100 100L0.06 96.51A100 100 0 0 1 0.72 87.99Z" style="fill:color-mix(in srgb,var(--pm-lo) 24%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 24%,var(--pm-hi))"/><path d="M100 100L0.55 89.55A100 100 0 0 1 1.80 81.09Z" style="fill:color-mix(in srgb,var(--pm-lo) 22%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 22%,var(--pm-hi))"/><path d="M100 100L1.52 82.64A100 100 0 0 1 3.36 74.29Z" style="fill:color-mix(in srgb,var(--pm-lo) 21%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 21%,var(--pm-hi))"/><path d="M100 100L2.97 75.81A100 100 0 0 1 5.39 67.61Z" style="fill:color-mix(in srgb,var(--pm-lo) 20%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 20%,var(--pm-hi))"/><path d="M100 100L4.89 69.10A100 100 0 0 1 7.88 61.09Z" style="fill:color-mix(in srgb,var(--pm-lo) 19%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 19%,var(--pm-hi))"/><path d="M100 100L7.28 62.54A100 100 0 0 1 10.82 54.76Z" style="fill:color-mix(in srgb,var(--pm-lo) 18%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 18%,var(--pm-hi))"/><path d="M100 100L10.12 56.16A100 100 0 0 1 14.19 48.65Z" style="fill:color-mix(in srgb,var(--pm-lo) 17%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 17%,var(--pm-hi))"/><path d="M100 100L13.40 50.00A100 100 0 0 1 17.98 42.79Z" style="fill:color-mix(in srgb,var(--pm-lo) 16%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 16%,var(--pm-hi))"/><path d="M100 100L17.10 44.08A100 100 0 0 1 22.18 37.20Z" style="fill:color-mix(in srgb,var(--pm-lo) 15%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 15%,var(--pm-hi))"/><path d="M100 100L21.20 38.43A100 100 0 0 1 26.75 31.93Z" style="fill:color-mix(in srgb,var(--pm-lo) 13%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 13%,var(--pm-hi))"/><path d="M100 100L25.69 33.09A100 100 0 0 1 31.67 26.98Z" style="fill:color-mix(in srgb,var(--pm-lo) 12%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 12%,var(--pm-hi))"/><path d="M100 100L30.53 28.07A100 100 0 0 1 36.93 22.40Z" style="fill:color-mix(in srgb,var(--pm-lo) 11%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 11%,var(--pm-hi))"/><path d="M100 100L35.72 23.40A100 100 0 0 1 42.50 18.19Z" style="fill:color-mix(in srgb,var(--pm-lo) 10%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 10%,var(--pm-hi))"/><path d="M100 100L41.22 19.10A100 100 0 0 1 48.35 14.37Z" style="fill:color-mix(in srgb,var(--pm-lo) 9%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 9%,var(--pm-hi))"/><path d="M100 100L47.01 15.20A100 100 0 0 1 54.45 10.98Z" style="fill:color-mix(in srgb,var(--pm-lo) 8%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 8%,var(--pm-hi))"/><path d="M100 100L53.05 11.71A100 100 0 0 1 60.77 8.02Z" style="fill:color-mix(in srgb,var(--pm-lo) 7%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 7%,var(--pm-hi))"/><path d="M100 100L59.33 8.65A100 100 0 0 1 67.28 5.51Z" style="fill:color-mix(in srgb,var(--pm-lo) 6%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 6%,var(--pm-hi))"/><path d="M100 100L65.80 6.03A100 100 0 0 1 73.95 3.45Z" style="fill:color-mix(in srgb,var(--pm-lo) 4%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 4%,var(--pm-hi))"/><path d="M100 100L72.44 3.87A100 100 0 0 1 80.75 1.87Z" style="fill:color-mix(in srgb,var(--pm-lo) 3%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 3%,var(--pm-hi))"/><path d="M100 100L79.21 2.19A100 100 0 0 1 87.64 0.77Z" style="fill:color-mix(in srgb,var(--pm-lo) 2%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 2%,var(--pm-hi))"/><path d="M100 100L86.08 0.97A100 100 0 0 1 94.59 0.15Z" style="fill:color-mix(in srgb,var(--pm-lo) 1%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 1%,var(--pm-hi))"/><path d="M100 100L93.02 0.24A100 100 0 0 1 100.00 0.00Z" style="fill:color-mix(in srgb,var(--pm-lo) 0%,var(--pm-hi));stroke:color-mix(in srgb,var(--pm-lo) 0%,var(--pm-hi))"/></g>
+            <circle class="pm-rim" cx="100" cy="100" r="99.5"></circle>
           </svg>
           <div class="pm-center"><span class="pomo-time" id="gpTimeEl">25:00</span></div>
           <div class="pm-meta" hidden>
@@ -2025,7 +1983,7 @@
           <button class="pomo-preset-btn pm-p" data-work="50" data-brk="10" type="button">50 / 10</button>
         </span>
         <span class="pm-ctl">
-          <button class="pm-reset" id="gpResetBtn" type="button">Reset</button>
+          <button class="pm-reset" id="gpResetBtn" type="button" aria-label="Reset" title="Reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
           <button class="pm-start" id="gpStartBtn" type="button">Start</button>
         </span>
         <span class="pm-x" aria-hidden="true"></span>
@@ -2041,7 +1999,7 @@
   const fab = $('.pm-fab'), ov = $('.pm-ov'), bd = $('.pm-bd'), panel = $('.pm-panel'),
         tile = $('.pm-tile'), dock = $('.pm-dock'), xbtn = $('.pm-x'), ghost = $('.pm-ghost'), badge = $('#pmBadge');
   const EASE = 'cubic-bezier(.22,.9,.24,1)', RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let isOpen = false, closing = false, prevOv = '';
+  let isOpen = false, closing = false;
   const A = (el, kf, o = {}) => el.animate(kf, { duration:520, easing:EASE, fill:'backwards', ...o });
   const cv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const rk = r => ({ left:r.left+'px', top:r.top+'px', width:r.width+'px', height:r.height+'px' });
@@ -2049,15 +2007,13 @@
   const fabBox = () => { // computed from the CSS anchor, so it never reads a half-animated/scaled rect
     const cs = getComputedStyle(root), fr = parseFloat(cs.getPropertyValue('--fr')) || 28, fb = parseFloat(cs.getPropertyValue('--fb')) || 28,
           w = isLive() ? 118 : 58, h = 58, de = document.documentElement;
-    return { left:de.clientWidth - fr - w, top:innerHeight - fb - h, width:w, height:h }; };
+    return { left:de.clientWidth - fr - w, top:de.clientHeight - fb - h, width:w, height:h }; };
   const clipOf = (f, d) => `inset(${f.top-d.top}px ${(d.left+d.width)-(f.left+f.width)}px ${(d.top+d.height)-(f.top+f.height)}px ${f.left-d.left}px round ${Math.min(f.width,f.height)/2}px)`;
   const killGhost = () => ghost.getAnimations({ subtree:true }).forEach(a => a.cancel());
-  const setTop = () => { const tb = document.getElementById('authBar'); root.style.setProperty('--pm-top', (tb ? Math.round(tb.getBoundingClientRect().bottom) : 60) + 'px'); };
 
   const DUR = 780, OUT = 'cubic-bezier(.55,0,.75,.2)';
   async function openP(){
-    if(isOpen || closing) return; isOpen = true; setTop();
-    prevOv = document.body.style.overflow; document.body.style.overflow = 'hidden';
+    if(isOpen || closing) return; isOpen = true;
     const fr = fabBox(); killGhost(); ov.hidden = false; fab.classList.remove('live'); fab.classList.add('open'); fab.setAttribute('aria-label', 'Close Pomodoro');
     bd.animate([{ opacity:0 }, { opacity:1 }], { duration:640, easing:'ease-out' });
     A(tile, [{ opacity:0, transform:'translateY(40px) scale(.96)' }, { opacity:1, transform:'none' }], { delay:120, duration:640 });
@@ -2096,13 +2052,23 @@
     }
     try{ await Promise.all(an.map(a => a.finished)); }catch(e){}
     ghost.hidden = true; killGhost(); ov.hidden = true; an.forEach(a => a.cancel());
-    document.body.style.overflow = prevOv; isOpen = false; closing = false; fab.focus({ preventScroll:true }); syncFab();
+    isOpen = false; closing = false; fab.focus({ preventScroll:true }); syncFab();
   }
   fab.addEventListener('click', () => isOpen ? closeP() : openP());
+  // navigating from the (unblurred) top bar / dock closes the Pomodoro first
+  document.querySelectorAll('#authBar .view-btn').forEach(b => b.addEventListener('click', () => { if(isOpen) closeP(); }));
   bd.addEventListener('click', closeP);
   panel.addEventListener('click', e => { if(e.target === panel || e.target === $('.pm-stage')) closeP(); });
   addEventListener('keydown', e => { if(e.key === 'Escape' && isOpen) closeP(); });
-  addEventListener('resize', () => { if(isOpen) setTop(); });
+  // page behind is not locked via overflow (that breaks the sticky top bar); block scroll chaining instead
+  const stageEl = $('.pm-stage');
+  const canScroll = t => stageEl.contains(t) && stageEl.scrollHeight > stageEl.clientHeight + 1;
+  const stopScroll = e => { if(isOpen && !canScroll(e.target)) e.preventDefault(); };
+  ov.addEventListener('wheel', stopScroll, { passive:false });
+  ov.addEventListener('touchmove', stopScroll, { passive:false });
+  addEventListener('keydown', e => {
+    if(isOpen && [' ','PageUp','PageDown','Home','End','ArrowUp','ArrowDown'].includes(e.key) && !e.target.closest('button,input,select,textarea')) e.preventDefault();
+  });
 
   // keep the launcher in step with the (unchanged) Pomodoro logic: live time chip + ringing pulse
   const syncFab = () => {
@@ -2121,7 +2087,7 @@
   const appWrap = document.getElementById('appWrap');
   const sync = () => {
     const on = appWrap && !appWrap.hidden; root.hidden = !on;
-    if(!on && isOpen){ ov.hidden = true; ghost.hidden = true; document.body.style.overflow = prevOv; fab.classList.remove('open'); isOpen = false; closing = false; }
+    if(!on && isOpen){ ov.hidden = true; ghost.hidden = true; fab.classList.remove('open'); isOpen = false; closing = false; }
   };
   if(appWrap) new MutationObserver(sync).observe(appWrap, { attributes:true, attributeFilter:['hidden'] });
   sync(); syncFab();
@@ -2636,7 +2602,6 @@ function showView(which){
     Object.entries(views).forEach(([key, el]) => { if(el) el.hidden = key !== which; });
     if(nextEl !== current) window.scrollTo({ top:0, left:0, behavior:'instant' });
     const gt = document.getElementById('globalTracker'); if(gt) gt.hidden = which === 'log'; // Activity Log shows the log only
-    if(which === 'timer') renderCtHistory();
     if(which === 'log') renderActivityLog();
     if(!nextEl || nextEl === current) return;
     const blocks = [];
@@ -2743,10 +2708,6 @@ function getCategory(id){
   const src = Object.values(SOURCE_CATEGORIES).find(c => c.id === id);
   if(src) return src;
   return categories.find(c => c.id === id) || {id, name:'(deleted category)', color:'#5B5F69'};
-}
-function makeCategoryId(){ return 'cat-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 function makeCategoryId(){ return 'cat-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function escapeHtml(s){
@@ -2918,7 +2879,10 @@ function silenceAcknowledgedAlarm(localAlarmId, ringingEl, cancelKey){
 function mergeFocusLog(remote){
   const local = loadFocusLog();
   const merged = {...local};
-  Object.keys(remote || {}).forEach(k => { merged[k] = Math.max(merged[k] || 0, remote[k] || 0); });
+  const settled = loadSettledDays();
+  // a day that's been settled against the Activity Log keeps its settled total — otherwise the max()
+  // below would let another device's stale/inflated counter bring phantom time straight back
+  Object.keys(remote || {}).forEach(k => { if(settled.has(k)) return; merged[k] = Math.max(merged[k] || 0, remote[k] || 0); });
   return merged;
 }
 // Same idea for the tracker log (day -> array of individual session entries): union by entry id
@@ -3008,7 +2972,6 @@ function applyState(state, {rerenderMatrix} = {}){
       timerHistory = { date: today, entries: [] };
     }
     saveTimerHistoryLocal();
-    renderCtHistory();
   }
   // Guard against an incoming snapshot that predates a session already running on THIS device
   // (e.g. a delayed/duplicate pull, or a realtime update that raced an in-flight local push).
@@ -3174,7 +3137,6 @@ function resetToDefaults(){
   }
   timerHistory = { date: dateKey(new Date()), entries: [] };
   saveTimerHistoryLocal();
-  renderCtHistory();
   renderStats();
 }
 
@@ -3274,7 +3236,9 @@ const authMsgEl = document.getElementById('authMsg');
 document.getElementById('signInBtn').addEventListener('click', async () => {
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPass').value;
+  if(!email || !password){ authMsgEl.textContent = 'enter your email and password'; return; }
   authMsgEl.textContent = 'signing in…';
+  const siBtn = document.getElementById('signInBtn'); siBtn.disabled = true; siBtn.style.opacity = '.6';
   try{
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if(error){ authMsgEl.textContent = error.message; return; }
@@ -3282,9 +3246,14 @@ document.getElementById('signInBtn').addEventListener('click', async () => {
     if(data && data.user) onSignedIn(data.user);
   } catch(e){
     console.error('sign in failed', e);
-    authMsgEl.textContent = 'sign in failed — check console';
+    authMsgEl.textContent = 'couldn\'t sign in — check your connection and try again';
+  } finally {
+    siBtn.disabled = false; siBtn.style.opacity = '';
   }
 });
+// there's no <form>, so the phone keyboard's Next / Go key used to do nothing
+document.getElementById('authEmail').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('authPass').focus(); } });
+document.getElementById('authPass').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('signInBtn').click(); } });
 document.getElementById('signUpBtn').addEventListener('click', async () => {
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPass').value;
@@ -3293,7 +3262,11 @@ document.getElementById('signUpBtn').addEventListener('click', async () => {
   const { error } = await sb.auth.signUp({ email, password });
   authMsgEl.textContent = error ? error.message : 'check your email to confirm, then sign in';
 });
-document.getElementById('logoutBtn').addEventListener('click', () => sb.auth.signOut());
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  // the sign-out icon sits right next to the notifications bell in the phone dock — don't let a slip log you out
+  if(!confirm('Sign out of Bitrhythm on this device?')) return;
+  sb.auth.signOut();
+});
 
 sb.auth.onAuthStateChange((event, session) => {
   if(session && session.user){
@@ -3455,11 +3428,6 @@ function applyTrackStart(date){
   d.setHours(0,0,0,0);
   TRACK_START = d;
   mxYear = TRACK_START.getFullYear();
-  const noteEl = document.getElementById('mxNote');
-  if(noteEl){
-    const label = TRACK_START.toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' });
-    noteEl.textContent = `Tracking began ${label} — every cell is one day, left to right, top to bottom.`;
-  }
   if(matrixView && !matrixView.hidden) renderMatrix();
 }
 
@@ -3520,7 +3488,7 @@ function renderMatrix(){
       const sessions = trackerLog[key] || [];
       let trackerSeconds = sessions.reduce((a,x) => a + (Number(x.seconds)||0), 0);
       if(key === todayKey && liveToday) trackerSeconds += liveToday.seconds;
-      const focusSeconds = Number(focusLog[key]) || 0;
+      const focusSeconds = key === todayKey ? 0 : (Number(focusLog[key]) || 0); // today = Activity Log only
       const actualMin = Math.max(trackerSeconds, focusSeconds) / 60;
       const targetMin = targetMinutesFor(cursor);
       const cls = classifyDay(actualMin, targetMin, isFuture);
@@ -3553,6 +3521,18 @@ function fitMatrix(){
   el.querySelectorAll('.mx-cell').forEach(c => { c.style.width = px + 'px'; c.style.height = px + 'px'; });
 }
 if(typeof ResizeObserver !== 'undefined') new ResizeObserver(() => fitMatrix()).observe(mxMatrixEl);
+
+// tap / click / keyboard readout: native title tooltips don't exist on touch screens
+const mxReadout = document.createElement('div');
+mxReadout.className = 'mx-readout'; mxReadout.setAttribute('aria-live', 'polite');
+mxMatrixEl.closest('.mx-matrix-wrap').after(mxReadout);
+mxMatrixEl.addEventListener('click', e => {
+  const cell = e.target.closest('.mx-cell');
+  mxMatrixEl.querySelectorAll('.mx-picked').forEach(c => c.classList.remove('mx-picked'));
+  if(!cell || !cell.title){ mxReadout.textContent = ''; return; }
+  cell.classList.add('mx-picked');
+  mxReadout.textContent = cell.title;
+});
 
 
 function fmt(min){
@@ -3608,8 +3588,29 @@ function renderAllTrackers(){ renderRail(); }
 
 // drop any session older than the 48h window (and any now-empty date bucket) so the log doesn't
 // grow forever; also backfills an id onto any legacy entry that predates ids existing.
+// Past days: the Activity Log is only kept for 48h, after which the per-day focusLog total is the
+// only record. Right before a past day's entries could be pruned, "settle" it once: set its
+// focusLog total to what the Activity Log actually lists for that day, so phantom seconds (see
+// renderStats) never get baked into history / the Matrix. Settled days are remembered and skipped.
+const SETTLED_KEY = 'wr_settled_days_v1';
+function loadSettledDays(){ try{ return new Set(JSON.parse(localStorage.getItem(SETTLED_KEY)||'[]')); }catch(e){ return new Set(); } }
+function settlePastDays(log){
+  const todayKey = dateKey(new Date()), settled = loadSettledDays();
+  let focus = null, changed = false;
+  Object.keys(log).forEach(k => {
+    if(k >= todayKey || settled.has(k) || !(log[k]||[]).length) return;
+    const sum = log[k].reduce((a,x) => a + (Number(x.seconds)||0), 0);
+    focus = focus || loadFocusLog();
+    focus[k] = sum; settled.add(k); changed = true;
+  });
+  if(!changed) return;
+  saveFocusLog(focus);
+  try{ localStorage.setItem(SETTLED_KEY, JSON.stringify(Array.from(settled).sort().slice(-30))); }catch(e){}
+  queueCloudPush();
+}
 function pruneTrackerLogWindow(){
   const log = loadTrackerLog();
+  settlePastDays(log);
   const cutoff = Date.now() - ACTIVITY_LOG_WINDOW_MS;
   let changed = false;
   Object.keys(log).forEach(k => {
@@ -3682,7 +3683,11 @@ function deleteActivitySession(dayKey, id){
   saveTrackerLog(log);
   const focus = loadFocusLog();
   focus[dayKey] = Math.max(0, (focus[dayKey]||0) - entry.seconds);
+  if(!focus[dayKey]) delete focus[dayKey];
   saveFocusLog(focus);
+  // timer/stopwatch sessions share their id with a time-history entry; drop it too so it can't linger or sync back
+  const hi = timerHistory.entries.findIndex(e => e.id === id);
+  if(hi !== -1){ timerHistory.entries.splice(hi, 1); saveTimerHistoryLocal(); }
   renderActivityLog();
   renderAllTrackers();
   renderStats();
@@ -3887,8 +3892,9 @@ function toggleBlockTimer(panel,idx){
   // Blocks can only be started on the day tab that is actually "today" — other days are
   // read-only for timer purposes. (The Start button is also hidden for non-today panels in
   // renderList, so this is a defense-in-depth check, not the primary gate.)
-  if(panel.dayIdx !== logical.idx) return;
   const key=panel.day.key+':'+idx;
+  const liveHere = blockTimerState.blockKey===key && (blockTimerState.running || blockTimerState.ringing);
+  if(panel.dayIdx !== logical.idx && !liveHere) return;
   if(blockTimerState.ringing && blockTimerState.blockKey===key){ stopBlockTimer(); return; }
   if(blockTimerState.running || blockTimerState.ringing){
     if(blockTimerState.blockKey===key){ stopBlockTimer(); return; }
@@ -4008,11 +4014,11 @@ function buildList(panel){
         typeOptions = `<option value="${b.type}">(deleted category)</option>` + typeOptions;
       }
       row.innerHTML = `
-        <input class="edit-time edit-duration" type="number" min="1" max="1440" value="${duration}" title="Minutes">
-        <span class="task-duration">min</span>
-        <input class="edit-label">
-        <select class="edit-type">${typeOptions}</select>
-        <button type="button" class="edit-del" title="Remove block">✕</button>`;
+        <label class="edit-dur-wrap"><input class="edit-time edit-duration" type="number" inputmode="numeric" min="1" max="1440" value="${duration}" title="Minutes" aria-label="Minutes"><span class="task-duration">min</span></label>
+        <input class="edit-label" aria-label="Task name" placeholder="Task name" enterkeyhint="done" autocomplete="off">
+        <select class="edit-type" aria-label="Category">${typeOptions}</select>
+        <button type="button" class="edit-del" title="Remove block" aria-label="Remove block">✕</button>`;
+      row.querySelectorAll('.edit-label,.edit-duration').forEach(inp => inp.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); inp.blur(); } }));
       row.querySelector('.edit-label').value = b.label;
       row.querySelector('.edit-type').value = b.type;
       const commit = () => {
@@ -4056,7 +4062,7 @@ function buildList(panel){
       // read-only schedule preview, so no Start/Stop button is rendered for them at all.
       const isToday = panel.dayIdx === logical.idx;
       const lockedByOtherTimer = !running && !ringingHere && (isPomoBusy() || isCtBusy());
-      const showBtn = b.type !== 'rest' && isToday;
+      const showBtn = b.type !== 'rest' && (isToday || running || ringingHere); // a block started before midnight must stay stoppable
       const rowCat = getCategory(b.type);
       const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7.5"/></svg>';
       const dotHtml = rowCat.id === 'rest' ? `<span class="dot rest"></span>` : (doneToday ? `<span class="dot-done" style="--c:${rowCat.color}" role="img" aria-label="Done">${CHECK_SVG}</span>` : `<span class="dot" style="background:${rowCat.color}"></span>`);
@@ -4172,22 +4178,6 @@ const DEFAULT_SCHEDULE = days.map(d => d.blocks.map(b => ({...b})));
 days.forEach(d => d.blocks.forEach(b => { if(b.duration == null) b.duration=Math.max(1,b.e-b.s); }));
 
 const ticks = [0,180,360,540,720,900,1080,1260,1440];
-
-// the hour-tick labels under the global rail never change, so build them once here instead of
-// per day panel (the rail itself is now page-level, not per-day — see #globalTicks).
-(function initGlobalTicks(){
-  const el = document.getElementById('globalTicks');
-  if(!el) return;
-  el.innerHTML = ticks.map(t => `<span class="tick" style="left:${((t-SCALE_START)/SCALE_RANGE)*100}%">${tickLabel(t)}</span>`).join('');
-})();
-
-// the Timer/Stopwatch/Pomodoro legend row (under the rail ticks) has been removed per request —
-// this function is kept a no-op (rather than deleted) so #globalTrackerLegend just stays hidden.
-(function initGlobalTrackerLegend(){
-  const el = document.getElementById('globalTrackerLegend');
-  if(!el) return;
-  el.innerHTML = '';
-})();
 
 // --- figure out "logical" schedule day: rolls over at real midnight, same as the calendar date.
 function getLogicalNow(){
@@ -4637,7 +4627,6 @@ function addTimerHistoryEntry(entry){
   pruneTimerHistoryToToday();
   timerHistory.entries.unshift(entry);
   saveTimerHistoryLocal();
-  renderCtHistory();
 }
 // removing an entry also un-credits the seconds it added to today's productive total, AND
 // removes the matching rail/tracker-log entry (same id) so the bar and productivity indicator
@@ -4662,7 +4651,6 @@ function deleteTimerHistoryEntry(id){
       saveTrackerLog(tracker);
     }
   }
-  renderCtHistory();
   renderAllTrackers();
   renderStats();
   if(!logView.hidden) renderActivityLog();
@@ -4678,26 +4666,6 @@ function ctDurationFmt(totalSeconds){
   if(h > 0 || m > 0) parts.push(m + 'm');
   parts.push(sec + 's');
   return parts.join(' ');
-}
-function renderCtHistory(){ morphRender(document.getElementById('ctHistoryList'), buildCtHistory); }
-function buildCtHistory(){
-  pruneTimerHistoryToToday();
-  const list = document.getElementById('ctHistoryList');
-  const empty = document.getElementById('ctHistoryEmpty');
-  if(!list || !empty) return; // history list now lives only in the Activity Log
-  list.innerHTML = '';
-  empty.style.display = timerHistory.entries.length ? 'none' : 'block';
-  timerHistory.entries.forEach(entry => {
-    const dur = ctDurationFmt(entry.seconds);
-    const row = document.createElement('div');
-    row.className = 'ct-row';
-    row.innerHTML = `
-      <span class="ct-row-type">${entry.type === 'timer' ? 'Timer' : 'Stopwatch'}</span>
-      <span class="ct-row-dur">${dur}</span>
-      <button type="button" class="ct-row-del" title="Remove and un-credit this time">✕</button>`;
-    row.querySelector('.ct-row-del').addEventListener('click', () => deleteTimerHistoryEntry(entry.id));
-    list.appendChild(row);
-  });
 }
 
 // --- the timer/stopwatch engine itself — same endAt-based, background-safe pattern as the pomodoro ---
@@ -4716,7 +4684,6 @@ const ctDurationPresets = document.getElementById('ctDurationPresets');
 const ctPresetBtns = ctDurationPresets.querySelectorAll('.ct-chip');
 const ctPomodoroEl = document.getElementById('ctPomodoro');
 const ctRulerEl = document.getElementById('ctRuler');
-const swRulerEl = document.getElementById('swRuler');
 const ctKnobTimer = document.getElementById('ctKnobTimer');
 const ctKnobSw = document.getElementById('ctKnobSw');
 const swTimeEl = document.getElementById('swTimeEl');
@@ -4889,7 +4856,6 @@ function renderCtLabels(){
   else { swSubMain.textContent = '--:--'; swSubCap.textContent = 'Not started'; }
 }
 
-let ctSlideInit=false;
 function renderCt(){
   const timerMode = ctState.mode === 'timer', swMode = ctState.mode === 'stopwatch';
   const timerLive = timerMode && ctState.sessionActive, swLive = swMode && ctState.sessionActive;
@@ -4937,6 +4903,12 @@ function ctCreditElapsed(now){
 }
 function ctFinishSession(ring){
   clearInterval(ctState.timerId);
+  // natural expiry: credit the sub-second remainder the whole-second crediting left behind, so a
+  // 15:00 timer logs 15m 00s instead of 14m 59s
+  if(ring && ctState.mode === 'timer' && ctState.endAt && ctState.lastCredit != null){
+    const rest = Math.round((ctState.endAt - ctState.lastCredit) / 1000);
+    if(rest > 0){ if(wrIsLeader) addFocusSeconds(rest); ctState.sessionSeconds += rest; }
+  }
   const endedRunId = ctState.runId; ctState.runId = null;
   ctState.running = false;
   if(ctState.sessionActive && ctState.sessionSeconds > 0){
@@ -5111,7 +5083,6 @@ ctResetBtn.addEventListener('click', () => ctStopFor('timer'));
 swStopBtn.addEventListener('click', () => ctStopFor('stopwatch'));
 
 renderCt();
-renderCtHistory();
 
 initSync();
 
@@ -5125,6 +5096,9 @@ function selectDay(i){
 }
 
 function renderStats(){
+  // once per page load: settle past days against the Activity Log (see settlePastDays) so this works
+  // even if the Activity Log view is never opened
+  if(!window.__wrSettled){ window.__wrSettled = true; try{ pruneTrackerLogWindow(); }catch(e){} }
   // The stats card is page-level now (under the title), so it always tracks the real current
   // day's target/progress — not whichever day tab happens to be selected in Weekly Rhythm.
   const p=dayPanels[logical.idx];
@@ -5143,8 +5117,12 @@ function renderStats(){
   // whatever reason — never made it into trackerLog as a finished session would show up on the
   // Matrix (which already checks both) but not here or in the Activity Log, which only reads
   // trackerLog: the exact "timer ran, but the bar/log show nothing" mismatch this fixes.
-  const focusSeconds = Number(loadFocusLog()[k]) || 0;
-  const doneSeconds = Math.max(trackerSeconds, focusSeconds);
+  // SINGLE SOURCE OF TRUTH: today's total is exactly what the Activity Log lists (+ the timer
+  // that's running right now). It used to also take Math.max() against the separate focusLog
+  // counter, so any seconds that counter held without a matching log entry (a deleted session
+  // that a cloud sync pushed back, a run that was reset/abandoned mid-way, time double-credited
+  // by two devices) showed up as phantom progress with nothing in the log to explain it.
+  const doneSeconds = trackerSeconds;
   const targetSeconds=Math.max(0,p.productiveTotal*60);
   const pct=targetSeconds?Math.min(100,doneSeconds/targetSeconds*100):0;
   const remaining=Math.max(0,(targetSeconds-doneSeconds)/60);
@@ -5425,6 +5403,7 @@ setInterval(() => {
 <div id="dustOverlay" role="dialog" aria-modal="true" aria-label="Dust projector">
   <video id="dustCam" playsinline muted></video>
   <canvas id="dustCanvas"></canvas>
+  <canvas id="dustGlow" aria-hidden="true"></canvas>
   <div class="dust-dots"></div><div class="dust-scan"></div><div class="dust-vig"></div>
   <span class="dust-corner tl"></span><span class="dust-corner tr"></span><span class="dust-corner bl"></span><span class="dust-corner br"></span>
 
@@ -5470,6 +5449,14 @@ setInterval(() => {
   const CLS = {
     'mx-off':[214,84,72], 'mx-d2':[122,152,132], 'mx-d1':[72,172,118], 'mx-bright':[70,222,132], 'mx-future':[120,120,128]
   };
+  // light paper needs deeper, more saturated hues than the dark screen for the same punch
+  const CLS_LIGHT = {
+    'mx-off':[226,66,52], 'mx-d2':[96,146,116], 'mx-d1':[38,170,104], 'mx-bright':[22,200,108], 'mx-future':[130,130,138]
+  };
+  const gcv = document.getElementById('dustGlow'), gctx = gcv.getContext('2d');
+  const GS = 4;                                  // glow layer runs at 1/4 resolution, the blur does the rest
+  const glowK = () => light ? .28 : .15;         // glow strength (per-particle alpha deposit), tuned per theme
+  function sizeGlow(){ gcv.width = Math.ceil(W/GS); gcv.height = Math.ceil(H/GS); }
   const MODES = ['Theme','Matrix','Accent']; let mode = 0;
 
   let running=false, raf=0, W=0, H=0, DPR=1, N=0, P=[], last=0, idleK=1;
@@ -5491,6 +5478,7 @@ setInterval(() => {
     bg = rgbOf('--bg',[15,15,17]); accent = rgbOf('--night',[240,87,44]); ink = rgbOf('--text',[241,241,243]);
     // in light theme the glowing "lighter" blend can't work, so colours get deepened and multiplied instead
     ctx.fillStyle = `rgb(${bg})`; ctx.fillRect(0,0,W,H);
+    gctx.clearRect(0,0,gcv.width,gcv.height);
     paintColours(); buildLegend();
   }
 
@@ -5505,7 +5493,7 @@ setInterval(() => {
       const key = dateKey(c), sessions = trackerLog[key] || [];
       let secs = sessions.reduce((a,x) => a + (Number(x.seconds)||0), 0);
       if(key === todayKey && live) secs += live.seconds;
-      const actual = Math.max(secs, Number(focusLog[key])||0) / 60, target = targetMinutesFor(c);
+      const actual = (key === todayKey ? secs : Math.max(secs, Number(focusLog[key])||0)) / 60, target = targetMinutesFor(c);
       const cls = classifyDay(actual, target, false);
       days.push({ cls, level: target > 0 ? Math.min(1.3, actual/target) : (actual > 0 ? 1 : 0), isToday: c.getTime() === today.getTime() });
     }
@@ -5543,7 +5531,7 @@ setInterval(() => {
   const mixBg = (c,f) => [bg[0]+(c[0]-bg[0])*f, bg[1]+(c[1]-bg[1])*f, bg[2]+(c[2]-bg[2])*f];
   // Theme: the site's own greys + orange (orange = off day), like the progress ring. Matrix: the cell greens/reds.
   function colourFor(cls, lv){
-    if(mode === 1) return CLS[cls] || CLS['mx-future'];
+    if(mode === 1) return (light ? CLS_LIGHT : CLS)[cls] || CLS['mx-future'];
     if(mode === 2) return mixBg(accent, .4 + .6*Math.min(1,lv));
     switch(cls){
       case 'mx-bright': return mixBg(ink, 1);
@@ -5558,6 +5546,10 @@ setInterval(() => {
       const d = p.di >= 0 ? days[p.di] : null;
       const c = colourFor(d ? d.cls : 'mx-future', d ? d.level : .4);
       p.r = c[0]; p.g = c[1]; p.b = c[2];
+      p.cs = `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
+      // what glows: on the light theme only the coloured dust (grey ink would just smudge); on dark everything, colour a bit more
+      const sat = (Math.max(c[0],c[1],c[2]) - Math.min(c[0],c[1],c[2])) / 255;
+      p.gw = light ? Math.min(1, sat*2.2) : .55 + .45*Math.min(1, sat*2);
     }
   }
   function buildLegend(){
@@ -5571,7 +5563,7 @@ setInterval(() => {
   // ---------- sizing ----------
   function resize(){
     DPR = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight;
-    cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); sizeGlow();
     ctx.fillStyle = `rgb(${bg})`; ctx.fillRect(0,0,W,H);
     if(running) initParticles();
   }
@@ -5644,6 +5636,9 @@ setInterval(() => {
   });
   ov.addEventListener('pointerdown', e=>{ if(e.target.closest('.dust-hud button')) return; mouse = {x:e.clientX,y:e.clientY,vx:0,vy:0,t:performance.now()}; });
   ov.addEventListener('pointerleave', ()=>{ mouse = null; });
+  // page behind isn't overflow-locked (that would break the sticky bar / repaint the page), so just swallow scroll gestures
+  ov.addEventListener('wheel', e => e.preventDefault(), {passive:false});
+  ov.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
   function burst(){
     const t = performance.now()*.001;
     P.forEach(p=>{ p.free = t+.8+p.s*.6; const a=Math.random()*6.28, f=Math.random()*14; p.vx+=Math.cos(a)*f; p.vy+=Math.sin(a)*f; });
@@ -5674,11 +5669,15 @@ setInterval(() => {
     if(!T.length && mouse && now-mouse.t<2500) T.push({x:mouse.x,y:mouse.y,vx:mouse.vx||0,vy:mouse.vy||0,r:90});
     idleK += ((T.length?0:1) - idleK)*.03*dt;
 
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
     ctx.fillStyle = `rgba(${bg[0]},${bg[1]},${bg[2]},${light?.22:.16})`;
     ctx.fillRect(0,0,W,H);
-    ctx.globalCompositeOperation = 'source-over';   // crisp pixels, no additive glow
+    // glow layer: fade its trails, then the particles below add to it (light adds up on dark, ink pools on light)
+    gctx.globalAlpha = 1; gctx.globalCompositeOperation = 'destination-out';
+    gctx.fillStyle = 'rgba(0,0,0,.3)'; gctx.fillRect(0,0,gcv.width,gcv.height);
+    gctx.globalCompositeOperation = light ? 'source-over' : 'lighter';
     const CELL = W<640 ? 3 : 4, PX = CELL-1;          // dot-matrix lattice, 1px gap like the matrix cells
+    const GK2 = glowK(), GK = 1/GS, GPX = Math.max(1.6, CELL*1.9/GS);  // glow dab size, in glow-layer pixels
 
     const R = Math.min(W,H)*.75, tt = now*.001, M = LUT.length;
     const wind = tt*.05 + Math.sin(tt*.07)*.8, ux = Math.cos(wind), uy = Math.sin(wind);
@@ -5739,32 +5738,66 @@ setInterval(() => {
 
       // draw as a square pixel snapped to the lattice; fast dust is brighter, far-side dust dimmer
       const sp = Math.hypot(p.vx,p.vy);
-      let a = (.3 + Math.min(.55, sp*.07) + heat*.2) * ((1-idleK) + idleK*Math.min(1.2, p.dz*p.dz*.8));
+      let a = (.44 + Math.min(.5, sp*.07) + heat*.24) * ((1-idleK) + idleK*Math.min(1.25, p.dz*p.dz*.85));
       a = Math.min(1, a);
-      ctx.fillStyle = `rgba(${p.r|0},${p.g|0},${p.b|0},${a.toFixed(2)})`;
+      ctx.globalAlpha = a; ctx.fillStyle = p.cs;
       ctx.fillRect(Math.round(p.x/CELL)*CELL, Math.round(p.y/CELL)*CELL, PX, PX);
+      if(p.gw > .05){            // bloom: brighter where dust is fast / near the hand, denser where it pools
+        gctx.globalAlpha = Math.min(1, a*GK2*p.gw*(1 + heat*1.4));
+        gctx.fillStyle = p.cs;
+        gctx.fillRect(p.x*GK - GPX/2, p.y*GK - GPX/2, GPX, GPX);
+      }
     }
+    ctx.globalAlpha = 1; gctx.globalAlpha = 1;
     throwEv = null;
   }
 
   // ---------- open / close ----------
-  let prevOverflow = '';
+  // fade + zoom transition (same easing as the page transitions)
+  const D_EASE = 'cubic-bezier(.22,.9,.24,1)', D_IN = 'cubic-bezier(.55,0,.8,.4)';
+  let closing = false;
+  const dOrigin = () => {
+    const b = document.getElementById('mxToday'), r = b && b.getBoundingClientRect();
+    if(r && r.width && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth) return {x:r.left+r.width/2, y:r.top+r.height/2};
+    return {x:innerWidth/2, y:innerHeight/2};
+  };
+  const dReach = o => Math.hypot(Math.max(o.x, innerWidth-o.x), Math.max(o.y, innerHeight-o.y)) + 4;
+  const dCircle = (o, r) => `circle(${r}px at ${o.x}px ${o.y}px)`;
+  const dHuds = () => [...ov.querySelectorAll('.dust-hud')];
   function open(){
     if(running) return;
-    prevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden';
     ov.classList.add('open'); running = true;
     DPR = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight;
-    cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); sizeGlow();
     idleK = 1; mouse = null; tips = {};
     buildData(); readTheme(); initParticles();
     last = performance.now(); raf = requestAnimationFrame(frame);
-    $('dustCloseBtn').focus({preventScroll:true});
+    if(Element.prototype.animate){
+      // overlay only fades (never scales), so its dot grid stays pinned exactly over the page's identical grid; the zoom is on the dust itself
+      ov.animate([{opacity:0}, {opacity:1}], {duration:760, easing:D_EASE, fill:'backwards'});
+      cv.animate([{transform:'scale(1.1)', opacity:0}, {transform:'none', opacity:1}], {duration:1100, delay:120, easing:D_EASE, fill:'backwards'});
+      gcv.animate([{opacity:0}, {opacity:1}], {duration:1100, delay:300, easing:D_EASE, fill:'backwards'});
+      dHuds().forEach((h,i) => h.animate([{opacity:0, transform:`translateY(${i?18:-18}px)`}, {opacity:1, transform:'none'}], {duration:620, delay:360+i*90, easing:D_EASE, fill:'backwards'}));
+    }
+    ov.tabIndex = -1; (matchMedia('(pointer:coarse)').matches ? ov : $('dustCloseBtn')).focus({preventScroll:true});
   }
-  function close(){
-    if(!running) return;
-    running = false; cancelAnimationFrame(raf); stopCam();
+  async function close(){
+    if(!running || closing) return;
+    closing = true; stopCam();
     if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
-    ov.classList.remove('open'); document.body.style.overflow = prevOverflow;
+    let anims = [];
+    if(Element.prototype.animate){
+      // fade only; the dust zooms out below while the grid stays put
+      anims.push(ov.animate([{opacity:1}, {opacity:0}], {duration:560, delay:80, easing:D_IN, fill:'both'}));
+      dHuds().forEach(h => anims.push(h.animate([{opacity:1, transform:'none'}, {opacity:0, transform:'scale(.97)'}], {duration:240, easing:D_IN, fill:'both'})));
+      anims.push(cv.animate([{transform:'none', opacity:1}, {transform:'scale(.94)', opacity:0}], {duration:620, easing:D_IN, fill:'both'}));
+      anims.push(gcv.animate([{opacity:1}, {opacity:0}], {duration:620, easing:D_IN, fill:'both'}));
+      try{ await Promise.all(anims.map(a => a.finished)); }catch(e){}
+    }
+    running = false; cancelAnimationFrame(raf);
+    ov.classList.remove('open');
+    anims.forEach(a => a.cancel());
+    closing = false;
   }
   window.openDustProjector = open; window.closeDustProjector = close;
 })();
