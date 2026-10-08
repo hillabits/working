@@ -1646,8 +1646,19 @@
   </div>
 </div>
 
+<div id="nameDlg" class="nd" aria-hidden="true">
+  <div class="nd-scrim" id="ndScrim"></div>
+  <div class="nd-card" role="dialog" aria-modal="true" aria-labelledby="ndTitle">
+    <div class="nd-title" id="ndTitle">Display name</div>
+    <input id="ndInput" class="nd-input" type="text" maxlength="40" placeholder="display name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    <div class="nd-actions">
+      <button type="button" class="nd-btn" id="ndCancel">Cancel</button>
+      <button type="button" class="nd-btn primary" id="ndSave">Save</button>
+    </div>
+  </div>
+</div>
 <div id="authBar" class="topnav" style="display:none;">
-  <div class="topnav-brand"><span class="brand-dot"></span><button type="button" id="themeToggleBtn" class="brand-dot brand-dot-2" aria-label="Toggle dark mode"></button><button type="button" id="brandMenuBtn" class="brand-name" aria-expanded="false" aria-controls="topnavCollapsible" aria-haspopup="true">bitrhythm<svg class="brand-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  <div class="topnav-brand"><span class="brand-dot"></span><button type="button" id="themeToggleBtn" class="brand-dot brand-dot-2" aria-label="Toggle dark mode"></button><button type="button" id="brandMenuBtn" class="brand-name" aria-expanded="false" aria-controls="topnavCollapsible" aria-haspopup="true"><span class="brand-label" id="brandLabel">bitrhythm</span><svg class="brand-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
   <button type="button" id="mobileMenuBtn" class="iconbtn mobile-menu-btn" aria-label="Account" aria-expanded="false" aria-controls="topnavCollapsible">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>
   </button>
@@ -2501,6 +2512,101 @@ html .row .task-start.ringing{ animation:wrStopGlow 1s ease-in-out infinite; }
 .pm-fab.open .pm-knob, .pm-fab.open:hover .pm-knob{ background:transparent !important; color:inherit !important; box-shadow:none !important; }
 .pm-fab.open .pm-knob svg{ filter:none; }
 .pm-live-time{ color:var(--text) !important; font-family:'Doto','Hanken Grotesk',sans-serif !important; font-weight:900 !important; letter-spacing:.06em; }
+
+/* ===== PATCH: no orange ring on the bell; phone bottom bar = solid black gradient that blends into the gesture area ===== */
+#authBar .dock-extras #enableAlarmsBtn.enabled, #enableAlarmsBtn.enabled{ box-shadow:none !important; border-color:transparent !important; }
+.topnav-links #enableAlarmsBtn::after, .topnav-links #enableAlarmsBtn.enabled::after{ display:none !important; }
+
+@media (max-width:720px){
+  html #authBar > .topnav-links, html:not([data-theme="dark"]) #authBar > .topnav-links, html[data-theme="dark"] #authBar > .topnav-links{
+    /* opaque: slightly lifted charcoal at the top, true black at the very bottom edge (same as the phone's gesture area) */
+    background:linear-gradient(180deg, #28282c 0%, #161618 52%, #000 100%) !important;
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    box-shadow:0 -1px 0 rgba(255,255,255,.06), 0 -14px 30px -20px rgba(0,0,0,.6) !important;
+    border-radius:30px 30px 0 0;
+  }
+  /* edge light: just a soft highlight along the top lip */
+  #authBar > .topnav-links::before{ background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0) 38%) !important; }
+  /* icons readable on black in both themes */
+  #authBar > .topnav-links .view-btn, #authBar > .topnav-links .iconbtn{ color:rgba(255,255,255,.5); }
+  #authBar > .topnav-links .view-btn:hover, #authBar > .topnav-links .iconbtn:hover{ color:rgba(255,255,255,.85); }
+  #authBar > .topnav-links .view-btn.active{ color:#fff; }
+  .topnav-links #enableAlarmsBtn::before{ background:rgba(255,255,255,.14); }
+}
+
+/* ===== hide scrollbars everywhere (scrolling still works) ===== */
+html, body, *{ scrollbar-width:none; -ms-overflow-style:none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar{ display:none !important; width:0 !important; height:0 !important; background:transparent; }
+
+/* ===== PATCH: phone top bar follows scroll (blur + fade), brand name swap + edit dialog, solid Pomodoro knob, dust HUD tidy ===== */
+@media (max-width:720px){
+  /* the old dropdown is gone on phones: tap the brand to swap it for your name, hold the name to edit */
+  #authBar .topnav-collapsible{ display:none !important; }
+  .brand-caret, #authBar.menu-open .brand-caret{ display:none !important; }
+  .brand-name{ padding:6px 4px 6px 0; }
+  .brand-label{ display:inline-block; max-width:58vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .brand-name.is-name .brand-label{ color:var(--night); }
+  .brand-label.swap{ animation:wrBrandSwap .38s var(--ease, ease); }
+  @keyframes wrBrandSwap{ from{ opacity:0; transform:translateY(7px); filter:blur(3px); } to{ opacity:1; transform:none; filter:none; } }
+
+  /* top bar stays with you while you scroll: a soft blurred gradient that fades into the page */
+  html #authBar.topnav{ position:sticky !important; top:0; padding:calc(12px + env(safe-area-inset-top,0px)) 18px 16px !important; }
+  #authBar.topnav::after{
+    content:''; position:absolute; z-index:-1; left:0; right:0; top:0; height:calc(100% + 24px); pointer-events:none;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--bg) 96%, transparent) 0%, color-mix(in srgb, var(--bg) 78%, transparent) 55%, color-mix(in srgb, var(--bg) 0%, transparent) 100%);
+    -webkit-backdrop-filter:blur(16px) saturate(1.2); backdrop-filter:blur(16px) saturate(1.2);
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 60%, transparent 100%); mask-image:linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
+  }
+}
+
+/* display-name dialog */
+html.nd-lock, html.nd-lock body{ overflow:hidden !important; }
+.nd{ position:fixed; left:0; top:0; width:100%; height:100%; z-index:500; display:none; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; overscroll-behavior:contain; }
+.nd.show{ display:flex; }
+.nd-scrim{ position:absolute; inset:0; background:rgba(8,8,10,.42); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); opacity:0; transition:opacity .25s ease; }
+.nd.open .nd-scrim{ opacity:1; }
+.nd-card{
+  position:relative; width:min(340px, 100%); padding:18px; border-radius:30px; box-sizing:border-box;
+  background:var(--glass-fill), color-mix(in srgb, var(--surface) 92%, transparent);
+  -webkit-backdrop-filter:blur(22px) saturate(1.3); backdrop-filter:blur(22px) saturate(1.3);
+  box-shadow:0 0 0 .5px var(--glass-hair), inset 0 0 0 1px rgba(255,255,255,.12), 0 30px 60px -24px rgba(0,0,0,.65);
+  opacity:0; transform:translateY(12px) scale(.96); transition:opacity .22s ease, transform .4s var(--spring, ease);
+}
+.nd.open .nd-card{ opacity:1; transform:none; }
+.nd-title{ font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:800; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-faint); padding:2px 6px 10px; }
+.nd-input{
+  display:block; width:100%; height:52px; box-sizing:border-box; padding:0 18px; border:0; border-radius:20px; outline:0;
+  background:color-mix(in srgb, var(--text) 7%, transparent); color:var(--text);
+  font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:700; font-size:17px; letter-spacing:.04em;
+  box-shadow:inset 0 0 0 1px var(--line); transition:box-shadow .25s ease;
+}
+.nd-input::placeholder{ color:var(--text-faint); font-weight:500; }
+.nd-input:focus{ box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--night) 70%, transparent), 0 0 0 4px var(--night-glow); }
+.nd-actions{ display:flex; gap:10px; margin-top:14px; }
+.nd-btn{
+  flex:1; height:46px; border:0; border-radius:100px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:800; font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+  background:var(--glass-chip); color:var(--text); box-shadow:0 0 0 .5px var(--glass-hair), inset 0 0 0 1px rgba(255,255,255,.14);
+  transition:transform .2s ease, opacity .2s ease;
+}
+.nd-btn:active{ transform:scale(.96); }
+.nd-btn:disabled{ opacity:.6; }
+.nd-btn.primary{
+  background:color-mix(in srgb, var(--night) 16%, transparent); color:var(--night); text-shadow:0 0 8px color-mix(in srgb, var(--night) 55%, transparent);
+  box-shadow:0 0 0 .5px color-mix(in srgb, var(--night) 40%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--night) 26%, transparent);
+}
+
+/* Pomodoro launcher: knob is the same solid colour as the Pomodoro circle (orange; blue-teal on break) */
+.pm-fab .pm-knob, .pm-fab.live .pm-knob{ background:var(--pm-acc) !important; color:#fff !important; box-shadow:none !important; }
+.pm-fab .pm-knob svg{ filter:none; }
+
+/* dust projector HUD on phones: no crowding corner brackets, tidy pill row, close button level with the title */
+@media (max-width:640px){
+  .dust-corner{ display:none; }
+  .dust-btns .mx-btn{ padding:7px 10px; font-size:10px; letter-spacing:.07em; white-space:nowrap; }
+  #dustCloseBtn{ top:2px; right:22px; width:38px; height:38px; }
+  .dust-top > div:first-child{ max-width:calc(100% - 58px); }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -5885,36 +5991,74 @@ function renderFocusSidebar(panel){
     </div>`;
   if(list._h !== html){ list._h = html; list.innerHTML = html; }
 }
-(function initMobileMenu(){
+(function initBrandName(){
+  // Mobile: tap "bitrhythm" to swap it for your display name (tap again to swap back); hold the name to edit it.
   const btn = document.getElementById('brandMenuBtn');
-  const bar = document.getElementById('authBar');
-  const panel = document.getElementById('topnavCollapsible');
-  if(!btn || !bar || !panel) return;
-  function closeMenu(){
-    bar.classList.remove('menu-open');
-    btn.setAttribute('aria-expanded','false');
+  const label = document.getElementById('brandLabel');
+  const nameSrc = document.getElementById('userLabel');
+  if(!btn || !label) return;
+  const isMobile = () => window.innerWidth <= 720;
+  let showName = false, held = false, timer = null, sx = 0, sy = 0;
+
+  function nameText(){ return (nameSrc && nameSrc.textContent.trim()) || 'bitrhythm'; }
+  function render(animate){
+    label.textContent = showName ? nameText() : 'bitrhythm';
+    btn.classList.toggle('is-name', showName);
+    btn.setAttribute('aria-label', showName ? 'Display name. Tap to switch back, hold to edit' : 'bitrhythm. Tap to show your display name');
+    if(animate){ label.classList.remove('swap'); void label.offsetWidth; label.classList.add('swap'); }
   }
-  function toggleMenu(){
-    const open = bar.classList.toggle('menu-open');
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  render(false);
+  if(nameSrc) new MutationObserver(() => { if(showName) render(false); }).observe(nameSrc, { childList:true, characterData:true, subtree:true });
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    if(!isMobile()) return;
+    if(held){ held = false; return; }
+    showName = !showName; render(true);
+  });
+  const clearHold = () => { if(timer){ clearTimeout(timer); timer = null; } };
+  btn.addEventListener('pointerdown', e => {
+    held = false;
+    if(!isMobile() || !showName) return;
+    sx = e.clientX; sy = e.clientY; clearHold();
+    timer = setTimeout(() => { timer = null; held = true; try{ navigator.vibrate && navigator.vibrate(12); }catch(_){} openDlg(); }, 520);
+  });
+  btn.addEventListener('pointermove', e => { if(timer && Math.hypot(e.clientX - sx, e.clientY - sy) > 8) clearHold(); });
+  ['pointerup','pointercancel','pointerleave'].forEach(t => btn.addEventListener(t, clearHold));
+  btn.addEventListener('contextmenu', e => { if(isMobile()) e.preventDefault(); });
+  window.addEventListener('resize', () => { if(!isMobile() && showName){ showName = false; render(false); } });
+
+  // ---- edit dialog: centred in whatever space the keyboard leaves ----
+  const dlg = document.getElementById('nameDlg'), inp = document.getElementById('ndInput');
+  const saveB = document.getElementById('ndSave'), cancelB = document.getElementById('ndCancel'), scrim = document.getElementById('ndScrim');
+  const vv = window.visualViewport;
+  function fit(){
+    if(!vv){ dlg.style.cssText = ''; return; }
+    dlg.style.left = vv.offsetLeft + 'px'; dlg.style.top = vv.offsetTop + 'px';
+    dlg.style.width = vv.width + 'px'; dlg.style.height = vv.height + 'px';
   }
-  btn.addEventListener('click', (e) => { e.stopPropagation(); if(window.innerWidth > 720) return; toggleMenu(); });
-  document.addEventListener('click', (e) => {
-    if(!bar.classList.contains('menu-open')) return;
-    // the dimmed scrim is the bar's own ::before, so a tap on it targets the bar itself
-    if(bar.contains(e.target) && e.target !== bar) return;
-    closeMenu();
-  });
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape' && bar.classList.contains('menu-open')){ closeMenu(); btn.focus(); }
-  });
-  // Navigating to a different view closes the menu; logging out does too.
-  bar.querySelectorAll('.view-btn, #logoutBtn').forEach(el => {
-    el.addEventListener('click', closeMenu);
-  });
-  window.addEventListener('resize', () => {
-    if(window.innerWidth > 720) closeMenu();
-  });
+  function openDlg(){
+    inp.value = (typeof currentUser !== 'undefined' && currentUser && currentUser.user_metadata && currentUser.user_metadata.display_name) || '';
+    dlg.classList.add('show'); dlg.setAttribute('aria-hidden', 'false');
+    document.documentElement.classList.add('nd-lock'); fit();
+    requestAnimationFrame(() => { dlg.classList.add('open'); inp.focus({ preventScroll:true }); inp.select(); });
+  }
+  function closeDlg(){
+    dlg.classList.remove('open'); inp.blur();
+    setTimeout(() => { dlg.classList.remove('show'); dlg.setAttribute('aria-hidden', 'true'); document.documentElement.classList.remove('nd-lock'); }, 260);
+  }
+  async function saveDlg(){
+    const name = inp.value.trim();
+    saveB.disabled = true;
+    try{
+      const { data, error } = await sb.auth.updateUser({ data: { display_name: name || null } });
+      if(!error && data && data.user){ currentUser = data.user; if(nameSrc) nameSrc.textContent = displayNameFor(currentUser); }
+    }catch(e){ console.error('save display name failed', e); }
+    saveB.disabled = false; closeDlg();
+  }
+  if(vv){ vv.addEventListener('resize', () => { if(dlg.classList.contains('show')) fit(); }); vv.addEventListener('scroll', () => { if(dlg.classList.contains('show')) fit(); }); }
+  saveB.addEventListener('click', saveDlg); cancelB.addEventListener('click', closeDlg); scrim.addEventListener('click', closeDlg);
+  inp.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); saveDlg(); } if(e.key === 'Escape') closeDlg(); });
 })();
 (function initSyncSlot(){
   // Mobile: the sync dot sits alone at the top right. Desktop: back with the other actions.
