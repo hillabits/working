@@ -25,6 +25,8 @@
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700;900&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -229,7 +231,6 @@
     letter-spacing:-.02em;
     color:var(--text);
   }
-  .sub{ color:var(--text-dim); font-size:15px; line-height:1.6; max-width:46ch; margin:0; }
 
   /* ---------------- day tabs row ---------------- */
   .tabs-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:22px; }
@@ -320,36 +321,11 @@
 
   /* ---------------- productivity ring + stats ---------------- */
   .tracker-block[hidden]{ display:none; }
-  .stats{
-    display:flex; align-items:center; gap:26px; flex-wrap:wrap;
-    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-md);
-    padding:20px 24px; margin-bottom:24px;
-  }
 
   /* On phones the card gets a deliberate, compact layout instead of the
      desktop row wrapping mid-sentence: ring+heading share the top line,
      the progress bar spans full width, and today's progress becomes its
      own full-width row with a separator, rather than stacking awkwardly. */
-  @media (max-width:640px){
-    .stats{
-      flex-wrap:wrap; align-items:flex-start; gap:14px;
-      padding:16px 16px 18px;
-    }
-    .ring-wrap{ width:72px; height:72px; }
-    .ring-time{ font-size:14px; }
-    .ring-sub{ font-size:9px; }
-    .stats-mid{ min-width:0; flex:1 1 auto; gap:6px; }
-    .stats-heading{ font-size:14px; }
-    .stats-caption{ font-size:12px; }
-    .stats-right{
-      order:3; flex-basis:100%; width:100%;
-      flex-direction:row; align-items:center; justify-content:space-between;
-      text-align:left; gap:10px;
-      margin-top:2px; padding-top:12px; border-top:1px solid var(--line);
-    }
-    .stats-right-info{ align-items:flex-start; }
-    .stats-right-pct{ font-size:15px; font-weight:600; color:var(--text); }
-  }
 
   /* ---------------- task list ---------------- */
   .list-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
@@ -438,15 +414,6 @@
 
   /* ---------------- global productivity tracker (page-level, persists across views) ---------------- */
   #globalTracker{ margin-bottom:8px; }
-  #globalTimelineBlock{ margin-top:0; padding-top:0; border-top:none; margin-bottom:32px; }
-  .rail{ position:relative; height:30px; margin-bottom:10px; }
-  .now-marker{ position:absolute; top:-5px; bottom:-5px; width:2px; background:var(--accent); }
-  @keyframes tracker-live-glow{
-    0%,100%{ box-shadow:0 0 4px 1px currentColor; opacity:.9; }
-    50%{ box-shadow:0 0 8px 2px currentColor; opacity:1; }
-  }
-  .ticks{ position:relative; height:16px; }
-  .tick{ position:absolute; transform:translateX(-50%); font-family:'Hanken Grotesk',sans-serif; font-size:10.5px; color:var(--text-faint); }
 
   /* ---------------- sidebar ---------------- */
   .sidebar{ display:flex; flex-direction:column; gap:16px; position:sticky; top:78px; }
@@ -463,9 +430,6 @@
   .focus-row.done .focus-name{ text-decoration:line-through; text-decoration-color:var(--text-faint); text-decoration-thickness:1px; opacity:.55; }
   .focus-time{ color:var(--text-dim); font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; }
   .focus-empty{ font-size:12.5px; color:var(--text-faint); }
-
-  @media (max-width:720px){
-    .stats{ gap:16px; }}
 
   /* ---------------- task rows on mobile ----------------
      Below ~640px there isn't room for dot / label / time / reset / button
@@ -567,7 +531,7 @@
   }
   .ct-chip.active{ background:var(--night); border-color:var(--night); color:#fff; }
   .ct-chip:disabled{ opacity:.4; cursor:not-allowed; }
-  @keyframes ctPulse{ 0%,100%{ transform:none; } 50%{ transform:scale(1.04); } }
+  @keyframes ctPulse{ 0%,100%{ transform:translate(-50%,-50%); } 50%{ transform:translate(-50%,-50%) scale(1.04); } }
 
   .ct-history{ margin-top:28px; }
   .ct-history-empty{ font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--text-faint); }
@@ -752,7 +716,6 @@
   .day-eyebrow, .list-header-title, .focus-title, .pomo-mode, .ct-title{
     text-transform:uppercase; letter-spacing:.08em; font-weight:600; font-size:11px; color:var(--text-dim);
   }
-  .sub{ font-weight:300; }
 
   /* tiles */
   .day, .focus-card, .pomodoro, .cat-manager, .ct-history, .mx-matrix-wrap, .stats-edit-popover{
@@ -830,29 +793,10 @@
     #authBar.topnav{ position:relative; background:transparent; padding:12px 18px 0; }
     header.hero{ margin:14px 0 8px; }
     h1{ font-size:clamp(34px,10vw,44px); font-weight:400; line-height:1.05; }
-    .eyebrow{ margin-bottom:8px; }
 
     /* stats: ring bleeds off the left edge, numbers sit right-aligned beside it */
-    .stats{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; position:relative; min-height:290px;
-            background:transparent; border:0; padding:34px 0 0; margin-bottom:14px; }
+
     .stats-edit-btn{ top:2px; right:0; }
-    .ring-wrap{ position:absolute; left:-70px; top:30px; width:250px; height:250px; }
-    .ring-track{ stroke:var(--surface); stroke-width:12; }
-    .ring-fill{ stroke-width:12; }
-    .ring-center{ transform:translateX(46px); }
-    .ring-time{ font-size:30px; font-weight:900; }
-    .ring-sub{ font-size:12px; }
-    .stats-right, .stats-mid{ width:52%; flex:none; align-items:flex-end; text-align:right; border:0; padding:0; margin:0; }
-    .stats-right{ order:1; flex-direction:column; gap:2px; }
-    .stats-right-info{ align-items:flex-end; }
-    .stats-right-label{ font-size:12px; }
-    .stats-right-frac{ font-size:26px; font-weight:300; color:var(--night); line-height:1.15; }
-    .stats-right-pct{ font-size:22px; font-weight:300; color:var(--text); }
-    .stats-mid{ order:2; margin-top:22px; gap:4px; }
-    .stats-heading{ font-size:13px; font-weight:400; color:var(--text-dim); }
-    .stats-caption{ font-size:12px; font-weight:300; }
-    .pbar{ height:10px; border-radius:99px; background:var(--surface); margin-top:8px; }
-    .pbar-fill{ border-radius:99px; }
 
     /* airy tiles */
     .day, .focus-card, .pomodoro, .cat-manager, .ct-history{ border-radius:34px; padding:24px 20px; }
@@ -862,10 +806,7 @@
     .pomodoro{ flex-direction:column; align-items:stretch; gap:18px; }
     .pomo-time{ font-size:64px; text-align:center; width:100%; }
     .pomo-mode{ align-self:center; }
-    .pomo-controls{ width:100%; gap:12px; }
-    .pomo-btn{ flex:1; height:54px; border-radius:99px; font-size:16px; background:var(--bg); border-color:transparent; }
-    .pomo-btn.start{ flex:1.7; background:var(--night); color:var(--on-night); }
-    .pomo-presets{ width:100%; margin:0; justify-content:center; flex-wrap:wrap; gap:0; }
+
     .pomo-preset-btn{ border:0; background:transparent; color:var(--text-faint); font-size:26px; font-weight:300; padding:4px 20px;
                       border-radius:0; transition:color .3s var(--ease), transform .4s var(--ease); }
     .pomo-preset-btn + .pomo-preset-btn{ border-left:1px solid var(--line-strong); }
@@ -892,8 +833,7 @@
       -webkit-backdrop-filter:none; backdrop-filter:none;
       background:color-mix(in srgb, var(--surface) 94%, transparent);
     }
-    .day, .focus-card, .pomodoro, .cat-manager, .ct-history{ will-change:transform, opacity; }
-    .ring-svg, .ring-fill{ filter:none; }
+
   }
 
   /* ---------- motion: shared easing + view-transition for the theme toggle ---------- */
@@ -904,7 +844,11 @@
   .stats-edit-popover:not([hidden]), .cat-palette.open{ animation:popIn .3s var(--ease); }
   @keyframes popIn{ from{ opacity:0; transform:translateY(-6px) scale(.97); } }
   .vt-theme::view-transition-old(root), .vt-theme::view-transition-new(root){ animation:none; mix-blend-mode:normal; }
-  .vt-theme::view-transition-new(root){ z-index:2; }
+  .vt-theme::view-transition-new(root){ z-index:2; animation:vtReveal 700ms cubic-bezier(.22,.9,.24,1) both; }
+  @keyframes vtReveal{
+    from{ clip-path:circle(0px at var(--vt-x,50%) var(--vt-y,50%)); }
+    to{ clip-path:circle(var(--vt-r,150vmax) at var(--vt-x,50%) var(--vt-y,50%)); }
+  }
   .vt-theme::view-transition-old(root){ z-index:1; }
 
   /* ================= Soft-glass layer (Oasis-style): airy wash, frosted tiles, pill actions, spring motion =================
@@ -987,10 +931,6 @@
     -webkit-mask-size:8px 8px; mask-size:8px 8px; -webkit-mask-repeat:repeat-x; mask-repeat:repeat-x;
   }
 
-  .rail{ height:36px; margin-bottom:8px; }
-  .ticks{ height:30px; }
-  .tick{ font-size:10.5px; letter-spacing:.06em; font-variant-numeric:tabular-nums; color:var(--text-faint); }
-  .tick::before{ content:''; display:block; width:1px; height:5px; margin:0 auto 5px; background:var(--line-strong); }
   .ct-head{ margin-bottom:18px; }
   .matrix-head{ margin-bottom:22px; }
 
@@ -1014,23 +954,6 @@
   .pomo-time .colon::after{ bottom:calc(var(--digit-h) * .27); }
   /* inside the dial the text has to clear the ring; long values (1:25:30) step down a size */
 
-  @media (min-width:721px){
-    .stats{
-      background:var(--surface); border:0; border-radius:var(--radius-lg);
-      padding:28px 40px 28px 34px; gap:40px; margin-bottom:22px;
-    }
-    .ring-wrap{ width:128px; height:128px; }
-    .ring-track, .ring-fill{ stroke-width:7; }
-    .ring-fill{ filter:drop-shadow(0 0 6px var(--tint-ring)); }
-    .ring-time{ font-size:26px; font-weight:300; letter-spacing:-.01em; }
-    .stats-mid{ gap:10px; }
-    .stats-heading{ font-size:19px; font-weight:500; letter-spacing:-.01em; }
-    .stats-caption{ font-size:13px; font-weight:300; }
-    .stats-right{ gap:6px; min-width:150px; }
-    .stats-right-frac{ font-size:30px; font-weight:300; letter-spacing:-.02em; color:var(--night); line-height:1.1; }
-    .stats-right-pct{ font-size:15px; font-weight:500; color:var(--text-dim); }
-  }
-
   /* ================= Day Pulse: two equal tiles — daily tracker | productivity matrix.
      Dial: thin outer ring = the 24h day (midnight at top, sessions sit where they happened),
      thick inner ring = today's target. A clear gap between them keeps it calm. ================= */
@@ -1045,17 +968,13 @@
 
   .pulse-dial{ --dial:212px; position:relative; width:var(--dial); height:var(--dial); flex:none; }
   .pulse-svg{ width:100%; height:100%; display:block; overflow:visible; }
-  .dial-track{ fill:none; stroke:var(--line); stroke-width:7; }
-  .pulse-track{ fill:none; stroke:var(--tint-ring); stroke-width:24; }
-  .pulse-fill{ fill:none; stroke:var(--night); stroke-width:24; stroke-linecap:round; transition:stroke-dashoffset .8s var(--ease), opacity .3s ease; }
+
   .dial-segs path{ fill:none; stroke-width:7; stroke-linecap:round; }
   .dial-segs path.live{ animation:dialLive 1.6s ease-in-out infinite; }
   @keyframes dialLive{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
-  .dial-notches line{ stroke:var(--surface); stroke-width:2; }
-  .dial-now circle{ fill:var(--night); stroke:var(--surface); stroke-width:3; }
-  .dial-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; pointer-events:none; }
+
+
   .dial-time{ font-size:calc(var(--dial) * .13); font-weight:300; letter-spacing:-.02em; line-height:1; color:var(--text); }
-  .dial-sub{ font-size:11px; font-weight:300; color:var(--text-faint); }
 
   .pulse-info{ display:flex; flex-direction:column; gap:22px; min-width:0; }
   .pulse-head{ font-size:17px; font-weight:500; letter-spacing:-.01em; color:var(--text); }
@@ -1203,7 +1122,7 @@
   #viewTimer .ct-viewport{ overflow:hidden; width:100%; touch-action:pan-y; }
   #viewTimer .ct-duo{
     display:flex; flex-direction:row; gap:0; max-width:none; margin:0; padding:0;
-    transition:transform .5s var(--spring); will-change:transform;
+    transition:transform .5s var(--spring);
   }
   #viewTimer .ct-knob{ flex:0 0 100%; width:100%; gap:12px; padding:26px 0 6px; }
   .ct-ghost, #ctKnobSw .ct-ghost{ top:0; font-size:clamp(44px,13vw,84px); }
@@ -1323,7 +1242,7 @@
     }
     .pulse .pulse-dial{ --dial:min(70vw,320px); margin-left:calc(var(--dial) * -.28); flex:none; }
     .pulse .dial-time{ font-size:calc(var(--dial) * .105); }
-    .pulse .dial-sub{ font-size:11px; }
+
     .pulse .pulse-info{ flex:1 1 auto; min-width:0; align-items:flex-end; text-align:right; gap:18px; justify-content:center; padding-left:12px; }
     .pulse .pulse-metrics{ order:1; align-items:flex-end; gap:2px; }
     .pulse .pulse-copy{ order:2; }
@@ -1353,12 +1272,12 @@
        looked inset further from the left edge than the text is from the right. Pull the dial left by exactly that
        amount so left gap (ring) == right gap (text) == 20px. Pure CSS, no markup/JS touched. */
     .pulse .pulse-dial{ --dial:min(54vw,230px); margin-left:calc(var(--dial) * -.023); }
-    .pulse .dial-center{ padding:0 22%; }
+
     .pulse .dial-time{
       width:min-content; max-width:100%; text-align:center; white-space:normal; word-break:keep-all;
       font-size:calc(var(--dial) * .17); line-height:1.05; font-weight:300; letter-spacing:-.02em;
     }
-    .pulse .dial-sub{ margin-top:3px; font-size:11px; }
+
     .pulse .pulse-info{ padding-left:0; }
     .pulse .pulse-caption{ text-wrap:balance; } /* no lonely trailing word on the right-aligned caption */
     .pulse .pulse-dial .stats-edit-btn{ top:-8px; right:-8px; }
@@ -1547,6 +1466,114 @@
   .mx-cell.mx-picked{ outline:1.5px solid var(--text); outline-offset:1px; }
   .sidebar, #catManagerMount, .cat-manager{ min-width:0; max-width:100%; }
 
+  /* ===== Login gate: same language as the app — dot grid page, flat tile, Doto type, pill actions ===== */
+  #authGate{
+    position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+    padding:max(24px, env(safe-area-inset-top,0px)) 20px max(24px, env(safe-area-inset-bottom,0px));
+    background:transparent; overflow-y:auto;
+  }
+  #authGate .gate-card{
+    width:100%; max-width:400px; margin:auto; text-align:left;
+    background:var(--surface); border-radius:var(--radius-lg); padding:34px 30px 28px;
+    animation:gateIn .7s var(--ease) both;
+  }
+  @keyframes gateIn{ from{ opacity:0; transform:translateY(18px) scale(.985); } }
+  .gate-brand{ display:flex; align-items:center; gap:8px; margin-bottom:26px; }
+  .gate-brand .brand-dot-2{ margin-left:-3px; }
+  .gate-title{
+    font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:900; text-transform:uppercase;
+    letter-spacing:.08em; font-size:clamp(34px,9vw,48px); line-height:1; margin:0 0 34px; color:var(--text);
+  }
+
+  .gate-form{ display:flex; flex-direction:column; gap:16px; }
+  .gate-field{ display:flex; flex-direction:column; gap:8px; }
+  .gate-label{
+    font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:700; text-transform:uppercase;
+    letter-spacing:.16em; font-size:11.5px; color:var(--text-dim);
+  }
+  #authGate .gate-field input{
+    width:100%; height:50px; padding:0 18px; border-radius:100px;
+    background:var(--bg); border:1px solid var(--line); color:var(--text);
+    font-family:'Hanken Grotesk',sans-serif; font-size:15px; font-weight:400;
+    transition:border-color .2s ease, box-shadow .25s ease, background-color .2s ease;
+  }
+  #authGate .gate-field input::placeholder{ color:var(--text-faint); }
+  #authGate .gate-field input:hover{ border-color:var(--line-strong); }
+  #authGate .gate-field input:focus{
+    outline:none; border-color:var(--night); box-shadow:0 0 0 4px var(--night-glow);
+  }
+  #authGate .gate-field input:-webkit-autofill{
+    -webkit-text-fill-color:var(--text); box-shadow:0 0 0 100px var(--bg) inset; caret-color:var(--text);
+  }
+  .gate-primary{
+    margin-top:6px; height:52px; border:0; border-radius:100px; cursor:pointer;
+    background:var(--accent); color:var(--on-accent);
+    font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; font-size:13px;
+  }
+  .gate-primary:hover:not(:disabled){ transform:translateY(-1px); }
+  .gate-primary:disabled{ cursor:wait; }
+
+  .gate-primary:focus-visible, .gate-secondary:focus-visible{ outline:2px solid var(--night); outline-offset:3px; }
+  .gate-msg{
+    min-height:18px; margin-top:18px; text-align:center;
+    font-family:'Hanken Grotesk',sans-serif; font-size:12.5px; color:var(--pending-text); line-height:1.45;
+  }
+  @media (max-width:480px){
+    #authGate{ align-items:flex-start; padding-top:max(56px, env(safe-area-inset-top,0px)); }
+    #authGate .gate-card{ padding:28px 22px 24px; margin:0 auto; }
+  }
+  @media (prefers-reduced-motion:reduce){ #authGate .gate-card{ animation:none; } }
+
+  /* ===== Productivity tracker: dot-matrix (Doto) type, matching the headings, nav and Pomodoro ===== */
+  #globalTracker .pulse .dial-time,
+  #globalTracker .pulse .pulse-head,
+  #globalTracker .pulse .pulse-pct,
+  #globalTracker .pulse .pulse-frac,
+  #globalTracker .pulse .dial-sub,
+  #globalTracker .pulse .pulse-label,
+  #globalTracker .pulse .pulse-caption{
+    font-family:'Doto','Hanken Grotesk',sans-serif;
+  }
+  #globalTracker .pulse .dial-time{ font-weight:900; letter-spacing:.02em; font-size:calc(var(--dial) * .15); }
+
+  #globalTracker .pulse .pulse-head{ font-weight:900; letter-spacing:.06em; text-transform:uppercase; font-size:16px; color:var(--text); }
+  #globalTracker .pulse .pulse-caption{ font-weight:600; letter-spacing:.04em; font-size:13px; color:var(--text-dim); }
+  #globalTracker .pulse .pulse-label{ font-weight:700; letter-spacing:.16em; text-transform:uppercase; font-size:12px; color:var(--text-dim); }
+  #globalTracker .pulse .pulse-pct{ font-weight:900; letter-spacing:0; }
+  #globalTracker .pulse .pulse-frac{ font-weight:700; letter-spacing:.06em; font-size:16px; color:var(--text-dim); }
+  @media (max-width:720px){
+    #globalTracker .pulse .dial-time{ font-size:calc(var(--dial) * .15); font-weight:900; letter-spacing:.02em; }
+    #globalTracker .pulse .pulse-head{ font-size:14px; }
+    #globalTracker .pulse .pulse-caption{ font-size:12px; }
+    #globalTracker .pulse .pulse-label{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); }
+    #globalTracker .pulse .pulse-frac{ font-size:clamp(14px,4vw,16px); font-weight:700; color:var(--text-dim); }
+  }
+
+  /* ===== Dial v3 — speaker-grille tracker (dot grid, 24h knob, progress knob). Circle area only. ===== */
+  #globalTracker .pulse-dial{ --dot:color-mix(in srgb, var(--night) 45%, var(--bg)); --dot-core:var(--dot); --ring-grey:#B4B4B8; }
+  html[data-theme="dark"] #globalTracker .pulse-dial{ --ring-grey:#4A4A50; }
+  #globalTracker .dd{ fill:var(--dot); transition:fill .7s var(--ease); }
+  #globalTracker .dd.c{ fill:var(--dot-core); }
+  @media (prefers-reduced-motion:reduce){ #globalTracker .dd, #globalTracker .kp-fill, #globalTracker .kp-dot{ transition:none !important; } }
+  /* history: coloured activity lines, no ring track; idle time is a grey line that follows the clock */
+  #globalTracker .dial-segs path{ fill:none; stroke-width:6; stroke-linecap:round; }
+  #globalTracker .dial-segs path.el{ stroke:var(--ring-grey); stroke-width:1.2; stroke-linecap:butt; opacity:.9; }
+
+  /* time in progress: soft glow, twinkling dots and drifting dust motes */
+  #globalTracker .dial-dust{ display:none; }
+  #globalTracker .dial-dust.live{ display:inline; }
+  #globalTracker .dial-dust circle{ fill:#FFD9C4; opacity:0; animation:dialDust 4s ease-out infinite; }
+  @keyframes dialDust{ 0%{ opacity:0; transform:translate(0,0); } 15%{ opacity:.95; } 100%{ opacity:0; transform:translate(var(--dx),var(--dy)); } }
+  @media (prefers-reduced-motion:reduce){ #globalTracker .dial-dust circle, #globalTracker .dial-dots.live .dd.on.tw{ animation:none !important; } }
+  /* ===== Glass knob: flat macOS-style glass (Control Center), not a bubble. Real HTML element above the svg,
+     so it never touches the dot grid. The arm rotates, the glass counter-rotates so the edge light stays put. ===== */
+  #globalTracker .dial-knob{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+  #globalTracker .dk-glass{
+    position:absolute; left:50%; top:11.786%; width:24.286%; aspect-ratio:1; border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+  #globalTracker .dk-glass::after{ display:none; }
   /* top bar: fully transparent, no frosted band / seam over the content */
   /* ================= Mobile refresh: same language as the web UI =================
      solid tiles, one-line task rows (dot · name · time · Start), calm dark Start pill, no glow / plus badge */
@@ -1600,17 +1627,22 @@
 <body>
 <div class="wr-toast-wrap" id="wrToastWrap"></div>
 
-<div id="authGate" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;">
-  <div style="max-width:360px;width:100%;text-align:center;">
-    <h1 style="font-family:'Doto','Hanken Grotesk',sans-serif;font-weight:600;font-size:clamp(32px,7vw,44px);line-height:1.1;margin:0 0 10px;letter-spacing:-.02em;">Bitrhythm</h1>
-    <p class="sub" style="margin:0 auto 28px;">Plan your week. Track what you actually do.</p>
-    <div id="loginForm" style="display:flex;flex-direction:column;gap:10px;">
-      <input id="authEmail" type="email" placeholder="Email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" aria-label="Email" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
-      <input id="authPass" type="password" placeholder="Password" autocomplete="current-password" enterkeyhint="go" aria-label="Password" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:8px;font-family:inherit;font-size:14px;">
-      <button id="signInBtn" type="button" style="background:var(--accent);border:none;color:var(--on-accent);padding:12px 14px;border-radius:100px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;">Sign in</button>
-      <button id="signUpBtn" type="button" style="background:none;border:none;color:var(--text-faint);cursor:pointer;text-decoration:underline;font-family:'Hanken Grotesk',sans-serif;font-size:12px;padding-top:4px;">Create account</button>
+<div id="authGate">
+  <div class="gate-card">
+    <div class="gate-brand" aria-hidden="true"><span class="brand-dot"></span><span class="brand-dot brand-dot-2"></span></div>
+    <h1 class="gate-title">Bitrhythm</h1>
+    <div id="loginForm" class="gate-form">
+      <label class="gate-field">
+        <span class="gate-label">Email</span>
+        <input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" aria-label="Email">
+      </label>
+      <label class="gate-field">
+        <span class="gate-label">Password</span>
+        <input id="authPass" type="password" placeholder="••••••••" autocomplete="current-password" enterkeyhint="go" aria-label="Password">
+      </label>
+      <button id="signInBtn" type="button" class="gate-primary">Sign in</button>
     </div>
-    <div id="authMsg" style="color:var(--text-faint);font-family:'Hanken Grotesk',sans-serif;font-size:12px;margin-top:14px;min-height:16px;"></div>
+    <div id="authMsg" class="gate-msg" role="status" aria-live="polite"></div>
   </div>
 </div>
 
@@ -1827,7 +1859,6 @@
 .pm-rim{fill:none;stroke:rgba(255,255,255,.07);stroke-width:1}
 .pm-fill{fill:none;stroke:#fff;stroke-width:100;stroke-linecap:butt;transition:stroke-dashoffset .8s var(--ease),opacity .3s ease}
 .pm-tile.is-running .pm-fill{transition:stroke-dashoffset 1s linear,opacity .3s ease}
-.pm-tile.is-running .pm-svg{filter:drop-shadow(0 12px 28px color-mix(in srgb,var(--pm-hi) 30%,transparent))}
 .pm-center{position:static;display:flex;align-items:center;justify-content:center;pointer-events:none}
 #pm-root .pomo-time{display:block;text-align:center;width:auto;min-width:0;font-size:clamp(44px,calc(var(--dial) * .2),68px);font-weight:300;letter-spacing:-.02em;line-height:1;color:var(--text)}
 .pm-tile::after{content:'focus';font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:13px;letter-spacing:.22em;text-transform:lowercase;color:var(--text-dim);margin-top:-6px}
@@ -2004,16 +2035,21 @@
   const cv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const rk = r => ({ left:r.left+'px', top:r.top+'px', width:r.width+'px', height:r.height+'px' });
   const isLive = () => startBtn.classList.contains('running') || tile.classList.contains('ringing');
-  const fabBox = () => { // computed from the CSS anchor, so it never reads a half-animated/scaled rect
-    const cs = getComputedStyle(root), fr = parseFloat(cs.getPropertyValue('--fr')) || 28, fb = parseFloat(cs.getPropertyValue('--fb')) || 28,
-          w = isLive() ? 118 : 58, h = 58, de = document.documentElement;
-    return { left:de.clientWidth - fr - w, top:de.clientHeight - fb - h, width:w, height:h }; };
+  // A zero-size probe sits on the same CSS anchor as the launcher (right:var(--fr); bottom:var(--fb)). Reading ITS rect resolves
+  // calc()/env() safe-area values exactly, and unlike the launcher it is never mid-animation or scaled.
+  const probe = document.createElement('i');
+  probe.setAttribute('aria-hidden', 'true');
+  probe.style.cssText = 'position:fixed;right:var(--fr);bottom:var(--fb);width:0;height:0;margin:0;padding:0;border:0;visibility:hidden;pointer-events:none';
+  root.appendChild(probe);
+  const fabBox = () => {
+    const w = isLive() ? 118 : 58, h = 58, pr = probe.getBoundingClientRect();
+    return { left:pr.right - w, top:pr.bottom - h, width:w, height:h }; };
   const clipOf = (f, d) => `inset(${f.top-d.top}px ${(d.left+d.width)-(f.left+f.width)}px ${(d.top+d.height)-(f.top+f.height)}px ${f.left-d.left}px round ${Math.min(f.width,f.height)/2}px)`;
   const killGhost = () => ghost.getAnimations({ subtree:true }).forEach(a => a.cancel());
 
   const DUR = 780, OUT = 'cubic-bezier(.55,0,.75,.2)';
   async function openP(){
-    if(isOpen || closing) return; isOpen = true;
+    if(isOpen || closing) return; isOpen = true; document.documentElement.classList.add('pm-open');
     const fr = fabBox(); killGhost(); ov.hidden = false; fab.classList.remove('live'); fab.classList.add('open'); fab.setAttribute('aria-label', 'Close Pomodoro');
     bd.animate([{ opacity:0 }, { opacity:1 }], { duration:640, easing:'ease-out' });
     A(tile, [{ opacity:0, transform:'translateY(40px) scale(.96)' }, { opacity:1, transform:'none' }], { delay:120, duration:640 });
@@ -2052,7 +2088,7 @@
     }
     try{ await Promise.all(an.map(a => a.finished)); }catch(e){}
     ghost.hidden = true; killGhost(); ov.hidden = true; an.forEach(a => a.cancel());
-    isOpen = false; closing = false; fab.focus({ preventScroll:true }); syncFab();
+    isOpen = false; closing = false; document.documentElement.classList.remove('pm-open'); fab.focus({ preventScroll:true }); syncFab();
   }
   fab.addEventListener('click', () => isOpen ? closeP() : openP());
   // navigating from the (unblurred) top bar / dock closes the Pomodoro first
@@ -2077,6 +2113,7 @@
     liveEl.textContent = ringing ? 'Done' : (d.length >= 3 ? d.slice(0, -2) + ':' + d.slice(-2) : '');
     fab.classList.toggle('live', (running || ringing) && (!isOpen || closing));
     fab.classList.toggle('ringing', ringing && !isOpen);
+    root.classList.toggle('is-break', tile.classList.contains('is-break'));
   };
   new MutationObserver(syncFab).observe(timeEl, { childList:true, subtree:true, characterData:true });
   new MutationObserver(syncFab).observe(startBtn, { attributes:true, attributeFilter:['class'] });
@@ -2087,7 +2124,7 @@
   const appWrap = document.getElementById('appWrap');
   const sync = () => {
     const on = appWrap && !appWrap.hidden; root.hidden = !on;
-    if(!on && isOpen){ ov.hidden = true; ghost.hidden = true; fab.classList.remove('open'); isOpen = false; closing = false; }
+    if(!on && isOpen){ ov.hidden = true; ghost.hidden = true; fab.classList.remove('open'); isOpen = false; closing = false; document.documentElement.classList.remove('pm-open'); }
   };
   if(appWrap) new MutationObserver(sync).observe(appWrap, { attributes:true, attributeFilter:['hidden'] });
   sync(); syncFab();
@@ -2099,18 +2136,394 @@
   CROSS-DEVICE SYNC: create an account (email + password, top of page) to save progress to
   Supabase and sync it live across devices. Signed out, everything still saves locally.
 -->
+<style id="glass-accent">
+/* ================= Glass accents (macOS Control Center style) =================
+   Flat translucent fill + backdrop blur + a thin edge light that is brightest top-left / bottom-right.
+   No dome, no glint. Applied only to small floating accents, never to the page or cards. */
+:root{
+  --glass-fill:linear-gradient(145deg, rgba(255,255,255,.58), rgba(255,255,255,.30));
+  --glass-chip:rgba(255,255,255,.62);
+  --glass-blur:blur(18px) saturate(1.7);
+  --glass-hair:rgba(0,0,0,.07);
+  --glass-sep:rgba(0,0,0,.08);
+  --glass-shadow:0 10px 30px -14px rgba(20,20,30,.30);
+  --glass-edge:linear-gradient(140deg, rgba(255,255,255,.95), rgba(255,255,255,.18) 38%, rgba(255,255,255,.12) 62%, rgba(255,255,255,.75));
+}
+html[data-theme="dark"]{
+  --glass-fill:linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+  --glass-chip:rgba(255,255,255,.18);
+  --glass-hair:rgba(0,0,0,.55);
+  --glass-sep:rgba(255,255,255,.09);
+  --glass-shadow:0 14px 34px -14px rgba(0,0,0,.7);
+  --glass-edge:linear-gradient(140deg, rgba(255,255,255,.50), rgba(255,255,255,.05) 38%, rgba(255,255,255,.04) 62%, rgba(255,255,255,.30));
+}
+/* the surface */
+#globalTracker .dk-glass,
+#authBar .topnav-links, #authBar .dock-extras, #pm-root .pm-dock,
+.wr-toast, .stats-edit-popover, .ct-window, .ct-arrow{
+  background:var(--glass-fill) !important;
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+  box-shadow:0 0 0 .5px var(--glass-hair), var(--glass-shadow) !important;
+  border-color:transparent !important;
+}
+#globalTracker .dk-glass{ -webkit-backdrop-filter:blur(12px) saturate(1.8) brightness(1.04); backdrop-filter:blur(12px) saturate(1.8) brightness(1.04); box-shadow:0 0 0 .5px var(--glass-hair), 0 6px 16px -8px rgba(20,20,30,.35) !important; }
+/* the edge light */
+#globalTracker .dk-glass::before,
+#authBar .topnav-links::before, #authBar .dock-extras::before, #pm-root .pm-dock::before,
+.wr-toast::before, .stats-edit-popover::before, .ct-window::before, .ct-arrow::before{
+  content:''; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; z-index:1;
+  background:var(--glass-edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor;
+          mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.wr-toast, .ct-arrow{ position:relative; }
+.ct-arrow{ color:var(--text-dim); }
+
+/* dock: icons now sit on glass, so they use the normal text colours instead of the old dark-pill ones */
+@media (min-width:721px){
+  #authBar .topnav-links .view-btn, #authBar .dock-extras .iconbtn{ color:var(--text-dim); }
+  #authBar .topnav-links .view-btn:hover, #authBar .dock-extras .iconbtn:hover{ color:var(--text); }
+  #authBar .dock-extras .iconbtn.enabled{ color:var(--night); }
+  #authBar .topnav-links .view-btn.active{
+    background:var(--glass-chip); color:var(--text);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.5), 0 4px 10px -6px rgba(0,0,0,.35);
+  }
+  html[data-theme="dark"] #authBar .topnav-links .view-btn.active{ box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), 0 4px 10px -6px rgba(0,0,0,.6); }
+}
+/* phone: the bottom bar is the same glass, a little more opaque so labels stay readable over scrolling content */
+@media (max-width:720px){
+  #authBar > .topnav-links{ border-radius:30px 30px 0 0; box-shadow:0 -1px 0 var(--glass-hair), 0 -14px 30px -20px rgba(0,0,0,.35) !important; }
+}
+/* Pomodoro control bar */
+#pm-root .pm-dock .pm-p{ color:var(--text-dim); }
+#pm-root .pm-dock .pm-p:hover:not(:disabled):not(.active){ color:var(--text); }
+#pm-root .pm-dock .pm-p.active{ background:var(--glass-chip); color:var(--text); box-shadow:inset 0 0 0 1px rgba(255,255,255,.45); }
+#pm-root .pm-dock .pm-ctl{ border-left-color:var(--glass-sep); }
+#pm-root .pm-dock .pm-reset{ color:var(--text-dim); }
+#pm-root .pm-dock .pm-reset:hover{ color:var(--text); }
+#pm-root .pm-dock .pm-start:not(.running):not(.ringing){ background:var(--glass-chip); color:var(--text); box-shadow:inset 0 0 0 1px rgba(255,255,255,.45), 0 4px 10px -6px rgba(0,0,0,.35); }
+
+/* ================= Glass round 2: day tabs, matrix controls, Activity Log card, small indicators, dust UI ================= */
+.tabs-row .tabs, .day-total, .log-count, .date-display, .today-pill, .mx-btn, #viewLog .log-card{
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+  box-shadow:0 0 0 .5px var(--glass-hair), var(--glass-shadow) !important;
+  border-color:transparent !important;
+  position:relative;
+}
+.tabs-row .tabs, .day-total, .log-count, .date-display, .mx-btn:not(.active), #viewLog .log-card{ background:var(--glass-fill) !important; }
+/* edge light (::after for buttons so the mobile Close "x" glyph on ::before is left alone) */
+.tabs-row .tabs::before, .day-total::before, .log-count::before, .date-display::before, .today-pill::before,
+#viewLog .log-card::before,
+.mx-btn::after{
+  content:''; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; z-index:1;
+  background:var(--glass-edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor;
+          mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+#dustCloseBtn{ position:absolute; }
+@media (min-width:721px){ #dustCloseBtn{ position:relative; } }
+
+/* day tabs (MON..SUN) */
+.tabs-row .tabs{ border-radius:100px !important; padding:5px !important; gap:2px; }
+.tabs-row .tabs .tab-btn{ color:var(--text-dim) !important; background:transparent; }
+.tabs-row .tabs .tab-btn:hover{ color:var(--text) !important; }
+.tabs-row .tabs .tab-btn.active{
+  background:var(--glass-chip) !important; color:var(--text) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.5), 0 4px 10px -6px rgba(0,0,0,.35);
+}
+html[data-theme="dark"] .tabs-row .tabs .tab-btn.active{ box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), 0 4px 10px -6px rgba(0,0,0,.6); }
+/* small "today" indicator: a lit dot with a soft halo */
+.tab-dot{ box-shadow:0 0 0 3px color-mix(in srgb, var(--night) 22%, transparent), 0 0 8px var(--night); }
+.today-pill{ background:color-mix(in srgb, var(--night) 16%, transparent) !important; color:var(--night); }
+
+/* matrix controls: prev / year / next / play, and the same buttons inside the dust projector */
+.mx-btn{ color:var(--text-dim); }
+.mx-btn:hover{ color:var(--text); }
+.mx-btn.active{ background:color-mix(in srgb, var(--night) 80%, transparent) !important; color:var(--on-night); }
+.dust-btns .mx-btn{ -webkit-backdrop-filter:blur(14px) saturate(1.5); backdrop-filter:blur(14px) saturate(1.5); }
+
+/* dust projector: indicators (year line, legend, stats row, key hints) stay plain and transparent, no border */
+
+/* Activity Log: the whole card is glass; keep the header pills readable inside it */
+#viewLog .log-card{ border-radius:var(--radius-lg); }
+#viewLog .log-list-header{ border-top-color:var(--glass-sep); }
+#viewLog .log-row{ border-color:var(--glass-sep); }
+
+/* ================= Glass round 3: Weekly Rhythm cards + buttons match the Activity Log ================= */
+.day, .focus-card, .cat-manager{
+  background:var(--glass-fill) !important;
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+  box-shadow:0 0 0 .5px var(--glass-hair), var(--glass-shadow) !important;
+  border-color:transparent !important;
+  position:relative;
+}
+.day::before, .focus-card::before, .cat-manager::before,
+.cat-palette::before, .vb-text::before, .dock-extras .iconbtn-label::before{
+  content:''; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; z-index:1;
+  background:var(--glass-edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor;
+          mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.day .log-row, .day .row{ border-color:var(--glass-sep); }
+.focus-foot{ border-top-color:var(--glass-sep); }
+/* popovers + dock tooltips */
+.cat-palette, .vb-text, .dock-extras .iconbtn-label{
+  background:var(--glass-fill) !important; color:var(--text) !important;
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+  box-shadow:0 0 0 .5px var(--glass-hair), var(--glass-shadow) !important;
+}
+/* buttons: Edit / Start / reset. Fill + edge light only (they sit on glass already, so no extra blur) */
+.add-task-btn, .cat-edit-toggle, .task-reset, .task-start{ position:relative; border-color:transparent !important; }
+.add-task-btn, .cat-edit-toggle, .task-reset, .task-start.running, .task-start.again{
+  background:var(--glass-fill) !important; color:var(--text);
+  box-shadow:0 0 0 .5px var(--glass-hair);
+}
+.task-start:not(.ringing):not(.running):not(.again){
+  background:var(--glass-chip) !important; color:var(--text) !important;
+  box-shadow:0 0 0 .5px var(--glass-hair), inset 0 0 0 1px rgba(255,255,255,.45), 0 6px 14px -8px rgba(0,0,0,.4) !important;
+}
+html[data-theme="dark"] .task-start:not(.ringing):not(.running):not(.again){ box-shadow:0 0 0 .5px var(--glass-hair), inset 0 0 0 1px rgba(255,255,255,.14), 0 6px 14px -8px rgba(0,0,0,.7) !important; }
+.add-task-btn.active{ background:color-mix(in srgb, var(--night) 80%, transparent) !important; color:var(--on-night); }
+.add-task-btn:hover, .cat-edit-toggle:hover, .task-reset:hover{ color:var(--text); }
+.add-task-btn::after, .cat-edit-toggle::after, .task-reset::after, .task-start::after{
+  content:''; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+  background:var(--glass-edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor;
+          mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.task-start.ringing::after{ display:none; }
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  :root{ --glass-fill:linear-gradient(rgba(245,245,247,.92), rgba(235,235,238,.92)); }
+  html[data-theme="dark"]{ --glass-fill:linear-gradient(rgba(44,44,48,.94), rgba(36,36,40,.94)); }
+}
+
+/* ================= Dark glass controls stay dark in light mode =================
+   The side dock (page tabs + notifications / log out), the phone bottom bar, the weekday tabs, the date chip
+   and the matrix / dust buttons (year arrows, play, Color / Hand camera / Fullscreen / Close) re-declare the dark-theme
+   tokens locally, so every rule that already reads var(--text), var(--glass-fill) ... resolves to its dark value
+   inside those controls only. The rest of the page keeps the light theme. */
+html:not([data-theme="dark"]) #authBar .topnav-links,
+html:not([data-theme="dark"]) #authBar .dock-extras,
+html:not([data-theme="dark"]) .tabs-row .tabs,
+html:not([data-theme="dark"]) .date-display,
+html:not([data-theme="dark"]) .mx-btn{
+  color-scheme:dark;
+  --bg:#0F0F11;
+  --surface:#1A1A1D;
+  --line:#303034;
+  --line-strong:#444449;
+  --text:#F1F1F3;
+  --text-dim:#A2A2A9;
+  --text-faint:#6F6F76;
+  --night:#F0572C;
+  /* translucent smoked glass: the page shows through, blurred, instead of a solid dark fill */
+  --glass-fill:linear-gradient(145deg, rgba(40,40,46,.80), rgba(10,10,13,.78));
+  --glass-blur:blur(26px) saturate(1.8) brightness(.55);
+  --glass-chip:rgba(255,255,255,.18);
+  --glass-hair:rgba(0,0,0,.55);
+  --glass-sep:rgba(255,255,255,.09);
+  --glass-shadow:0 14px 34px -14px rgba(0,0,0,.7);
+  --glass-edge:linear-gradient(140deg, rgba(255,255,255,.50), rgba(255,255,255,.05) 38%, rgba(255,255,255,.04) 62%, rgba(255,255,255,.30));
+}
+html:not([data-theme="dark"]) #authBar .topnav-links,
+html:not([data-theme="dark"]) #authBar .dock-extras,
+html:not([data-theme="dark"]) .tabs-row .tabs,
+html:not([data-theme="dark"]) .date-display,
+html:not([data-theme="dark"]) .mx-btn,
+html:not([data-theme="dark"]) .dust-btns .mx-btn{
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+  box-shadow:0 0 0 .5px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.10), 0 14px 34px -14px rgba(0,0,0,.55) !important;
+}
+@media (min-width:721px){
+  html:not([data-theme="dark"]) #authBar .topnav-links .view-btn.active{
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), 0 4px 10px -6px rgba(0,0,0,.6);
+  }
+}
+html:not([data-theme="dark"]) .tabs-row .tabs .tab-btn.active{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), 0 4px 10px -6px rgba(0,0,0,.6);
+}
+@media (max-width:720px){
+  html:not([data-theme="dark"]) #authBar > .topnav-links{
+    box-shadow:0 -1px 0 rgba(0,0,0,.55), 0 -14px 30px -20px rgba(0,0,0,.55) !important;
+  }
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  html:not([data-theme="dark"]) #authBar .topnav-links,
+  html:not([data-theme="dark"]) #authBar .dock-extras,
+  html:not([data-theme="dark"]) .tabs-row .tabs,
+  html:not([data-theme="dark"]) .date-display,
+  html:not([data-theme="dark"]) .mx-btn{ --glass-fill:linear-gradient(#26262A, #1E1E21); }
+}
+
+/* live theme cross-fade (no snapshots, so backdrop blur never switches off) */
+html.theme-xfade *, html.theme-xfade *::before, html.theme-xfade *::after{
+  transition:background-color .45s ease, color .45s ease, border-color .45s ease, fill .45s ease, stroke .45s ease, box-shadow .45s ease !important;
+}
+
+/* big cards (Thursday / Today's Focus / Categories / Activity Log): glass look only, no backdrop blur.
+   Same recipe as the timer ruler window: translucent gradient fill, thin edge light, soft shadow. */
+.day, .focus-card, .cat-manager, #viewLog .log-card{
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+
+/* ================= Glass that looks the same before, during and after a transition =================
+   Safari switches backdrop-filter off while the shape (or a parent) is being animated, so the blur "arrived" only when
+   the animation ended. The look of the blur is now baked into the shape's own fill: a near-opaque tint under the usual
+   glass sheen. It hides whatever is behind it by itself, so it reads identically with or without the live blur. */
+#globalTracker .dk-glass{
+  background:var(--glass-fill), rgba(30,22,21,.94) !important;
+  background:var(--glass-fill), color-mix(in srgb, color-mix(in srgb, var(--night) 9%, var(--bg)) 94%, transparent) !important;
+}
+.ct-window, .ct-arrow{
+  background:var(--glass-fill), rgba(30,30,33,.92) !important;
+  background:var(--glass-fill), color-mix(in srgb, var(--surface) 92%, transparent) !important;
+}
+
+/* Same idea for every other blurred shape: bake the look of the blur into the shape's own fill so nothing depends on
+   backdrop-filter being live mid-animation.
+   Strong: panels / popovers / tooltips sit over busy content, so their tint is near-opaque.
+   Soft: the small floating controls keep a see-through tint (and still get the live blur on top when available). */
+.ct-window, .ct-arrow, .day, .focus-card, .cat-manager, #viewLog .log-card,
+.cat-palette, .vb-text, .dock-extras .iconbtn-label, .stats-edit-popover, .wr-toast{
+  background:var(--glass-fill), color-mix(in srgb, var(--surface) 92%, transparent) !important;
+}
+#authBar .topnav-links, #authBar .dock-extras, #pm-root .pm-dock,
+.tabs-row .tabs, .day-total, .log-count, .date-display, .mx-btn:not(.active){
+  background:var(--glass-fill), color-mix(in srgb, var(--surface) 55%, transparent) !important;
+}
+
+/* ================= Big cards are solid (glass is kept for the small floating pieces) =================
+   Thursday / Today's Focus / Categories / Activity Log: flat surface, hairline border, faint top highlight. */
+.day, .focus-card, .cat-manager, #viewLog .log-card{
+  background:var(--surface) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  box-shadow:0 0 0 1px var(--line), inset 0 1px 0 rgba(255,255,255,.04), 0 18px 40px -28px rgba(0,0,0,.45) !important;
+}
+html:not([data-theme="dark"]) .day, html:not([data-theme="dark"]) .focus-card,
+html:not([data-theme="dark"]) .cat-manager, html:not([data-theme="dark"]) #viewLog .log-card{
+  box-shadow:0 0 0 1px var(--line), inset 0 1px 0 rgba(255,255,255,.7), 0 18px 40px -28px rgba(0,0,0,.25) !important;
+}
+.day::before, .focus-card::before, .cat-manager::before, #viewLog .log-card::before{ display:none !important; }
+
+/* ================= Time knob stays dark in light mode =================
+   Same colour as the dock / sidebar pill (--pill), with a faint top-left edge light so it still reads as glass.
+   Fully opaque on purpose: it looks identical before, during and after the theme cross-fade. Dark mode keeps its own look. */
+html:not([data-theme="dark"]) #globalTracker .dk-glass{
+  --glass-edge:linear-gradient(140deg, rgba(255,255,255,.42), rgba(255,255,255,.05) 38%, rgba(255,255,255,.04) 62%, rgba(255,255,255,.26));
+  background:linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.02)), var(--pill) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  box-shadow:0 0 0 .5px rgba(0,0,0,.62), 0 8px 18px -8px rgba(20,20,30,.55) !important;
+}
+
+/* ================= Pomodoro launcher: same language as the dock =================
+   Dark pill (same colour as the dock + time knob) with an accent knob: orange while focusing, blue (same as the dial) on a break.
+   Running: the time sits on the dark track, the accent knob is on the right. The morph skin matches the launcher. */
+#pm-root{ --pm-acc:var(--night); --pm-acc-glow:var(--tint-ring-glow-1); --pm-acc-glow0:var(--tint-ring-glow-0); }
+#pm-root.is-break{ --pm-acc:#3FD0D0; --pm-acc-glow:rgba(63,208,208,.32); --pm-acc-glow0:rgba(63,208,208,0); }
+.pm-fab{
+  background:var(--pill); color:#fff;
+  box-shadow:0 10px 28px -10px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.pm-knob{ background:var(--pm-acc); color:#fff; transition:background-color .45s ease, color .45s ease, transform .45s var(--ease, ease); }
+.pm-fab:hover{ box-shadow:0 14px 34px -10px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.12); }
+.pm-fab.live, .pm-fab.live:hover, .pm-fab.live:active{ box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); }
+.pm-fab.live .pm-knob{ background:var(--pm-acc); color:#fff; box-shadow:none; }
+.pm-live-time{ color:var(--pill-active, #F1F1F3); }
+.pm-fab.open .pm-knob, .pm-fab.open:hover .pm-knob{ background:transparent; color:inherit; }
+.pm-fab.ringing{ animation:pmFabRing2 1s ease-in-out infinite; }
+@keyframes pmFabRing2{
+  0%,100%{ box-shadow:0 10px 28px -10px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08), 0 0 0 0 var(--pm-acc-glow); }
+  50%{ box-shadow:0 10px 28px -10px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08), 0 0 0 9px var(--pm-acc-glow0); }
+}
+.pm-ghost{ background:var(--pill); }
+#pm-root .pm-start.running{ background:var(--pm-acc); color:#fff; }
+#pm-root .pm-start.ringing{ background:var(--pm-acc); color:#fff; animation:pmBtnPulse2 1s ease-in-out infinite; }
+@keyframes pmBtnPulse2{ 0%,100%{ box-shadow:0 0 0 0 var(--pm-acc-glow0); } 50%{ box-shadow:0 0 0 7px var(--pm-acc-glow); } }
+
+/* ================= Push notifications ON = orange outline around the bell ================= */
+#authBar .dock-extras #enableAlarmsBtn{ transition:box-shadow .3s ease, color .3s ease; }
+#authBar .dock-extras #enableAlarmsBtn.enabled{ color:var(--night); box-shadow:inset 0 0 0 1.5px var(--night); }
+.topnav-links #enableAlarmsBtn::after{
+  content:''; position:absolute; left:50%; top:calc(50% - 2px); width:42px; height:42px; margin:-21px 0 0 -21px; border-radius:50%;
+  box-shadow:inset 0 0 0 1.5px var(--night); opacity:0; transform:scale(.85); pointer-events:none;
+  transition:opacity .3s ease, transform .45s var(--spring);
+}
+.topnav-links #enableAlarmsBtn.enabled::after{ opacity:1; transform:none; }
+
+/* ================= PATCH: bell orange, Doto type on day card, glass Stop button, glass Pomodoro launcher ================= */
+/* bell: icon + stroke orange whenever push is active (beats hover / dock colour rules) */
+#enableAlarmsBtn.enabled, #enableAlarmsBtn.enabled:hover, #enableAlarmsBtn.enabled:focus-visible{ color:var(--night) !important; }
+#enableAlarmsBtn.enabled svg{ color:var(--night) !important; stroke:var(--night) !important; filter:drop-shadow(0 0 6px color-mix(in srgb, var(--night) 55%, transparent)); }
+
+/* day card: same dot-matrix type as the rest of the theme.
+   Tweak these 5 numbers to resize everything at once. */
+:root{ --wr-fs-name:13.5px; --wr-fs-sub:10.5px; --wr-fs-time:12px; --wr-fs-chip:10.5px; --wr-fs-btn:11px; }
+.row .label, .row .task-sub, .row .task-duration, .row .task-remaining, .day-total,
+.focus-name, .focus-time, .focus-foot, .cat-name-static, .cat-name-input{
+  font-family:'Doto','Hanken Grotesk',sans-serif !important;
+}
+.row .label, .focus-name, .cat-name-static{ font-weight:700; letter-spacing:.03em; font-size:var(--wr-fs-name); }
+.row .task-sub{ font-weight:600; letter-spacing:.05em; font-size:var(--wr-fs-sub); }
+.row .task-duration, .row .task-remaining, .focus-time{ font-weight:800; letter-spacing:.05em; font-size:var(--wr-fs-time); }
+.row .task-remaining{ color:var(--night); text-shadow:0 0 8px color-mix(in srgb, var(--night) 40%, transparent); }
+.day-total{ font-weight:700; letter-spacing:.07em; font-size:var(--wr-fs-chip); }
+.focus-foot{ font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:var(--wr-fs-chip); }
+.task-start, .add-task-btn, .cat-edit-toggle{
+  font-family:'Doto','Hanken Grotesk',sans-serif !important; font-weight:800; text-transform:uppercase; letter-spacing:.1em; font-size:var(--wr-fs-btn);
+}
+
+/* Stop (running / ringing) = same glass as the TODAY chip: translucent orange tint, orange dot-matrix label */
+html .row .task-start.running, html .row .task-start.ringing,
+html .task-start.running, html .task-start.ringing{
+  background:color-mix(in srgb, var(--night) 16%, transparent) !important;
+  color:var(--night) !important; border-color:transparent !important;
+  text-shadow:0 0 8px color-mix(in srgb, var(--night) 55%, transparent);
+  box-shadow:0 0 0 .5px color-mix(in srgb, var(--night) 40%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--night) 26%, transparent), 0 6px 14px -8px rgba(0,0,0,.6) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
+}
+html .row .task-start.ringing{ animation:wrStopGlow 1s ease-in-out infinite; }
+@keyframes wrStopGlow{
+  0%,100%{ box-shadow:0 0 0 .5px color-mix(in srgb, var(--night) 40%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--night) 26%, transparent), 0 0 0 0 var(--tint-ring-glow-0); }
+  50%{ box-shadow:0 0 0 .5px color-mix(in srgb, var(--night) 55%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--night) 40%, transparent), 0 0 0 7px var(--tint-ring-glow-1); }
+}
+
+/* Pomodoro launcher: glass disc + glass orange knob with an orange target icon */
+.pm-fab{
+  background:var(--glass-fill) !important; color:var(--pm-acc);
+  -webkit-backdrop-filter:blur(18px) saturate(1.3); backdrop-filter:blur(18px) saturate(1.3);
+  box-shadow:0 10px 28px -10px rgba(0,0,0,.55), 0 0 0 .5px var(--glass-hair), inset 0 0 0 1px rgba(255,255,255,.12) !important;
+}
+.pm-fab .pm-knob, .pm-fab.live .pm-knob{
+  background:color-mix(in srgb, var(--pm-acc) 18%, transparent) !important; color:var(--pm-acc) !important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--pm-acc) 38%, transparent), 0 0 14px -2px color-mix(in srgb, var(--pm-acc) 35%, transparent) !important;
+}
+.pm-fab .pm-knob svg{ filter:drop-shadow(0 0 5px color-mix(in srgb, var(--pm-acc) 55%, transparent)); }
+.pm-fab.open .pm-knob, .pm-fab.open:hover .pm-knob{ background:transparent !important; color:inherit !important; box-shadow:none !important; }
+.pm-fab.open .pm-knob svg{ filter:none; }
+.pm-live-time{ color:var(--text) !important; font-family:'Doto','Hanken Grotesk',sans-serif !important; font-weight:900 !important; letter-spacing:.06em; }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const sb = supabase.createClient(
-  'https://filciqqqqwpplhnpdeko.supabase.co',
-  'sb_publishable_O9BWULqG4SPvF-d6Y2npcg_XQGJjaLg'
-);
+// If the Supabase script can't load (offline, blocked), the app must still boot and keep every timer working locally.
+// `sb` then becomes an inert stand-in: any call returns itself, and awaiting it yields an "offline" error result.
+function wrOfflineClient(){
+  const res = { data:null, error:{ message:'Cloud sync unavailable (offline)' } };
+  const h = { get:(t,k) => k === 'then' ? (ok => Promise.resolve(res).then(ok)) : (k === 'catch' || k === 'finally') ? (() => px) : px, apply:() => px };
+  const px = new Proxy(function(){}, h);
+  return px;
+}
 let currentUser = null;
+let sb;
+try{
+  sb = supabase.createClient(
+    'https://filciqqqqwpplhnpdeko.supabase.co',
+    'sb_publishable_O9BWULqG4SPvF-d6Y2npcg_XQGJjaLg'
+  );
+}catch(e){ sb = wrOfflineClient(); }
 </script>
 <script>
 const SCALE_START = 0;     // 12:00 AM — the rail now always spans the full 24h day
 const SCALE_END   = 1440;  // 24:00 (12:00 AM the next day)
-const SCALE_RANGE = SCALE_END - SCALE_START;
 
 // --- keep the screen awake while a pomodoro is running, so mobile auto-lock doesn't suspend
 // the tab mid-session. This only prevents the OS's idle-timeout sleep — it can't override a
@@ -2160,6 +2573,87 @@ function wrResumeAudioContexts(){
   document.addEventListener(evt, wrResumeAudioContexts, { passive: true });
 });
 
+// --- crash shield -----------------------------------------------------------------------------
+// One failing render / corrupt saved value must never stop a timer, lose a log entry or silence an alarm.
+function wrReportError(e, tag){ try{ console.error('[Bitrhythm]' + (tag ? ' ' + tag + ':' : ''), e); }catch(_){} }
+function wrSafe(fn, tag){ try{ return fn(); }catch(e){ wrReportError(e, tag); } }
+window.addEventListener('error', ev => { wrReportError(ev && (ev.error || ev.message), 'window.error'); });
+window.addEventListener('unhandledrejection', ev => { wrReportError(ev && ev.reason, 'unhandledrejection'); try{ ev.preventDefault(); }catch(_){} });
+const wrIsObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+// read + parse + validate a saved value; anything missing, corrupt or the wrong shape falls back to a fresh default
+function wrReadJSON(key, fallback, ok){
+  try{
+    const raw = localStorage.getItem(key);
+    if(raw == null || raw === '') return fallback();
+    const v = JSON.parse(raw);
+    return (!ok || ok(v)) ? v : fallback();
+  }catch(e){ return fallback(); }
+}
+
+// --- alarm sound: ONE shared AudioContext and one retro digital-alarm pattern for all three timers ---
+// Dry, clicky square-wave beeps like an 8-bit watch / arcade: "bip-bip-bip-BEEP", twice, then a pause. Each beep has a tiny
+// noise click at its start and a hard-edged envelope so it stays crisp. It repeats and swells over the first few rings.
+let wrAudioCtx = null, wrChimeRing = 0;
+function wrGetAudio(){
+  try{
+    if(!wrAudioCtx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return null;
+      wrAudioCtx = new AC();
+      wrRegisterAudioCtx(() => wrAudioCtx);
+    }
+    if(wrAudioCtx.state !== 'running'){ const pr = wrAudioCtx.resume(); if(pr && pr.catch) pr.catch(() => {}); }
+    return wrAudioCtx;
+  }catch(e){ return null; }
+}
+function wrChimeBus(ctx){
+  if(ctx._wrBus) return ctx._wrBus;
+  const master = ctx.createGain(); master.gain.value = 0.9;
+  const tone = ctx.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = 5200; tone.Q.value = 0.5; // takes the harsh edge off the square wave
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -14; comp.ratio.value = 4; comp.attack.value = 0.002; comp.release.value = 0.12;
+  master.connect(tone); tone.connect(comp); comp.connect(ctx.destination);
+  ctx._wrBus = master;
+  return master;
+}
+function wrClick(ctx, bus, t, vel){
+  if(!ctx._wrNoise){
+    const n = Math.floor(ctx.sampleRate * 0.012), buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0);
+    for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    ctx._wrNoise = buf;
+  }
+  const src = ctx.createBufferSource(), g = ctx.createGain(), hp = ctx.createBiquadFilter();
+  src.buffer = ctx._wrNoise; hp.type = 'highpass'; hp.frequency.value = 2500;
+  g.gain.setValueAtTime(vel, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.012);
+  src.connect(hp); hp.connect(g); g.connect(bus); src.start(t);
+}
+function wrBeep(ctx, bus, freq, t, dur, vel){
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'square'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(vel, t + 0.003);
+  g.gain.setValueAtTime(vel, t + Math.max(0.004, dur - 0.008));
+  g.gain.linearRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(bus);
+  o.start(t); o.stop(t + dur + 0.02);
+  wrClick(ctx, bus, t, vel * 1.4);
+}
+function wrChime(){
+  try{
+    const ctx = wrGetAudio(); if(!ctx) return;
+    const bus = wrChimeBus(ctx);
+    const t0 = ctx.currentTime + 0.03;
+    const lvl = Math.min(1, 0.7 + wrChimeRing * 0.12); wrChimeRing++;
+    const vel = 0.2 * lvl;
+    // bip bip bip BEEP  (x2)
+    [0, 0.62].forEach(g0 => {
+      [0, 0.12, 0.24].forEach(dt => wrBeep(ctx, bus, 1975, t0 + g0 + dt, 0.065, vel));
+      wrBeep(ctx, bus, 2637, t0 + g0 + 0.36, 0.17, vel * 1.1);
+    });
+  }catch(e){ /* audio unavailable — the vibration / notification paths still fire */ }
+}
+const WR_RING_EVERY_MS = 1900;
+
 // --- service worker registration, purely so notifications can be shown on Android ---
 // Android refuses `new Notification()` called from the page itself (throws "Illegal
 // constructor") — it only allows notifications shown via a registered service worker's
@@ -2194,6 +2688,36 @@ function wrNotify(title, body, tag){
   }
   try{ new Notification(title, options); }catch(e){ /* Android: Notification() itself is illegal — nothing more we can do without sw.js */ }
 }
+
+// --- notification burst: when an alarm goes off and the page is hidden (phone locked / app in background), the sound may be
+// blocked by the OS, so a fresh notification is posted every 2.5 s for 15 s. Same tag + renotify, so they replace each other and
+// buzz again instead of piling up. It is clocked by the background worker heartbeat (see tickAllRunning), stops the moment the
+// alarm is acknowledged or you come back to the app, and never runs while the app is on screen (sound + UI handle that).
+const WR_BURST_EVERY_MS = 2500, WR_BURST_FOR_MS = 15000;
+const wrBursts = {};
+function wrBurstFire(b){ b.last = Date.now(); b.sent++; wrSafe(() => wrNotify(b.title, b.body, b.tag), 'notify burst'); }
+function wrNotifyBurst(key, title, body, tag, isRinging){
+  wrBursts[key] = { title, body, tag, isRinging, active: false, startedAt: 0, last: 0, sent: 0, done: false };
+  if(document.hidden) wrBurstStart(wrBursts[key]);
+}
+function wrBurstStart(b){ if(b.active || b.done) return; b.active = true; b.startedAt = Date.now(); wrBurstFire(b); }
+function wrStopNotifyBurst(key){ delete wrBursts[key]; }
+function wrBurstTick(){
+  const now = Date.now();
+  Object.keys(wrBursts).forEach(k => {
+    const b = wrBursts[k];
+    if(!b || !b.active) return;
+    if(!(b.isRinging && b.isRinging()) || now - b.startedAt > WR_BURST_FOR_MS){ b.active = false; b.done = true; return; }
+    if(now - b.last >= WR_BURST_EVERY_MS) wrBurstFire(b);
+  });
+}
+document.addEventListener('visibilitychange', () => {
+  Object.keys(wrBursts).forEach(k => {
+    const b = wrBursts[k]; if(!b) return;
+    if(document.hidden){ if(b.isRinging && b.isRinging()) wrBurstStart(b); } // alarm was ringing when the screen turned off
+    else { b.active = false; b.done = true; }                                // back in the app: the sound and UI take over
+  });
+});
 
 // --- "time almost up" toast + system notification, shared by every timer on the page ---
 const wrToastWrap = document.getElementById('wrToastWrap');
@@ -2358,7 +2882,7 @@ if(navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', 
 // ============================================================================
 const WR_ENDED_KEY = 'wr_ended_runs_v1';
 const WR_ENDED_TTL_MS = 24*60*60*1000;
-let wrEndedRuns = (function(){ try{ return JSON.parse(localStorage.getItem(WR_ENDED_KEY) || '{}') || {}; }catch(e){ return {}; } })();
+let wrEndedRuns = wrReadJSON(WR_ENDED_KEY, () => ({}), wrIsObj);
 function wrSaveEnded(){
   const cutoff = Date.now() - WR_ENDED_TTL_MS;
   Object.keys(wrEndedRuns).forEach(k => { if((wrEndedRuns[k]||0) < cutoff) delete wrEndedRuns[k]; });
@@ -2460,10 +2984,11 @@ async function wrCheckEndedFromCloud(fromPush){
 // Tick every currently-running timer once. Shared by the visibility resync below and by the
 // background heartbeat further down, so both paths stay in sync instead of duplicating the loop.
 function tickAllRunning(){
-  pomoRefs.forEach(r => { if(r.pomo.running) r.tick(); });
-  if(ctState && ctState.running) ctTick();
-  if(blockTimerState.running) blockTimerTick();
-  wrOngoingTick();
+  pomoRefs.forEach(r => { if(r.pomo.running) wrSafe(r.tick, 'pomo tick'); });
+  if(ctState && ctState.running) wrSafe(ctTick, 'timer tick');
+  if(blockTimerState.running) wrSafe(blockTimerTick, 'block tick');
+  wrSafe(wrOngoingTick, 'ongoing tick');
+  wrSafe(wrBurstTick, 'notify burst tick');
   try{ wrCheckEndedFromCloud(false); }catch(e){} // pick up a Stop done on another device within ~1.5s
 }
 
@@ -2561,21 +3086,15 @@ function morphRender(listEl, build){
 // from scratch on every tick, so the CSS transition alone can never show this growth.
 function growStats(){
   if(!motionOK()) return;
-  const ring = document.querySelector('.pulse-fill');
-  if(ring){
-    const full = parseFloat(ring.getAttribute('stroke-dasharray')), to = parseFloat(ring.getAttribute('stroke-dashoffset'));
-    if(full) ring.animate([{ strokeDashoffset:full }, { strokeDashoffset:to }], { duration:1100, easing:EASE });
-  }
+  const dg = document.querySelector('.dial-dots');
+  if(dg){ const p0 = parseFloat(dg.dataset.pct) || 0; paintDialDots(0); requestAnimationFrame(() => requestAnimationFrame(() => { dg._lp = null; paintDialDots(p0); })); }
   // the day ring fades up, and the "now" dot sweeps round from midnight to the current time
   const segs = document.querySelector('.dial-segs');
   if(segs) segs.animate([{ opacity:0 }, { opacity:1 }], { duration:900, delay:300, easing:EASE, fill:'backwards' });
-  const now = document.querySelector('.dial-now');
-  if(now){
-    const m = /rotate\(([-\d.]+)/.exec(now.getAttribute('transform') || '');
-    const deg = m ? parseFloat(m[1]) : 0;
-    now.animate([{ transform:'rotate(0deg)', transformOrigin:'140px 140px' }, { transform:`rotate(${deg}deg)`, transformOrigin:'140px 140px' }], { duration:1300, easing:EASE });
+  { const kn = document.querySelector('.dial-knob');
+    if(kn && kn._a != null) sweepDialKnob(kn);
   }
-  rise(document.querySelector('.pulse-dial'), 0, 14, 600);
+  { const pd = document.querySelector('.pulse-dial'); if(pd) pd.animate([{ opacity:0 }, { opacity:1 }], { duration:600, easing:EASE, fill:'backwards' }); } // opacity only: a transform animation on the parent would switch the knob's backdrop blur off until it ends
   rise(document.querySelector('.pulse-copy'), 90, 12);
   rise(document.querySelector('.pulse-metrics'), 160, 12);
 }
@@ -2626,8 +3145,9 @@ showLogBtn.addEventListener('click', () => showView('log'));
 const FOCUS_LOG_KEY = 'wr_focus_log_v1';
 
 function loadFocusLog(){
-  try{ return JSON.parse(localStorage.getItem(FOCUS_LOG_KEY) || '{}'); }
-  catch(e){ return {}; }
+  const o = wrReadJSON(FOCUS_LOG_KEY, () => ({}), wrIsObj);
+  Object.keys(o).forEach(k => { const n = Number(o[k]); o[k] = (Number.isFinite(n) && n > 0) ? n : 0; });
+  return o;
 }
 function saveFocusLog(log){
   try{ localStorage.setItem(FOCUS_LOG_KEY, JSON.stringify(log)); }
@@ -2645,7 +3165,7 @@ function addFocusSeconds(sec){
   queueCloudPush();
   // keep the productivity matrix's reached/not-reached status live if it happens to be open
   // while a timer or pomodoro is running in the background
-  if(typeof matrixView !== 'undefined' && matrixView && !matrixView.hidden) renderMatrix();
+  if(typeof matrixView !== 'undefined' && matrixView && !matrixView.hidden) scheduleMatrix();
 }
 // per-weekday custom productive-time targets (minutes), set by the user — overrides the
 // auto-computed total from that day's to-do blocks when present. Keyed by day.key.
@@ -2822,8 +3342,7 @@ const POMO_KEY = 'wr_pomo_state_v1';
 const pomoRefs = []; // {pomo, render} for each day, filled in as day panels are built
 
 function loadPomoState(){
-  try{ return JSON.parse(localStorage.getItem(POMO_KEY) || '{}'); }
-  catch(e){ return {}; }
+  return wrReadJSON(POMO_KEY, () => ({}), wrIsObj);
 }
 function snapshotState(){
   return {
@@ -2882,7 +3401,8 @@ function mergeFocusLog(remote){
   const settled = loadSettledDays();
   // a day that's been settled against the Activity Log keeps its settled total — otherwise the max()
   // below would let another device's stale/inflated counter bring phantom time straight back
-  Object.keys(remote || {}).forEach(k => { if(settled.has(k)) return; merged[k] = Math.max(merged[k] || 0, remote[k] || 0); });
+  if(!wrIsObj(remote)) return merged;
+  Object.keys(remote).forEach(k => { if(settled.has(k)) return; merged[k] = Math.max(merged[k] || 0, Number(remote[k]) || 0); });
   return merged;
 }
 // Same idea for the tracker log (day -> array of individual session entries): union by entry id
@@ -2891,14 +3411,21 @@ function mergeFocusLog(remote){
 function mergeTrackerLog(remote){
   const local = loadTrackerLog();
   const merged = {...local};
-  Object.keys(remote || {}).forEach(k => {
+  if(!wrIsObj(remote)) return merged;
+  Object.keys(remote).forEach(k => {
+    if(!Array.isArray(remote[k])) return;
     const byId = new Map((merged[k] || []).map(e => [e.id, e]));
-    (remote[k] || []).forEach(e => { const cur = byId.get(e.id); if(!cur || (e.seconds||0) < (cur.seconds||0)) byId.set(e.id, e); });
+    remote[k].filter(wrIsObj).forEach(e => { const cur = byId.get(e.id); if(!cur || (e.seconds||0) < (cur.seconds||0)) byId.set(e.id, e); });
     merged[k] = Array.from(byId.values()).sort((a,b) => (b.at||0) - (a.at||0));
   });
   return merged;
 }
-function applyState(state, {rerenderMatrix} = {}){
+function applyState(state, opts){
+  if(!wrIsObj(state)) return; // empty / corrupt snapshot from storage or the cloud: ignore it
+  try{ return applyStateCore(state, opts || {}); }
+  catch(e){ wrReportError(e, 'applyState'); }
+}
+function applyStateCore(state, {rerenderMatrix} = {}){
   // Guards the volatile, fully-overwritten pieces of state (customTimer/blockTimer/pomo) against
   // an older or out-of-order snapshot resurrecting a session that's already been correctly
   // stopped/updated from a newer one. focusLog/trackerLog/timerHistory don't need this — they're
@@ -3182,11 +3709,18 @@ async function onSignedIn(user){
   currentUser = user;
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('authBar').style.display = 'flex';
-  document.getElementById('appWrap').hidden = false;
-  requestAnimationFrame(growStats);
+  // Don't reveal the app until this account's data is in. Revealing straight away showed the built-in template schedule
+  // (Corporate Work, Study / Trend Analysis ...) for a moment on every refresh, then jumped to the real tasks once the
+  // cloud copy arrived. Reveal when the pull settles, or after a short cap so a slow / offline connection never leaves a blank page.
+  const appWrapEl = document.getElementById('appWrap');
+  const wasShown = !appWrapEl.hidden;
+  let revealed = wasShown;
+  const reveal = () => { if(revealed) return; revealed = true; appWrapEl.hidden = false; requestAnimationFrame(growStats); };
+  const revealCap = wasShown ? 0 : setTimeout(reveal, 1500);
   hideNameEditor();
   userLabelEl.textContent = displayNameFor(user);
   if(user && user.created_at) applyTrackStart(user.created_at);
+  if(!wasShown){ const cached = loadPomoState(); if(cached && cached.ownerId === user.id && cached.updatedAt) applyState(cached, {rerenderMatrix:true}); }
 
   try{
     const remote = await pullCloudState();
@@ -3216,6 +3750,7 @@ async function onSignedIn(user){
     console.error('cloud sync failed', e);
     if(syncStatusEl) setSyncStatus('error');
   }
+  clearTimeout(revealCap); reveal();
   refreshPushButtonState();
 }
 
@@ -3254,14 +3789,6 @@ document.getElementById('signInBtn').addEventListener('click', async () => {
 // there's no <form>, so the phone keyboard's Next / Go key used to do nothing
 document.getElementById('authEmail').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('authPass').focus(); } });
 document.getElementById('authPass').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('signInBtn').click(); } });
-document.getElementById('signUpBtn').addEventListener('click', async () => {
-  const email = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPass').value;
-  if(password.length < 6){ authMsgEl.textContent = 'password needs 6+ characters'; return; }
-  authMsgEl.textContent = 'creating account…';
-  const { error } = await sb.auth.signUp({ email, password });
-  authMsgEl.textContent = error ? error.message : 'check your email to confirm, then sign in';
-});
 document.getElementById('logoutBtn').addEventListener('click', () => {
   // the sign-out icon sits right next to the notifications bell in the phone dock — don't let a slip log you out
   if(!confirm('Sign out of Bitrhythm on this device?')) return;
@@ -3325,6 +3852,21 @@ function urlBase64ToUint8Array(base64String){
 const enableAlarmsBtn = document.getElementById('enableAlarmsBtn');
 let pushSubscribed = false;
 
+// Resolves to the active service-worker registration. Registers sw.js itself if nothing is registered yet,
+// and gives up after 8 s with a readable error instead of hanging forever (which made the bell look dead).
+async function wrGetPushReg(){
+  if(!('serviceWorker' in navigator)) throw new Error('This browser has no service-worker support.');
+  let reg = await navigator.serviceWorker.getRegistration();
+  if(!reg){
+    try{ reg = await navigator.serviceWorker.register('sw.js'); }
+    catch(e){ throw new Error("sw.js could not be registered (" + (e && e.message || e) + "). Upload sw.js next to index.html and open the app over https."); }
+  }
+  return await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise((_, rej) => setTimeout(() => rej(new Error('The service worker never became active. Check that sw.js exists next to index.html (no 404) and reload.')), 8000))
+  ]);
+}
+
 async function refreshPushButtonState(){
   if(!currentUser || !('serviceWorker' in navigator) || !('PushManager' in window)){
     pushSubscribed = false;
@@ -3332,11 +3874,11 @@ async function refreshPushButtonState(){
     return;
   }
   try{
-    const reg = await navigator.serviceWorker.ready;
+    const reg = await wrGetPushReg();
     const sub = await reg.pushManager.getSubscription();
-    pushSubscribed = !!sub;
+    pushSubscribed = !!sub && Notification.permission === 'granted';
     enableAlarmsBtn.classList.toggle('enabled', pushSubscribed);
-  }catch(e){ /* ignore — button just stays off */ }
+  }catch(e){ console.warn('push state check failed:', e); }
 }
 
 async function enablePushAlarms(){
@@ -3346,9 +3888,9 @@ async function enablePushAlarms(){
     return;
   }
   const perm = await Notification.requestPermission();
-  if(perm !== 'granted'){ alert("Notification permission wasn't granted, so screen-off alarms can't be enabled."); return; }
+  if(perm !== 'granted'){ alert("Notification permission is '" + perm + "', so screen-off alarms can't be enabled. Allow notifications for this site in your browser/site settings (on iPhone: add the app to the Home Screen first)."); return; }
   try{
-    const reg = await navigator.serviceWorker.ready;
+    const reg = await wrGetPushReg();
     let sub = await reg.pushManager.getSubscription();
     if(!sub){
       sub = await reg.pushManager.subscribe({
@@ -3368,13 +3910,13 @@ async function enablePushAlarms(){
     enableAlarmsBtn.classList.add('enabled');
   }catch(e){
     console.error('push subscribe failed', e);
-    alert('Could not enable screen-off alarms — see console for details.');
+    alert('Could not enable screen-off alarms: ' + ((e && e.message) || e));
   }
 }
 
 async function disablePushAlarms(){
   try{
-    const reg = await navigator.serviceWorker.ready;
+    const reg = await wrGetPushReg();
     const sub = await reg.pushManager.getSubscription();
     if(sub){
       await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
@@ -3385,6 +3927,8 @@ async function disablePushAlarms(){
   enableAlarmsBtn.classList.remove('enabled');
 }
 
+document.addEventListener('visibilitychange', () => { if(!document.hidden && currentUser) refreshPushButtonState(); });
+window.addEventListener('focus', () => { if(currentUser) refreshPushButtonState(); });
 enableAlarmsBtn.addEventListener('click', () => {
   if(pushSubscribed) disablePushAlarms(); else enablePushAlarms();
 });
@@ -3400,7 +3944,7 @@ function wrScheduleAlarm(key, fireAtMs, title, body, tag){
     // Explicit, not left to the column default — otherwise an *existing* row (re-scheduled on
     // every restart of the same timer) keeps whatever interval it was first created with,
     // even after the table's default gets tuned faster later.
-    repeat_every_seconds: 5, max_repeats: 18
+    repeat_every_seconds: 3, max_repeats: 5 // a push every 3 s for ~15 s
   }, { onConflict: 'user_id,client_key' }).then(({error}) => {
     if(error) console.error('schedule alarm failed', error);
   });
@@ -3441,7 +3985,14 @@ mxPrevBtn.addEventListener('click', () => { mxYear -= 1; renderMatrix(); });
 mxNextBtn.addEventListener('click', () => { mxYear += 1; renderMatrix(); });
 mxTodayBtn.addEventListener('click', () => { mxYear = new Date().getFullYear(); renderMatrix(); if(typeof window.openDustProjector === 'function') window.openDustProjector(); });
 
+// timers credit time every second; the matrix only needs to catch up every few seconds
+var mxTimer = null, mxLast = 0;
+function scheduleMatrix(){
+  if(mxTimer) return;
+  mxTimer = setTimeout(() => { mxTimer = null; renderMatrix(); }, Math.max(0, 3000 - (Date.now() - mxLast)));
+}
 function renderMatrix(){
+  mxLast = Date.now();
   mxPeriodLabel.textContent = String(mxYear);
 
   // Reads from the same ledger (trackerLog) and the same live-in-progress helper that the rail
@@ -3508,6 +4059,9 @@ function fitMatrix(){
   const el = mxMatrixEl, n = el.children.length;
   const W = el.clientWidth, H = el.clientHeight;
   if(!n || W < 50 || H < 50) return;
+  const fk = n + '|' + W + '|' + H;
+  if(el._fk === fk) return;
+  el._fk = fk;
   const gap = parseFloat(getComputedStyle(el).columnGap) || 4;
   let best = {c:Math.ceil(Math.sqrt(n)), s:0};
   for(let c = 7; c <= 80; c++){
@@ -3518,7 +4072,10 @@ function fitMatrix(){
   const px = Math.max(6, Math.min(26, Math.floor(best.s)));
   el.style.gridTemplateColumns = `repeat(${best.c}, ${px}px)`;
   el.style.gridAutoRows = px + 'px';
-  el.querySelectorAll('.mx-cell').forEach(c => { c.style.width = px + 'px'; c.style.height = px + 'px'; });
+  if(el._px !== px || el._pn !== n){
+    el._px = px; el._pn = n;
+    el.querySelectorAll('.mx-cell').forEach(c => { c.style.width = px + 'px'; c.style.height = px + 'px'; });
+  }
 }
 if(typeof ResizeObserver !== 'undefined') new ResizeObserver(() => fitMatrix()).observe(mxMatrixEl);
 
@@ -3541,13 +4098,6 @@ function fmt(min){
   const ampm = (h < 12 || h === 24) ? 'AM' : 'PM';
   let h12 = h % 12; if(h12 === 0) h12 = 12;
   return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
-}
-// 24-hour tick label (00, 03, 06 ... 21, 24) — the rail is a straightforward midnight-to-midnight
-// clock now, so labels are plain 24h hour numbers instead of 12h am/pm.
-function tickLabel(min){
-  const wrapped = ((min % 1440) + 1440) % 1440;
-  const h = (min >= 1440 && wrapped === 0) ? 24 : Math.floor(wrapped/60);
-  return String(h).padStart(2,'0');
 }
 function minsToHM(mins){
   mins = Math.max(0, Math.round(mins));
@@ -3573,16 +4123,26 @@ function refreshGlobalTargetUI(){
 // --- unified activity tracker + per-block countdowns ---
 const TRACKER_KEY = 'wr_activity_tracker_v1';
 const ACTIVITY_LOG_WINDOW_MS = 48*60*60*1000; // storage retention only — the Activity Log view itself now shows just today (see renderActivityLog); this window just bounds how long a finished session's data sticks around before pruneTrackerLogWindow() clears it out, as a safety margin past a plain midnight cutoff
-function loadTrackerLog(){ try{return JSON.parse(localStorage.getItem(TRACKER_KEY)||'{}')}catch(e){return {}} }
+function loadTrackerLog(){
+  // every day must be a list of well-formed entries; a corrupt value is dropped instead of crashing the log / rail / matrix
+  const o = wrReadJSON(TRACKER_KEY, () => ({}), wrIsObj);
+  Object.keys(o).forEach(k => {
+    const list = Array.isArray(o[k]) ? o[k] : [];
+    o[k] = list.filter(e => wrIsObj(e) && Number.isFinite(Number(e.seconds)));
+  });
+  return o;
+}
 function saveTrackerLog(x){ try{localStorage.setItem(TRACKER_KEY,JSON.stringify(x));}catch(e){} }
 function makeSessionId(){ return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function addTrackerSession(source, seconds, label, cat, id){
   seconds=Math.max(0,Math.round(seconds)); if(!seconds) return;
   const log=loadTrackerLog(), k=dateKey(new Date());
-  log[k]=log[k]||[];
+  if(!Array.isArray(log[k])) log[k]=[];
   log[k].push({id:id||makeSessionId(),source,seconds,label:label||source,at:Date.now(),cat:cat||'day-soft'});
-  saveTrackerLog(log); renderAllTrackers(); persistLocal();
-  if(!logView.hidden) renderActivityLog();
+  saveTrackerLog(log);
+  wrSafe(persistLocal);
+  wrSafe(renderAllTrackers, 'rail');
+  wrSafe(() => { if(!logView.hidden) renderActivityLog(); }, 'activity log');
 }
 function renderAllTrackers(){ renderRail(); }
 
@@ -3593,7 +4153,7 @@ function renderAllTrackers(){ renderRail(); }
 // focusLog total to what the Activity Log actually lists for that day, so phantom seconds (see
 // renderStats) never get baked into history / the Matrix. Settled days are remembered and skipped.
 const SETTLED_KEY = 'wr_settled_days_v1';
-function loadSettledDays(){ try{ return new Set(JSON.parse(localStorage.getItem(SETTLED_KEY)||'[]')); }catch(e){ return new Set(); } }
+function loadSettledDays(){ return new Set(wrReadJSON(SETTLED_KEY, () => [], Array.isArray)); }
 function settlePastDays(log){
   const todayKey = dateKey(new Date()), settled = loadSettledDays();
   let focus = null, changed = false;
@@ -3727,44 +4287,32 @@ function findBlockByKey(key){
 
 // --- block-timer alarm: same "beep loop until acknowledged" pattern as the pomodoro/custom
 // timer, so finishing a block is just as hard to miss as the other two timers ---
-let blockAudioCtx = null;
-function blockBeep(){
-  try{
-    if(!blockAudioCtx){ blockAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => blockAudioCtx); }
-    if(blockAudioCtx.state === 'suspended') blockAudioCtx.resume();
-    const now = blockAudioCtx.currentTime;
-    [0, 0.22].forEach(offset => {
-      [880, 1320].forEach(freq => {
-        const osc = blockAudioCtx.createOscillator();
-        const gain = blockAudioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now + offset);
-        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
-        osc.connect(gain).connect(blockAudioCtx.destination);
-        osc.start(now + offset);
-        osc.stop(now + offset + 0.24);
-      });
-    });
-  }catch(e){ /* audio unavailable — ignore */ }
-}
+function blockBeep(){ wrChime(); }
 function blockStartRinging(){
+  try{ blockStartRingingCore(); }
+  catch(e){
+    wrReportError(e, 'blockStartRinging');
+    if(!blockTimerState.alarmId){ blockTimerState.ringing = true; wrChimeRing = 0; blockBeep(); blockTimerState.alarmId = setInterval(blockBeep, WR_RING_EVERY_MS); }
+  }
+}
+function blockStartRingingCore(){
   // Guard against a second overlapping beep loop being layered on top of one that's already
   // running — this is what made the alarm sound "stacked"/doubled: nothing here used to check
   // whether alarmId was already set before handing out a brand new setInterval.
   if(blockTimerState.alarmId){ clearInterval(blockTimerState.alarmId); blockTimerState.alarmId = null; }
   blockTimerState.ringing = true;
+  wrChimeRing = 0;
   blockBeep();
-  blockTimerState.alarmId = setInterval(blockBeep, 900);
+  blockTimerState.alarmId = setInterval(blockBeep, WR_RING_EVERY_MS);
   if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
   // Same as pomodoro/custom timer: the beep can be silent in a backgrounded tab, so also fire a
   // local system notification, and let the server-side push (scheduled below) keep spamming as
   // a guaranteed backup even if the tab is fully asleep or the screen is locked.
-  if(document.hidden) wrNotify('Bitrhythm', `${blockTimerState.label} — time's up.`, 'wr-block');
+  wrNotifyBurst('block', 'Bitrhythm', `${blockTimerState.label} — time's up.`, 'wr-block', () => blockTimerState.ringing);
   dayPanels.forEach(renderList);
 }
 function blockStopRinging(){
+  wrStopNotifyBurst('block');
   blockTimerState.ringing = false;
   clearInterval(blockTimerState.alarmId);
   blockTimerState.alarmId = null;
@@ -3780,7 +4328,7 @@ function blockFinishSession(asOf){
   const endedRunId = blockTimerState.runId, trackId = 'b' + blockTimerState.startedAt; // same id on every device => logged once
   // catch up any trailing partial second that hasn't been credited to the focus log yet — the
   // rest was already credited live, tick by tick, via blockCreditElapsedFocus
-  blockCreditElapsedFocus(asOf);
+  wrSafe(() => blockCreditElapsedFocus(asOf), 'block credit');
   const elapsed = Math.max(0, Math.floor((asOf-blockTimerState.startedAt)/1000));
   const total = blockTimerState.elapsed + elapsed;
   const finishedInfo = findBlockByKey(blockTimerState.blockKey);
@@ -3795,12 +4343,12 @@ function blockFinishSession(asOf){
   blockTimerState.elapsed = 0; blockTimerState.endAt = null; blockTimerState.startedAt = null; blockTimerState.warned30 = false;
   blockTimerState.lastCredit = null; blockTimerState.runId = null;
   // focus log was already credited live above — only the rail/history still need this lump sum
-  if(total>0){ addTrackerSession('block',total,blockTimerState.label,blockTimerState.category,trackId); }
+  if(total>0){ wrSafe(() => addTrackerSession('block',total,blockTimerState.label,blockTimerState.category,trackId), 'block log'); }
   blockStartRinging();
-  releaseWakeLockIfIdle();
-  renderAllTrackers(); dayPanels.forEach(renderList); renderStats(); persistLocal();
-  renderPomo(); renderCt(); // block timer freed up — unlock the other two widgets' Start buttons
-  wrMarkRunEnded(endedRunId);
+  wrSafe(releaseWakeLockIfIdle);
+  wrSafe(renderAllTrackers); wrSafe(() => dayPanels.forEach(renderList), 'render list'); wrSafe(renderStats); wrSafe(persistLocal);
+  wrSafe(renderPomo); wrSafe(renderCt); // block timer freed up — unlock the other two widgets' Start buttons
+  wrSafe(() => wrMarkRunEnded(endedRunId));
 }
 // manual Stop (mid-countdown) or dismissing an alarm that's already ringing
 function stopBlockTimer(){
@@ -3861,6 +4409,14 @@ function updateRunningBlockRowTime(panel){
 // (tickAllRunning), so a throttled/backgrounded tab still catches up and fires the alarm the
 // moment it's checked again, instead of drifting.
 function blockTimerTick(){
+  try{ blockTimerTickCore(); }
+  catch(e){
+    wrReportError(e, 'blockTimerTick');
+    // whatever broke, the deadline still has to fire
+    if(blockTimerState.running && blockTimerState.endAt && Date.now() >= blockTimerState.endAt) wrSafe(() => blockFinishSession(), 'block finish');
+  }
+}
+function blockTimerTickCore(){
   if(!blockTimerState.running) return;
   if(!wrShouldTick(blockTimerState)) return;
   const now = Date.now();
@@ -3907,8 +4463,7 @@ function toggleBlockTimer(panel,idx){
   if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   // Warm up the alarm's AudioContext right on this click (a real user gesture) — same reasoning
   // as the pomodoro/custom timer Start handlers.
-  if(!blockAudioCtx){ blockAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => blockAudioCtx); }
-  if(blockAudioCtx.state === 'suspended') blockAudioCtx.resume();
+  wrGetAudio();
   const fullDurationSec=Math.max(1,Math.round(b.duration!=null?b.duration:b.e-b.s))*60;
   // leftover time only resumes if it was left over *today* — otherwise (e.g. this is next
   // week's occurrence of the same weekday block) it starts fresh from the full duration.
@@ -3959,13 +4514,147 @@ function getLiveTracking(){
   }
   return null;
 }
+function dialDotsMarkup(){
+  // speaker grille: 31-col dot grid clipped to a clean circle, black core block, like the reference
+  const P=8, N=15, RM=117, CR=61; let s='';
+  for(let r=-N;r<=N;r++) for(let c=-N;c<=N;c++){
+    const x=c*P, y=r*P, d=Math.hypot(x,y);
+    if(d>RM) continue;
+    const core = Math.pow(Math.abs(x),2.6)+Math.pow(Math.abs(y),2.6) <= Math.pow(CR,2.6);
+    const tw = ((c+N)*3+(r+N)*5)%4===0;
+    s += `<circle class="dd${core?' c':''}${tw?' tw':''}" cx="${(140+x).toFixed(1)}" cy="${(140+y).toFixed(1)}" r="${(1.5+1.5*Math.pow(1-d/117,1.2)).toFixed(2)}" data-e="${d.toFixed(1)}" data-c="${core?1:0}" style="transition-delay:${Math.round(d/117*240)}ms;--tw:-${(((c+N)*7+(r+N)*11)%18)/10}s"/>`;
+  }
+  return s;
+}
+// Orange spreads from the centre dot (area grows with progress) and fades toward its edge; 100% = every dot solid orange.
+// ---- Dial FX: idle ripple, milestone pulses, touch magnify, halftone breathing (one light rAF loop) ----
+const DFX = { sweep:false, run:false, vis:true, last:0, pulses:[], ptr:null, still: matchMedia('(prefers-reduced-motion: reduce)').matches };
+function dialPulse(ox, oy, v, w, a, delay){ DFX.pulses.push({ t0: performance.now() + (delay||0), ox, oy, v, w, a }); }
+function dialMilestone(full){
+  if(DFX.still) return;
+  if(full){ dialPulse(0,0,170,24,1.1,0); dialPulse(0,0,170,16,.8,260); dialPulse(0,0,170,10,.6,520); }
+  else dialPulse(0,0,120,12,.95,0);
+}
+function initDialFX(){
+  const g = document.querySelector('.dial-dots'); if(!g) return;
+  if(!g._fx){
+    g._fx = true;
+    for(const el of g.children){ el._x = el.cx.baseVal.value - 140; el._y = el.cy.baseVal.value - 140; el._d = Math.hypot(el._x, el._y); el._r0 = el.r.baseVal.value; }
+    const svg = g.ownerSVGElement, pt = e => { const b = svg.getBoundingClientRect(), k = 280/b.width; return { x:(e.clientX-b.left)*k-140, y:(e.clientY-b.top)*k-140 }; };
+    svg.addEventListener('pointermove', e => { DFX.ptr = pt(e); });
+    svg.addEventListener('pointerleave', () => { DFX.ptr = null; });
+    svg.addEventListener('pointercancel', () => { DFX.ptr = null; });
+    svg.addEventListener('pointerdown', e => { const q = pt(e); DFX.ptr = q; if(!DFX.still) dialPulse(q.x, q.y, 130, 9, .85, 0); });
+    if('IntersectionObserver' in window) new IntersectionObserver(es => { DFX.vis = es[es.length-1].isIntersecting; }).observe(svg);
+  }
+  if(!DFX.run){ DFX.run = true; requestAnimationFrame(dialFXFrame); }
+}
+function dialFXFrame(ts){
+  const g = document.querySelector('.dial-dots');
+  if(!g){ DFX.run = false; return; }
+  requestAnimationFrame(dialFXFrame);
+  const de = document.documentElement;
+  // nothing to animate while the dial is off-screen or covered by the Pomodoro / dust overlay
+  if(document.hidden || !DFX.vis || DFX.sweep || de.classList.contains('pm-open') || de.classList.contains('dust-open')) return;
+  if(ts - DFX.last < ((DFX.pulses.length || DFX.ptr) ? 33 : 100)) return;
+  DFX.last = ts;
+  const now = performance.now(), live = g.classList.contains('live'), f0 = (ts/1000*(live ? 44 : 22)) % 177;
+  DFX.pulses = DFX.pulses.filter(p => (now - p.t0)/1000*p.v < 230);
+  const act = DFX.pulses.filter(p => now >= p.t0).map(p => [p.ox, p.oy, (now - p.t0)/1000*p.v, p.w, p.a]);
+  const ptr = DFX.ptr;
+  for(const el of g.children){
+    if(el._d === undefined) continue;
+    let i = DFX.still ? 0 : .5*Math.exp(-Math.pow(el._d - f0, 2)/288);
+    for(const [ox,oy,fr,w,a] of act){ const q = Math.hypot(el._x-ox, el._y-oy) - fr; i += a*Math.exp(-q*q/(2*w*w)); }
+    if(ptr && !DFX.still){ const q = Math.hypot(el._x-ptr.x, el._y-ptr.y); if(q < 30) i += Math.pow(1 - q/30, 2)*.9; }
+    i = Math.min(1.4, i);
+    const op = Math.round(Math.min(1, .8 + .2*(el._t||0) + .3*i)*20)/20, rr = Math.round(el._r0*(1 + .45*i)*5)/5;
+    if(el._o !== op){ el._o = op; el.style.opacity = op; }
+    if(el._rr !== rr){ el._rr = rr; el.setAttribute('r', rr); }
+  }
+}
+// outer band of the grille takes the colour of what you did at that time of day (same categories as the history line)
+function dialWedges(WS){
+  const g = document.querySelector('.dial-dots'); if(!g) return;
+  const sig = WS.map(w => Math.round(w[0]) + ',' + Math.round(w[1]) + ',' + w[2]).join(';');
+  if(g._ws === sig) return;
+  g._ws = sig;
+  let ch = false;
+  for(const el of g.children){
+    if(el._d === undefined || el._d < 78) continue;
+    if(el._m === undefined) el._m = ((Math.atan2(el._x, -el._y)/(2*Math.PI)) + 1) % 1 * 1440;
+    const m = el._m; let c = null;
+    for(const w of WS) if(m >= w[0] && m <= w[1]) c = w[2];
+    const b = c ? `color-mix(in srgb, ${c} 40%, var(--dot))` : null;
+    if(el._b !== b){ el._b = b; el._t = -1; ch = true; }
+  }
+  if(ch) paintDialDots(parseFloat(g.dataset.pct) || 0, true);
+}
+function dialDustMarkup(){
+  // little dust motes that drift out from the centre while a timer is running
+  let o='';
+  for(let i=0;i<18;i++){
+    const a=i*(Math.PI*2/18)+((i*37)%10)/10, d=45+((i*29)%60), r=(1.1+((i*7)%5)*.35).toFixed(2);
+    o += `<circle cx="140" cy="140" r="${r}" style="--dx:${(Math.sin(a)*d).toFixed(1)}px;--dy:${(-Math.cos(a)*d).toFixed(1)}px;animation-duration:${3+((i*3)%4)}s;animation-delay:-${((i*5)%9)*.4}s"/>`;
+  }
+  return o;
+}
+function setDialLive(on){
+  document.querySelectorAll('.dial-dots, .dial-dust').forEach(g => g.classList.toggle('live', !!on));
+}
+function paintDialDots(pct, force){
+  const g = document.querySelector('.dial-dots'); if(!g) return;
+  pct = Math.max(0, Math.min(100, Number(pct)||0)); g.dataset.pct = pct;
+  { const prev = g._lp; g._lp = pct; if(prev != null && pct > prev) for(const m of [25,50,75,100]) if(prev < m && pct >= m) dialMilestone(m === 100); }
+  const EM = 117, SOFT = 46, F = pct > 0 ? Math.sqrt(pct/100)*(EM+SOFT) + SOFT*.5 : -1e9;
+  if(!force && g._pp != null && pct > 0 && pct < 100 && Math.abs(pct - g._pp) < .15) return;
+  g._pp = pct;
+  for(const el of g.children){
+    if(el._e === undefined) el._e = parseFloat(el.dataset.e);
+    let t = Math.max(0, Math.min(1, (F - el._e)/SOFT));
+    t = Math.min(1, t*1.5); t = Math.round(t*40)/40;
+    if(el._t === t) continue; el._t = t; el.classList.toggle('on', t > 0);
+    el.style.fill = t > 0 ? `color-mix(in srgb, var(--night) ${Math.round(t*100)}%, ${el._b || 'var(--dot)'})` : (el._b || '');
+  }
+}
+// The knob is positioned with left/top (never a transform animation): backdrop-filter stays live on every
+// frame while it moves, instead of switching on after the transition ends (WebKit/Chrome drop it under
+// animated transforms). It only has to move 0.25deg a minute, so tiny changes (<0.05deg) are skipped.
+const KNOB_R = 38.214; // knob centre radius as % of the dial (107 / 280)
+function placeDialKnob(k, deg){
+  const g = k.firstElementChild, r = deg*Math.PI/180;
+  g.style.left = (50 + KNOB_R*Math.sin(r)).toFixed(3) + '%';
+  g.style.top = (50 - KNOB_R*Math.cos(r)).toFixed(3) + '%';
+}
+function setDialKnob(deg){
+  const k = document.querySelector('.dial-knob'); if(!k) return;
+  if(k._a != null && Math.abs(deg - k._a) < .05) return;
+  k._a = deg;
+  if(!k._sweeping) placeDialKnob(k, deg);
+}
+function sweepDialKnob(k){
+  if(k._raf) cancelAnimationFrame(k._raf);
+  const t0 = performance.now(), D = 1300;
+  k._sweeping = true; DFX.sweep = true;
+  const end = () => { k._sweeping = false; k._raf = 0; DFX.sweep = false; placeDialKnob(k, k._a); };
+  const step = now => {
+    const t = Math.min(1, (now - t0)/D), e = 1 - Math.pow(1 - t, 4);
+    placeDialKnob(k, k._a*e);
+    if(t < 1) k._raf = requestAnimationFrame(step); else end();
+  };
+  placeDialKnob(k, 0);
+  k._raf = requestAnimationFrame(step);
+}
 function renderRail(panel){
   // Paints today's sessions as arcs on the dial's outer ring (midnight at the top, clockwise) and
   // moves the "now" dot. Safe to call before the dial exists — it just does nothing.
   const segs = document.querySelector('.dial-segs');
-  const nowG = document.querySelector('.dial-now');
-  if(!segs || !nowG) return;
-  const R = 130, CX = 140, CY = 140;
+  if(!segs) return;
+  { const lv = getLiveTracking();
+    const sig = (localStorage.getItem(TRACKER_KEY) || '') + '|' + Math.floor(Date.now()/1000) + '|' + (lv ? lv.cat + ':' + lv.seconds + ':' + lv.startedAt : '') + '|' + categories.map(c => c.id + c.color).join(',');
+    if(segs._sig === sig) return;
+    segs._sig = sig; }
+  const R = 125, CX = 140, CY = 140;
   const pt = m => { const a = m/1440*2*Math.PI; return [CX + R*Math.sin(a), CY - R*Math.cos(a)]; };
   const arc = (s, e) => {
     e = Math.min(1439, Math.max(e, s + 2));        // keep very short sessions visible as a dot
@@ -3975,22 +4664,28 @@ function renderRail(panel){
   const sessions = loadTrackerLog()[dateKey(new Date())] || [];
   const live = getLiveTracking();
   let out = '';
+  const WS = [];
+  const nowMin = toScaleMinutes(new Date());
+  if(nowMin > 1) out += `<path class="el" d="${arc(0, nowMin)}"><title>Time so far today</title></path>`;
   sessions.forEach(x => {
     const sec = Math.max(0, Number(x.seconds)||0);
     if(!sec) return;
     const endMin = toScaleMinutes(new Date(x.at));
     const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(x.at - sec*1000))));
     const cat = getCategory(x.cat || 'day-soft');
+    WS.push([startMin, endMin, cat.color || 'var(--rest-line)']);
     out += `<path d="${arc(startMin, endMin)}" stroke="${cat.color || 'var(--rest-line)'}"><title>${escapeHtml(x.label || x.source || 'Session')} — ${ctDurationFmt(sec)}</title></path>`;
   });
   if(live){
     const endMin = toScaleMinutes(new Date());
     const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(live.startedAt))));
     const cat = getCategory(live.cat || 'day-soft');
+    WS.push([startMin, endMin, cat.color || 'var(--rest-line)']);
     out += `<path class="live" d="${arc(startMin, endMin)}" stroke="${cat.color || 'var(--rest-line)'}"><title>${escapeHtml(live.label)} — running now (${ctDurationFmt(live.seconds)})</title></path>`;
   }
   segs.innerHTML = out;
-  nowG.setAttribute('transform', `rotate(${(toScaleMinutes(new Date())/1440*360).toFixed(2)} ${CX} ${CY})`);
+  setDialKnob(toScaleMinutes(new Date())/1440*360);
+  dialWedges(WS);
 }
 function renderList(panel){ morphRender(panel.listEl, () => buildList(panel)); }
 function buildList(panel){
@@ -4360,52 +5055,34 @@ const gpPresetBtns = document.getElementById('gpPresets').querySelectorAll('.pom
 const gpSessionsEl = document.getElementById('gpSessions');
 const gpLoggedEl = document.getElementById('gpLogged');
 
-let pomoAudioCtx = null;
-function pomoBeep(){
-  try{
-    if(!pomoAudioCtx){
-      pomoAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      wrRegisterAudioCtx(() => pomoAudioCtx);
-    }
-    if(pomoAudioCtx.state === 'suspended') pomoAudioCtx.resume();
-    const now = pomoAudioCtx.currentTime;
-    // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
-    [0, 0.22].forEach(offset => {
-      [880, 1320].forEach(freq => {
-        const osc = pomoAudioCtx.createOscillator();
-        const gain = pomoAudioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now + offset);
-        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
-        osc.connect(gain).connect(pomoAudioCtx.destination);
-        osc.start(now + offset);
-        osc.stop(now + offset + 0.24);
-      });
-    });
-  }catch(e){ /* audio unavailable — ignore */ }
-}
+function pomoBeep(){ wrChime(); }
 
 function pomoStartRinging(){
+  try{ pomoStartRingingCore(); }
+  catch(e){
+    wrReportError(e, 'pomoStartRinging');
+    if(!pomo.alarmId){ pomo.ringing = true; wrChimeRing = 0; pomoBeep(); pomo.alarmId = setInterval(pomoBeep, WR_RING_EVERY_MS); }
+  }
+}
+function pomoStartRingingCore(){
   // Same guard as blockStartRinging/ctStartRinging: never layer a second beep loop on top of
   // one that's already going, or the alarm sounds "stacked"/doubled.
   if(pomo.alarmId){ clearInterval(pomo.alarmId); pomo.alarmId = null; }
   pomo.ringing = true;
   gpEl.classList.add('ringing');
+  wrChimeRing = 0;
   pomoBeep();
-  pomo.alarmId = setInterval(pomoBeep, 900);
+  pomo.alarmId = setInterval(pomoBeep, WR_RING_EVERY_MS);
   if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
   // Browsers often mute or suspend audio in background tabs, so the beep alone can be
   // silent while backgrounded — a system notification is the more reliable signal there.
-  if(document.hidden){
-    wrNotify('Bitrhythm', pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.", 'wr-pomo');
-  }
+  wrNotifyBurst('pomo', 'Bitrhythm', pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.", 'wr-pomo', () => pomo.ringing);
   // Deliberately NOT cancelling the server-side push here — the server still sends its own
   // alert a few seconds later as a guaranteed backup if the beep/notification above didn't land.
   renderPomo(); // Start button turns into Stop
 }
 function pomoStopRinging(){
+  wrStopNotifyBurst('pomo');
   pomo.ringing = false;
   gpEl.classList.remove('ringing');
   clearInterval(pomo.alarmId);
@@ -4489,17 +5166,24 @@ function pomoFinishPhase(asOf){
     pomo.sessions++;
     pomo.mode = 'break';
     pomo.remaining = pomo.breakLen;
-    pomoFlushTracker(); // focus stretch just ended — log it to the rail now
+    wrSafe(pomoFlushTracker, 'pomo log'); // focus stretch just ended — log it to the rail now
   } else {
     pomo.mode = 'focus';
     pomo.remaining = pomo.workLen;
   }
   pomoStartRinging();
-  persistLocal();
-  releaseWakeLockIfIdle();
-  wrMarkRunEnded(endedRunId);
+  wrSafe(persistLocal);
+  wrSafe(releaseWakeLockIfIdle);
+  wrSafe(() => wrMarkRunEnded(endedRunId));
 }
 function pomoTick(){
+  try{ pomoTickCore(); }
+  catch(e){
+    wrReportError(e, 'pomoTick');
+    if(pomo.running && pomo.endAt && Date.now() >= pomo.endAt) wrSafe(() => pomoFinishPhase(Date.now()), 'pomo finish');
+  }
+}
+function pomoTickCore(){
   if(!pomo.running) return;
   if(!wrShouldTick(pomo)) return;
   const now = Date.now();
@@ -4542,8 +5226,7 @@ gpStartBtn.addEventListener('click', () => {
     ensurePomoNotifyPermission();
     // Warm up the alarm's AudioContext right on this click (a real user gesture) — see the
     // matching comment on the custom timer's Start handler below for why.
-    if(!pomoAudioCtx){ pomoAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => pomoAudioCtx); }
-    if(pomoAudioCtx.state === 'suspended') pomoAudioCtx.resume();
+    wrGetAudio();
     pomo.running = true;
     pomo.runId = wrNewRunId();
     pomo.endAt = Date.now() + pomo.remaining * 1000;
@@ -4606,10 +5289,11 @@ pomoRefs.push({ pomo, render: renderPomo, tick: pomoTick });
 const TIMER_HISTORY_KEY = 'wr_timer_history_v1';
 let timerHistory = { date: dateKey(new Date()), entries: [] };
 function loadTimerHistoryLocal(){
-  try{
-    const raw = JSON.parse(localStorage.getItem(TIMER_HISTORY_KEY) || 'null');
-    if(raw && raw.date === dateKey(new Date())) return raw;
-  }catch(e){}
+  const raw = wrReadJSON(TIMER_HISTORY_KEY, () => null, wrIsObj);
+  if(raw && raw.date === dateKey(new Date()) && Array.isArray(raw.entries)){
+    raw.entries = raw.entries.filter(e => wrIsObj(e) && Number.isFinite(Number(e.seconds)));
+    return raw;
+  }
   return { date: dateKey(new Date()), entries: [] };
 }
 function saveTimerHistoryLocal(){
@@ -4625,36 +5309,9 @@ timerHistory = loadTimerHistoryLocal();
 
 function addTimerHistoryEntry(entry){
   pruneTimerHistoryToToday();
+  if(!Array.isArray(timerHistory.entries)) timerHistory.entries = [];
   timerHistory.entries.unshift(entry);
   saveTimerHistoryLocal();
-}
-// removing an entry also un-credits the seconds it added to today's productive total, AND
-// removes the matching rail/tracker-log entry (same id) so the bar and productivity indicator
-// correct themselves too — this is the fix for "forgot to stop it".
-function deleteTimerHistoryEntry(id){
-  const idx = timerHistory.entries.findIndex(e => e.id === id);
-  if(idx === -1) return;
-  const entry = timerHistory.entries[idx];
-  timerHistory.entries.splice(idx, 1);
-  saveTimerHistoryLocal();
-  const log = loadFocusLog();
-  const k = dateKey(new Date());
-  log[k] = Math.max(0, (log[k] || 0) - entry.seconds);
-  saveFocusLog(log);
-  const tracker = loadTrackerLog();
-  const dayArr = tracker[k];
-  if(dayArr){
-    const tIdx = dayArr.findIndex(x => x.id === id);
-    if(tIdx !== -1){
-      dayArr.splice(tIdx, 1);
-      if(!dayArr.length) delete tracker[k];
-      saveTrackerLog(tracker);
-    }
-  }
-  renderAllTrackers();
-  renderStats();
-  if(!logView.hidden) renderActivityLog();
-  persistLocal();
 }
 // unlike minsToHM (used for the daily productive-time totals), session history always shows
 // seconds too, since individual sessions can be as short as a few seconds or a minute
@@ -4692,45 +5349,31 @@ const swStopBtn = document.getElementById('swStopBtn');
 const CT_DIAL_MAX_MIN = 180; // ruler supports up to 3 hours
 let ctDialDragging = false;
 
-let ctAudioCtx = null;
-function ctBeep(){
-  try{
-    if(!ctAudioCtx){
-      ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      wrRegisterAudioCtx(() => ctAudioCtx);
-    }
-    if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume();
-    const now = ctAudioCtx.currentTime;
-    // two notes, each a louder two-tone chord (root + fifth) for a fuller, more piercing ring
-    [0, 0.22].forEach(offset => {
-      [880, 1320].forEach(freq => {
-        const osc = ctAudioCtx.createOscillator();
-        const gain = ctAudioCtx.createGain();
-        osc.type = 'triangle'; osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now + offset);
-        gain.gain.exponentialRampToValueAtTime(0.55, now + offset + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.2);
-        osc.connect(gain).connect(ctAudioCtx.destination);
-        osc.start(now + offset); osc.stop(now + offset + 0.24);
-      });
-    });
-  }catch(e){ /* audio unavailable — ignore */ }
-}
+function ctBeep(){ wrChime(); }
 function ctStartRinging(){
+  try{ ctStartRingingCore(); }
+  catch(e){
+    wrReportError(e, 'ctStartRinging');
+    if(!ctState.alarmId){ ctState.ringing = true; wrChimeRing = 0; ctBeep(); ctState.alarmId = setInterval(ctBeep, WR_RING_EVERY_MS); }
+  }
+}
+function ctStartRingingCore(){
   // Same guard as pomoStartRinging/blockStartRinging: never layer a second beep loop on top of
   // one that's already going, or the alarm sounds "stacked"/doubled.
   if(ctState.alarmId){ clearInterval(ctState.alarmId); ctState.alarmId = null; }
   ctState.ringing = true;
   ctPomodoroEl.classList.add('ringing');
+  wrChimeRing = 0;
   ctBeep();
-  ctState.alarmId = setInterval(ctBeep, 900);
+  ctState.alarmId = setInterval(ctBeep, WR_RING_EVERY_MS);
   if('vibrate' in navigator){ try{ navigator.vibrate([200,100,200]); }catch(e){} }
-  if(document.hidden) wrNotify('Bitrhythm', "Timer's up.", 'wr-timer');
+  wrNotifyBurst('ct', 'Bitrhythm', "Timer's up.", 'wr-timer', () => ctState.ringing);
   // Deliberately NOT cancelling the server-side push here — see the matching comment in the
   // pomodoro's finish handler. The server-side alert is the guaranteed backup for exactly the
   // case where this line never got the chance to run reliably.
 }
 function ctStopRinging(){
+  wrStopNotifyBurst('ct');
   ctState.ringing = false;
   ctPomodoroEl.classList.remove('ringing');
   clearInterval(ctState.alarmId);
@@ -4914,16 +5557,16 @@ function ctFinishSession(ring){
   if(ctState.sessionActive && ctState.sessionSeconds > 0){
     // deterministic (same on every device for this session) so a second device's late Stop merges into this one entry instead of adding another
     const entryId = ctState.sessionStartedAt ? 'c' + ctState.sessionStartedAt : Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-    addTimerHistoryEntry({
+    wrSafe(() => addTimerHistoryEntry({
       id: entryId,
       type: ctState.mode,
       seconds: ctState.sessionSeconds, startedAt: ctState.sessionStartedAt, endedAt: Date.now()
-    });
+    }), 'timer history');
     // also credit the rail/productivity-indicator tracker log — this is what was missing before:
     // Timer/Stopwatch sessions counted toward the focus log but never showed up on the bar.
     // Reuses the same id as the history entry above so deleting one un-credits the other too.
     const srcCat = ctState.mode === 'timer' ? SOURCE_CATEGORIES.timer : SOURCE_CATEGORIES.stopwatch;
-    addTrackerSession(ctState.mode, ctState.sessionSeconds, srcCat.name, srcCat.id, entryId);
+    wrSafe(() => addTrackerSession(ctState.mode, ctState.sessionSeconds, srcCat.name, srcCat.id, entryId), 'timer log');
   }
   ctState.sessionActive = false;
   ctState.sessionSeconds = 0;
@@ -4935,13 +5578,20 @@ function ctFinishSession(ring){
   ctState.elapsedStopwatch = 0;
   ctState.warned30 = false;
   if(ring) ctStartRinging();
-  releaseWakeLockIfIdle();
-  renderCt();
-  renderStats();
-  persistLocal();
-  wrMarkRunEnded(endedRunId);
+  wrSafe(releaseWakeLockIfIdle);
+  wrSafe(renderCt);
+  wrSafe(renderStats);
+  wrSafe(persistLocal);
+  wrSafe(() => wrMarkRunEnded(endedRunId));
 }
 function ctTick(){
+  try{ ctTickCore(); }
+  catch(e){
+    wrReportError(e, 'ctTick');
+    if(ctState.running && ctState.mode === 'timer' && ctState.endAt && Date.now() >= ctState.endAt) wrSafe(() => ctFinishSession(true), 'timer finish');
+  }
+}
+function ctTickCore(){
   if(!ctState.running) return;
   if(!wrShouldTick(ctState)) return;
   const now = Date.now();
@@ -5046,8 +5696,7 @@ function ctToggle(mode){
     // waiting until the alarm fires — a context first created while the tab is backgrounded
     // can be left permanently suspended by the browser, which is why the alarm sometimes
     // never made a sound at all.
-    if(!ctAudioCtx){ ctAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); wrRegisterAudioCtx(() => ctAudioCtx); }
-    if(ctAudioCtx.state === 'suspended') ctAudioCtx.resume();
+    wrGetAudio();
     if(!ctState.sessionActive){
       ctState.sessionActive = true;
       ctState.sessionSeconds = 0;
@@ -5126,45 +5775,28 @@ function renderStats(){
   const targetSeconds=Math.max(0,p.productiveTotal*60);
   const pct=targetSeconds?Math.min(100,doneSeconds/targetSeconds*100):0;
   const remaining=Math.max(0,(targetSeconds-doneSeconds)/60);
-  const R=96, C=2*Math.PI*R;
-  const dashOffset = C*(1-pct/100);
   const caption = pct>=100 ? "Target reached — nice work." : "Keep going, you're doing great.";
   const pctShown = Math.round(pct);
   const fracText = `${minsToHM(doneSeconds/60)} / ${minsToHM(targetSeconds/60)}`;
   const pulseEl = slot.querySelector('.pulse');
   if(pulseEl){
     // update in place: same DOM nodes stay alive, so the ring eases to its new value
-    const fill = pulseEl.querySelector('.pulse-fill');
-    fill.setAttribute('stroke-dashoffset', dashOffset);
-    fill.style.strokeDashoffset = dashOffset + 'px';
-    fill.style.opacity = pct > 0 ? 1 : 0;
-    pulseEl.querySelector('.dial-time').textContent = minsToHM(remaining);
+    { const dt = pulseEl.querySelector('.dial-time'); if(dt) dt.textContent = minsToHM(remaining); }
     pulseEl.querySelector('.pulse-caption').textContent = caption;
     pulseEl.querySelector('.pulse-pct-num').textContent = pctShown;
     pulseEl.querySelector('.pulse-frac').textContent = fracText;
   } else {
-    // quarter notches (00 / 06 / 12 / 18) cut through the day ring — no labels, midnight is at the top
-    const notches = [0,1,2,3].map(q => {
-      const a = q*Math.PI/2, s = Math.sin(a), c = Math.cos(a);
-      return `<line x1="${(140+123*s).toFixed(2)}" y1="${(140-123*c).toFixed(2)}" x2="${(140+137*s).toFixed(2)}" y2="${(140-137*c).toFixed(2)}"/>`;
-    }).join('');
     { const gb=document.getElementById('globalTrackerBlock'), eb=document.getElementById('globalTargetBtn'), ep=document.getElementById('globalTargetEditor'); if(gb&&eb&&ep){ gb.appendChild(eb); gb.appendChild(ep); } }
     slot.innerHTML=`<div class="pulse">
       <div class="pulse-tracker">
         <div class="pulse-dial">
-          <svg class="pulse-svg" viewBox="0 0 280 280" role="img" aria-label="Today: 24 hour timeline and productivity progress">
-            <title>Outer ring: your day from midnight (top), clockwise. Inner ring: today's target.</title>
-            <circle class="dial-track" cx="140" cy="140" r="130"></circle>
+          <svg class="pulse-svg" viewBox="0 0 280 280" role="img" aria-label="Today: 24 hour clock and target progress">
+            <title>Outer line: your day from midnight (top), clockwise; the glass knob is the time now. Dots fill orange from the centre as you reach today's target.</title>
+            <g class="dial-dots">${dialDotsMarkup()}</g>
+            <g class="dial-dust">${dialDustMarkup()}</g>
             <g class="dial-segs"></g>
-            <g class="dial-notches">${notches}</g>
-            <circle class="pulse-track" cx="140" cy="140" r="${R}"></circle>
-            <circle class="pulse-fill" cx="140" cy="140" r="${R}" transform="rotate(-90 140 140)" stroke-dasharray="${C}" stroke-dashoffset="${dashOffset}" style="opacity:${pct>0?1:0}"></circle>
-            <g class="dial-now" transform="rotate(0 140 140)"><circle cx="140" cy="10" r="6"></circle></g>
-          </svg>
-          <div class="dial-center">
-            <div class="dial-time">${minsToHM(remaining)}</div>
-            <div class="dial-sub">left</div>
-          </div>
+            </svg>
+          <div class="dial-knob" aria-hidden="true"><i class="dk-glass"></i></div>
         </div>
         <div class="pulse-info">
           <div class="pulse-copy">
@@ -5192,6 +5824,9 @@ function renderStats(){
         dts.forEach((d,k)=>d.addEventListener('click',()=>pg.scrollTo({left:k*pg.clientWidth,behavior:'smooth'})));
       } }
   }
+  paintDialDots(pct);
+  setDialLive(!!live);
+  initDialFX();
   renderRail(p);
   // The "Today's Focus" sidebar stays part of Weekly Rhythm and reflects whichever day tab is
   // currently selected there, same as before.
@@ -5228,13 +5863,14 @@ function renderFocusSidebar(panel){
       };
     });
   if(!rows.length){
+    list._h = null;
     list.innerHTML = `<div class="focus-empty">No tasks scheduled for this day.</div>`;
     return;
   }
   const FCHK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7.5"/></svg>';
   const doneCount = rows.filter(r => r.done).length;
   const totalMins = rows.reduce((a,r) => a + r.mins, 0);
-  list.innerHTML = rows.map(r => `
+  const html = rows.map(r => `
     <div class="focus-row${r.done ? ' done' : ''}">
       ${r.done
         ? `<span class="focus-check" style="--c:${r.cat.color || '#9DA1A8'}" role="img" aria-label="Done">${FCHK}</span>`
@@ -5247,6 +5883,7 @@ function renderFocusSidebar(panel){
       <span>${isToday ? doneCount + ' of ' + rows.length + ' done' : rows.length + (rows.length === 1 ? ' task' : ' tasks')}</span>
       <span>${minsToHM(totalMins)} total</span>
     </div>`;
+  if(list._h !== html){ list._h = html; list.innerHTML = html; }
 }
 (function initMobileMenu(){
   const btn = document.getElementById('brandMenuBtn');
@@ -5324,16 +5961,25 @@ function renderFocusSidebar(panel){
   btn.addEventListener('click', () => {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     const commit = () => { apply(next); try{ localStorage.setItem('wr_theme', next); }catch(e){} };
-    if(!document.startViewTransition || !motionOK()){ commit(); return; }
+    // The circular reveal is a View Transition: the page is swapped for two flat screenshots while it runs, so every glass
+    // element loses its live backdrop blur until it ends. Default is a live cross-fade instead (blur stays on every frame).
+    // Set to true to get the circle back.
+    const THEME_CIRCLE_REVEAL = true;
+    if(!THEME_CIRCLE_REVEAL || !document.startViewTransition || !motionOK()){
+      const root = document.documentElement;
+      if(motionOK()){ root.classList.add('theme-xfade'); commit(); setTimeout(() => root.classList.remove('theme-xfade'), 700); }
+      else commit();
+      return;
+    }
     // circle grows from the toggle across the whole screen
     const r = btn.getBoundingClientRect(), x = r.left + r.width/2, y = r.top + r.height/2;
     const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)), de = document.documentElement;
+    // The reveal is a plain CSS animation (see @keyframes vtReveal) driven by these variables. Animating the pseudo-element
+    // from JS (Element.animate with pseudoElement) is not honoured by Safari, so the theme just hard-cut with no transition.
+    de.style.setProperty('--vt-x', x + 'px'); de.style.setProperty('--vt-y', y + 'px'); de.style.setProperty('--vt-r', end + 'px');
     de.classList.add('vt-theme');
     const tr = document.startViewTransition(commit);
-    tr.ready.then(() => de.animate(
-      { clipPath:[`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
-      { duration:700, easing:EASE, pseudoElement:'::view-transition-new(root)' })).catch(() => {});
-    tr.finished.finally(() => de.classList.remove('vt-theme'));
+    tr.finished.finally(() => { de.classList.remove('vt-theme'); de.style.removeProperty('--vt-x'); de.style.removeProperty('--vt-y'); de.style.removeProperty('--vt-r'); });
   });
   window.addEventListener('storage', (e) => {
     if(e.key === 'wr_theme') apply(e.newValue === 'dark' ? 'dark' : 'light');
@@ -5516,7 +6162,7 @@ setInterval(() => {
 
   // ---------- particles ----------
   function initParticles(){
-    N = Math.min(6500, Math.floor(W*H/240)); P = [];
+    N = Math.min(5200, Math.floor(W*H/240)); P = [];
     const n = days.length;
     for(let i=0;i<N;i++){
       const uf = Math.random();
@@ -5756,17 +6402,10 @@ setInterval(() => {
   // fade + zoom transition (same easing as the page transitions)
   const D_EASE = 'cubic-bezier(.22,.9,.24,1)', D_IN = 'cubic-bezier(.55,0,.8,.4)';
   let closing = false;
-  const dOrigin = () => {
-    const b = document.getElementById('mxToday'), r = b && b.getBoundingClientRect();
-    if(r && r.width && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth) return {x:r.left+r.width/2, y:r.top+r.height/2};
-    return {x:innerWidth/2, y:innerHeight/2};
-  };
-  const dReach = o => Math.hypot(Math.max(o.x, innerWidth-o.x), Math.max(o.y, innerHeight-o.y)) + 4;
-  const dCircle = (o, r) => `circle(${r}px at ${o.x}px ${o.y}px)`;
   const dHuds = () => [...ov.querySelectorAll('.dust-hud')];
   function open(){
     if(running) return;
-    ov.classList.add('open'); running = true;
+    ov.classList.add('open'); running = true; document.documentElement.classList.add('dust-open');
     DPR = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight;
     cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); sizeGlow();
     idleK = 1; mouse = null; tips = {};
@@ -5795,7 +6434,7 @@ setInterval(() => {
       try{ await Promise.all(anims.map(a => a.finished)); }catch(e){}
     }
     running = false; cancelAnimationFrame(raf);
-    ov.classList.remove('open');
+    ov.classList.remove('open'); document.documentElement.classList.remove('dust-open');
     anims.forEach(a => a.cancel());
     closing = false;
   }
