@@ -1874,6 +1874,7 @@
 #pm-root .pomo-time{display:block;text-align:center;width:auto;min-width:0;font-size:clamp(44px,calc(var(--dial) * .2),68px);font-weight:300;letter-spacing:-.02em;line-height:1;color:var(--text)}
 .pm-tile::after{content:'focus';font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:13px;letter-spacing:.22em;text-transform:lowercase;color:var(--text-dim);margin-top:-6px}
 .pm-tile.is-break::after{content:'break'}
+.pm-tile[data-label]::after{content:attr(data-label)}
 .pm-tile.ringing{animation:pmTile 1s ease-in-out infinite}
 .pm-tile.ringing .pm-svg{filter:drop-shadow(0 0 22px color-mix(in srgb,var(--pm-hi) 55%,transparent))}
 @keyframes pmTile{0%,100%{transform:none}50%{transform:scale(1.03)}}
@@ -1884,6 +1885,8 @@
 #pm-root .pm-p:hover:not(:disabled):not(.active){background:transparent;color:#fff}
 #pm-root .pm-p.active{background:var(--pill-active);color:var(--pill-active-text);border:0}
 #pm-root .pm-p:disabled{opacity:.4;cursor:not-allowed}
+.pm-c{margin-left:4px;padding-left:6px;border-left:1px solid rgba(255,255,255,.09)}
+#pm-root .pm-cy{min-width:44px;padding:0 12px;font-variant-numeric:tabular-nums}
 .pm-ctl{display:flex;align-items:center;gap:4px;margin-left:4px;padding-left:8px;border-left:1px solid rgba(255,255,255,.09)}
 #pm-root .pm-reset{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:50%;background:transparent;color:var(--pill-dim);transition:color .15s ease,background-color .15s ease}
 #pm-root .pm-reset svg{width:21px;height:21px;display:block;transition:transform .55s var(--spring,cubic-bezier(.34,1.56,.64,1))}
@@ -1905,13 +1908,15 @@
  .pm-bd{-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2)}
  #pm-root .pm-p,.pm-fab{-webkit-tap-highlight-color:transparent}
  #pm-root{--fr:18px;--fb:calc(94px + env(safe-area-inset-bottom,0px))}
- .pm-stage{padding-bottom:calc(250px + env(safe-area-inset-bottom,0px))}
- .pm-tile{--dial:min(320px,76vw,max(170px,calc(100vh - 470px)))}
- @supports (height:1dvh){.pm-tile{--dial:min(320px,76vw,max(170px,calc(100dvh - 470px)))}}
+ .pm-stage{padding-bottom:calc(304px + env(safe-area-inset-bottom,0px))}
+ .pm-tile{--dial:min(320px,76vw,max(160px,calc(100vh - 520px)))}
+ @supports (height:1dvh){.pm-tile{--dial:min(320px,76vw,max(160px,calc(100dvh - 520px)))}}
  .pm-tile.is-running .pm-svg{filter:none}
  .pm-dock{left:10px;max-width:none;flex-wrap:wrap;gap:6px;border-radius:32px}
  .pm-f{order:1;flex:1 0 100%;gap:4px}
+ .pm-c{margin:0;padding:0;border-left:0}
  #pm-root .pm-p{flex:1;height:48px;font-size:14px}
+ #pm-root .pm-cy{height:40px;min-width:0;padding:0 6px;font-size:13px}
  .pm-ctl{order:2;flex:1;margin:0;padding:0;border-left:0;gap:6px}
  #pm-root .pm-start{flex:1;height:48px}
  #pm-root .pm-reset{width:48px;height:48px}
@@ -2023,6 +2028,12 @@
         <span class="pm-f" id="gpPresets">
           <button class="pomo-preset-btn pm-p active" data-work="25" data-brk="5" type="button">25 / 5</button>
           <button class="pomo-preset-btn pm-p" data-work="50" data-brk="10" type="button">50 / 10</button>
+        </span>
+        <span class="pm-f pm-c" id="gpCycles" role="group" aria-label="Sessions to run back to back">
+          <button class="pomo-preset-btn pm-p pm-cy active" data-n="1" type="button" title="One session, then stop" aria-label="1 session">1×</button>
+          <button class="pomo-preset-btn pm-p pm-cy" data-n="2" type="button" title="2 sessions back to back, breaks included" aria-label="2 sessions">2×</button>
+          <button class="pomo-preset-btn pm-p pm-cy" data-n="3" type="button" title="3 sessions back to back, breaks included" aria-label="3 sessions">3×</button>
+          <button class="pomo-preset-btn pm-p pm-cy" data-n="4" type="button" title="4 sessions back to back, breaks included" aria-label="4 sessions">4×</button>
         </span>
         <span class="pm-ctl">
           <button class="pm-reset" id="gpResetBtn" type="button" aria-label="Reset" title="Reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
@@ -2209,7 +2220,8 @@ html[data-theme="dark"]{
 #pm-root .pm-dock .pm-p{ color:var(--text-dim); }
 #pm-root .pm-dock .pm-p:hover:not(:disabled):not(.active){ color:var(--text); }
 #pm-root .pm-dock .pm-p.active{ background:var(--glass-chip); color:var(--text); box-shadow:inset 0 0 0 1px rgba(255,255,255,.45); }
-#pm-root .pm-dock .pm-ctl{ border-left-color:var(--glass-sep); }
+#pm-root .pm-dock .pm-ctl, #pm-root .pm-dock .pm-c{ border-left-color:var(--glass-sep); }
+@media (max-width:720px){ #pm-root .pm-dock .pm-c{ border-left:0; } }
 #pm-root .pm-dock .pm-reset{ color:var(--text-dim); }
 #pm-root .pm-dock .pm-reset:hover{ color:var(--text); }
 #pm-root .pm-dock .pm-start:not(.running):not(.ringing){ background:var(--glass-chip); color:var(--text); box-shadow:inset 0 0 0 1px rgba(255,255,255,.45), 0 4px 10px -6px rgba(0,0,0,.35); }
@@ -3072,9 +3084,9 @@ function wrStopEndedLocally(){
       const pm = r.pomo;
       if(pm.running && pm.runId && wrEndedRuns[pm.runId]){
         clearInterval(pm.timerId);
-        pm.running = false; pm.warned30 = false; pm.trackerSeconds = 0; pm.runId = null;
-        if(pm.endAt) pm.remaining = Math.max(0, Math.round((pm.endAt - Date.now())/1000));
-        wrCancelAlarm(pomoAlarmKey);
+        pm.running = false; pm.warned30 = false; pm.segStart = null; pm.lastCredit = null; pm.runId = null;
+        if(pm.endAt) pm.remaining = Math.max(0, Math.ceil((pm.endAt - Date.now())/1000));
+        wrCancelAlarm(POMO_ALARM_KEYS);
         any = true;
       }
     });
@@ -3116,7 +3128,10 @@ async function wrCheckEndedFromCloud(fromPush){
 
 // Tick every currently-running timer once. Shared by the visibility resync below and by the
 // background heartbeat further down, so both paths stay in sync instead of duplicating the loop.
+let wrLeaderRenewAt = 0;
 function tickAllRunning(){
+  const nowMs = Date.now();
+  if(nowMs - wrLeaderRenewAt > 1000){ wrLeaderRenewAt = nowMs; wrSafe(wrClaimLeadership, 'leader'); }
   pomoRefs.forEach(r => { if(r.pomo.running) wrSafe(r.tick, 'pomo tick'); });
   if(ctState && ctState.running) wrSafe(ctTick, 'timer tick');
   if(blockTimerState.running) wrSafe(blockTimerTick, 'block tick');
@@ -3488,11 +3503,13 @@ function snapshotState(){
     schedule: dayPanels.reduce((o,p) => { o[p.day.key] = p.day.blocks; return o; }, {}),
     targetOverrides: {...targetOverrides},
     categories: categories.map(c => ({...c})),
+    // Only absolute timestamps + settings travel between devices (no running "seconds so far" counters): a stale
+    // snapshot can therefore never shrink what a session is about to log.
     pomo: pomoRefs.map(r => ({
-      workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, mode:r.pomo.mode,
+      workLen:r.pomo.workLen, breakLen:r.pomo.breakLen, cycles:r.pomo.cycles, cycleIdx:r.pomo.cycleIdx, mode:r.pomo.mode,
       remaining:r.pomo.remaining, running:r.pomo.running, endAt:r.pomo.endAt,
-      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds, trackerSeconds:r.pomo.trackerSeconds,
-      ringing:r.pomo.ringing, phaseStartedAt:r.pomo.phaseStartedAt, runId:r.pomo.runId
+      sessions:r.pomo.sessions, focusSeconds:r.pomo.focusSeconds,
+      ringing:r.pomo.ringing, phaseStartedAt:r.pomo.phaseStartedAt, segStart:r.pomo.segStart, bIdx:r.pomo.bIdx, runId:r.pomo.runId
     })),
     customTimer: ctState ? {
       mode:ctState.mode, running:ctState.running, sessionActive:ctState.sessionActive,
@@ -3548,10 +3565,27 @@ function mergeTrackerLog(remote){
   Object.keys(remote).forEach(k => {
     if(!Array.isArray(remote[k])) return;
     const byId = new Map((merged[k] || []).map(e => [e.id, e]));
-    remote[k].filter(wrIsObj).forEach(e => { const cur = byId.get(e.id); if(!cur || (e.seconds||0) < (cur.seconds||0)) byId.set(e.id, e); });
+    remote[k].filter(wrIsObj).forEach(e => {
+      const cur = byId.get(e.id);
+      const grows = /^p\d+$/.test(String(e.id)); // Pomodoro stretches have a deterministic id and a final length: never let a shorter copy win
+      if(!cur || (grows ? (e.seconds||0) > (cur.seconds||0) : (e.seconds||0) < (cur.seconds||0))) byId.set(e.id, e);
+    });
     merged[k] = Array.from(byId.values()).sort((a,b) => (b.at||0) - (a.at||0));
   });
   return merged;
+}
+// Which side wins when a snapshot from another device meets a timer that is LIVE on this device?
+// Stops/pauses/finishes always travel through the ended-runs registry (applied before this), so a snapshot that
+// merely says "not running" only means that device had not heard about this run yet - it must never stop it, and
+// a snapshot of the SAME run must never overwrite our own accumulated numbers with its older ones. That overwrite
+// (a stale copy carrying "5 seconds so far") is what used to shrink logged sessions. Only a genuinely newer run
+// started elsewhere replaces ours. Wall-clock skew between devices cannot affect any of this (no timestamp
+// comparison against the snapshot's own clock is involved except between two real run starts).
+function wrKeepLiveRun(local, remote, startKey){
+  if(!local || !local.running) return false;
+  if(!remote || !remote.running) return true;
+  if(remote.runId && remote.runId === local.runId) return true;
+  return !((Number(remote[startKey]) || 0) > (Number(local[startKey]) || 0));
 }
 function applyState(state, opts){
   if(!wrIsObj(state)) return; // empty / corrupt snapshot from storage or the cloud: ignore it
@@ -3598,25 +3632,10 @@ function applyStateCore(state, {rerenderMatrix} = {}){
   (state.pomo || []).forEach((s, i) => {
     const r = pomoRefs[i];
     if(!r) return;
-    // same staleness guard as customTimer/blockTimer below — don't let an old/out-of-order
-    // snapshot stomp a pomodoro phase that started locally after that snapshot was taken, or
-    // resurrect one that's already been stopped by a newer update.
+    // same staleness guard as customTimer/blockTimer below
     if(incomingIsStaleForVolatile) return;
     if(wrDead(s)){ wrNeedReassert = true; return; }
-    if(r.pomo.running && r.pomo.phaseStartedAt && state.updatedAt && r.pomo.phaseStartedAt > state.updatedAt) return;
-    const wasRinging = r.pomo.ringing, localAlarmId = r.pomo.alarmId;
-    if(r.pomo.running) { clearInterval(r.pomo.timerId); }
-    Object.assign(r.pomo, s);
-    if(wasRinging && !r.pomo.ringing) silenceAcknowledgedAlarm(localAlarmId, gpEl, pomoAlarmKey);
-    if(r.pomo.running && r.pomo.endAt){
-      const left = Math.round((r.pomo.endAt - Date.now())/1000);
-      // Same fix as the block timer and custom timer below: a phase that finished while the app
-      // was closed/backgrounded used to just get marked not-running here, with nothing credited
-      // to the tracker/activity log and no alarm. Credit it up through its actual end time (not
-      // "now") and route it through the normal finish-and-ring path instead.
-      if(left <= 0){ pomoCreditElapsedFocus(r.pomo.endAt); pomoFinishPhase(r.pomo.endAt); }
-      else { r.pomo.remaining = left; r.pomo.lastCredit = Date.now(); r.pomo.timerId = setInterval(r.tick, 250); acquireWakeLock(); }
-    }
+    pomoApplyRemote(s);
     r.render();
   });
   if(state.timerHistory){
@@ -3642,7 +3661,7 @@ function applyStateCore(state, {rerenderMatrix} = {}){
   // the "started a timer and it just never showed up in history" failure mode.
   const staleForCustomTimer = incomingIsStaleForVolatile || (ctState && ctState.sessionActive && ctState.sessionStartedAt && state.updatedAt && ctState.sessionStartedAt > state.updatedAt);
   if(wrDead(state.customTimer)) wrNeedReassert = true;
-  if(state.customTimer && ctState && !staleForCustomTimer && !wrDead(state.customTimer)){
+  if(state.customTimer && ctState && !staleForCustomTimer && !wrDead(state.customTimer) && !wrKeepLiveRun(ctState, state.customTimer, 'sessionStartedAt')){
     const wasRinging = ctState.ringing, localAlarmId = ctState.alarmId;
     if(ctState.running) clearInterval(ctState.timerId);
     Object.assign(ctState, state.customTimer);
@@ -3672,7 +3691,7 @@ function applyStateCore(state, {rerenderMatrix} = {}){
   // unlike the Pomodoro and Timer/Stopwatch widgets, which already resumed correctly.
   const staleForBlockTimer = incomingIsStaleForVolatile || (blockTimerState.running && blockTimerState.startedAt && state.updatedAt && blockTimerState.startedAt > state.updatedAt);
   if(wrDead(state.blockTimer)) wrNeedReassert = true;
-  if(state.blockTimer && !staleForBlockTimer && !wrDead(state.blockTimer)){
+  if(state.blockTimer && !staleForBlockTimer && !wrDead(state.blockTimer) && !wrKeepLiveRun(blockTimerState, state.blockTimer, 'startedAt')){
     const wasRinging = blockTimerState.ringing, localAlarmId = blockTimerState.alarmId;
     if(blockTimerState.running) clearInterval(blockTimerState.timerId);
     Object.assign(blockTimerState, state.blockTimer);
@@ -3782,8 +3801,8 @@ function resetToDefaults(){
   pomoRefs.forEach(r => {
     clearInterval(r.pomo.timerId);
     Object.assign(r.pomo, {
-      workLen:25*60, breakLen:5*60, mode:'focus', remaining:25*60,
-      running:false, sessions:0, focusSeconds:0, ringing:false, endAt:null
+      workLen:25*60, breakLen:5*60, cycles:1, cycleIdx:0, mode:'focus', remaining:25*60,
+      running:false, runId:null, sessions:0, focusSeconds:0, ringing:false, endAt:null, segStart:null, bIdx:0, lastCredit:null
     });
     r.render();
   });
@@ -4068,7 +4087,7 @@ enableAlarmsBtn.addEventListener('click', () => {
 
 // Upsert (or move) the server-side alarm for one timer instance. Safe to call on every
 // pause/resume — it just replaces fire_at for that same client_key instead of piling up rows.
-function wrScheduleAlarm(key, fireAtMs, title, body, tag){
+function wrScheduleAlarm(key, fireAtMs, title, body, tag, opts){
   if(!currentUser || !pushSubscribed) return;
   sb.from('scheduled_alarms').upsert({
     user_id: currentUser.id, client_key: key,
@@ -4077,7 +4096,7 @@ function wrScheduleAlarm(key, fireAtMs, title, body, tag){
     // Explicit, not left to the column default — otherwise an *existing* row (re-scheduled on
     // every restart of the same timer) keeps whatever interval it was first created with,
     // even after the table's default gets tuned faster later.
-    repeat_every_seconds: 3, max_repeats: 5 // a push every 3 s for ~15 s
+    repeat_every_seconds: 3, max_repeats: (opts && opts.maxRepeats != null) ? opts.maxRepeats : 5 // a push every 3 s for ~15 s (a quieter 1 repeat for the in-between phases of a multi-session set)
   }, { onConflict: 'user_id,client_key' }).then(({error}) => {
     if(error) console.error('schedule alarm failed', error);
   });
@@ -4086,9 +4105,13 @@ function wrScheduleAlarm(key, fireAtMs, title, body, tag){
 // rung locally (tab was in the foreground), so the cron job doesn't also push a redundant one.
 function wrCancelAlarm(key){
   if(!currentUser) return;
-  sb.from('scheduled_alarms').delete().eq('user_id', currentUser.id).eq('client_key', key)
+  const q = sb.from('scheduled_alarms').delete().eq('user_id', currentUser.id);
+  (Array.isArray(key) ? q.in('client_key', key) : q.eq('client_key', key))
     .then(({error}) => { if(error) console.error('cancel alarm failed', error); });
 }
+// A multi-session Pomodoro pre-schedules one server alarm per phase boundary ('pomo', 'pomo-1', 'pomo-2' ...), so
+// the phone still pings at every switch while the page is frozen. Stop / pause / reset cancels the whole set.
+const POMO_ALARM_KEYS = ['pomo','pomo-1','pomo-2','pomo-3','pomo-4','pomo-5','pomo-6','pomo-7','pomo-8','pomo-9','pomo-10','pomo-11'];
 
 // Matrix tracking normally starts the day the signed-in account was created (from Supabase's
 // user.created_at), so this is just the fallback used before that's known (first paint, signed
@@ -4267,11 +4290,28 @@ function loadTrackerLog(){
 }
 function saveTrackerLog(x){ try{localStorage.setItem(TRACKER_KEY,JSON.stringify(x));}catch(e){} }
 function makeSessionId(){ return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
-function addTrackerSession(source, seconds, label, cat, id){
+function addTrackerSession(source, seconds, label, cat, id, at){
   seconds=Math.max(0,Math.round(seconds)); if(!seconds) return;
-  const log=loadTrackerLog(), k=dateKey(new Date());
+  at = Number.isFinite(at) ? at : Date.now();
+  const log=loadTrackerLog(), k=dateKey(new Date(at));
+  // Deterministic ids (Pomodoro 'p<start>', block 'b<start>' ...) make logging idempotent: when two devices (or a
+  // catch-up after the page was frozen) log the same stretch, it stays ONE entry (the longer value wins).
+  if(id){
+    for(const dk of Object.keys(log)){
+      const hit = (log[dk]||[]).find(e => e && e.id === id);
+      if(!hit) continue;
+      if(seconds > (Number(hit.seconds)||0)){
+        hit.seconds = seconds; hit.at = Math.max(Number(hit.at)||0, at);
+        saveTrackerLog(log);
+        wrSafe(persistLocal);
+        wrSafe(renderAllTrackers, 'rail');
+        wrSafe(() => { if(!logView.hidden) renderActivityLog(); }, 'activity log');
+      }
+      return;
+    }
+  }
   if(!Array.isArray(log[k])) log[k]=[];
-  log[k].push({id:id||makeSessionId(),source,seconds,label:label||source,at:Date.now(),cat:cat||'day-soft'});
+  log[k].push({id:id||makeSessionId(),source,seconds,label:label||source,at,cat:cat||'day-soft'});
   saveTrackerLog(log);
   wrSafe(persistLocal);
   wrSafe(renderAllTrackers, 'rail');
@@ -4638,8 +4678,9 @@ function getLiveTracking(){
     const seconds = blockTimerState.elapsed + Math.max(0, Math.floor((Date.now()-blockTimerState.startedAt)/1000));
     if(seconds > 0) return { seconds, cat: blockTimerState.category, label: blockTimerState.label, startedAt: blockTimerState.startedAt - blockTimerState.elapsed*1000 };
   }
-  if(pomo && pomo.running && pomo.mode === 'focus' && pomo.trackerSeconds > 0){
-    return { seconds: pomo.trackerSeconds, cat: SOURCE_CATEGORIES.pomodoro.id, label: SOURCE_CATEGORIES.pomodoro.name, startedAt: Date.now() - pomo.trackerSeconds*1000 };
+  if(pomo && pomo.running && pomo.mode === 'focus' && pomo.segStart){
+    const seconds = pomoSegSeconds();
+    if(seconds > 0) return { seconds, cat: SOURCE_CATEGORIES.pomodoro.id, label: SOURCE_CATEGORIES.pomodoro.name, startedAt: pomo.segStart };
   }
   if(ctState && ctState.running && ctState.sessionSeconds > 0){
     const srcCat = ctState.mode === 'timer' ? SOURCE_CATEGORIES.timer : SOURCE_CATEGORIES.stopwatch;
@@ -5152,29 +5193,77 @@ days.forEach((day, i) => {
 // Pomodoro — single global instance, lives on the Timer page (in-memory only,
 // resets on page reload, same as it did per-day before)
 // ============================================================================
+// ----------------------------------------------------------------------------------------------
+// HOW THE POMODORO KEEPS TIME AND LOGS IT (read before changing anything below)
+//   * Everything is derived from absolute timestamps: `endAt` (when this phase hits zero) and `segStart` (when the
+//     current uninterrupted FOCUS stretch began). There is no "seconds so far" counter that a tick, a throttled tab or a
+//     stale snapshot from another device could shrink - the old counter is what made sessions log 5 s / 5 min
+//     instead of 25 / 50.
+//   * A stretch is logged ONCE, when it ends (pause, reset, phase finished or a catch-up after the page was frozen),
+//     with the deterministic id 'p<segStart>' - so two devices logging the same stretch still make one entry.
+//   * A multi-session set (1x-4x) rolls from focus to break to focus on its own. Because every phase boundary is just
+//     `previous endAt + length`, any device (or this one after being frozen for an hour) re-derives the exact same
+//     chain with pomoAdvance(), logging every stretch it missed.
+// ----------------------------------------------------------------------------------------------
+const POMO_MAX_CYCLES = 4;
 pomo = {
   workLen: 25*60, breakLen: 5*60,
+  cycles: 1,           // focus sessions to run back to back before the set ends (1-4). 1 = the classic one-at-a-time flow
+  cycleIdx: 0,         // focus sessions already finished in the current set
   mode: 'focus', remaining: 25*60,
   running: false, runId: null, timerId: null,
   sessions: 0, focusSeconds: 0,
   ringing: false, alarmId: null, warned30: false,
-  endAt: null,       // timestamp (ms) the current phase should hit zero — timer is driven off this,
-  lastCredit: null,  // not off a tick counter, so background-tab throttling can't make it "pause"
-  phaseStartedAt: null, // when the CURRENT running phase began — used only to detect a stale
-                         // incoming cloud snapshot in applyState() (see staleForCustomTimer/
-                         // staleForBlockTimer); unlike lastCredit/endAt this never advances while
-                         // the phase is running, so it's a stable "did this start after that
-                         // snapshot was taken" marker.
-  trackerSeconds: 0, // focus seconds accumulated since the last flush to the rail/tracker log
+  endAt: null,         // timestamp (ms) the current phase should hit zero - the clock is driven off this, never off a tick counter
+  lastCredit: null,    // only feeds the per-day focusLog counter now (the Activity Log is logged from segStart/endAt)
+  phaseStartedAt: null,// when the CURRENT running phase began; also the "which run is newer" marker when snapshots collide
+  segStart: null,      // ms when the current uninterrupted focus stretch began (null during a break / while paused)
+  bIdx: 0,             // phase boundaries crossed since this run was started/resumed (names the server alarm rows)
+  trackerSeconds: 0    // legacy: unused, kept only so old cached snapshots still load
 };
-// Commits whatever focus time has piled up (since the last flush) to the rail/productivity-
-// indicator tracker log as one session, then zeroes the accumulator. Called whenever a
-// continuous focus stretch ends: pause, reset, or a focus period completing into a break.
-function pomoFlushTracker(){
-  if(pomo.trackerSeconds > 0){
-    addTrackerSession('pomodoro', pomo.trackerSeconds, SOURCE_CATEGORIES.pomodoro.name, SOURCE_CATEGORIES.pomodoro.id, pomo.phaseStartedAt ? 'p' + pomo.phaseStartedAt : undefined);
-    pomo.trackerSeconds = 0;
+// whole seconds left in the phase, rounded UP like a phone timer (shows 25:00 for the first second, 00:00 only at the end)
+function pomoLeft(now){ return pomo.endAt == null ? pomo.remaining : Math.max(0, Math.ceil(((pomo.endAt - (now == null ? Date.now() : now)) / 1000) - 0.0005)); }
+// Seconds of the current focus stretch that are not in the log yet (drives the live rail + "time left" box).
+function pomoSegSeconds(asOf){
+  if(pomo.mode !== 'focus' || !pomo.segStart) return 0;
+  const end = Math.min(asOf == null ? Date.now() : asOf, pomo.endAt != null ? pomo.endAt : Infinity);
+  return Math.max(0, Math.floor((end - pomo.segStart) / 1000));
+}
+// Commits the current focus stretch to the rail / Activity Log as one session, then forgets it. Called whenever a
+// continuous focus stretch ends: pause, reset, a focus phase completing, or a missed phase being caught up.
+// The length is end - start (never past the phase's own deadline), so it is exact no matter how the page was
+// throttled, frozen or reloaded in between.
+function pomoFlushTracker(endMs){
+  const start = pomo.segStart;
+  pomo.segStart = null;
+  if(pomo.mode !== 'focus' || !start) return;
+  const end = Math.min(endMs == null ? Date.now() : endMs, pomo.endAt != null ? pomo.endAt : Infinity);
+  const secs = Math.floor((end - start) / 1000);
+  if(secs > 0) addTrackerSession('pomodoro', secs, SOURCE_CATEGORIES.pomodoro.name, SOURCE_CATEGORIES.pomodoro.id, 'p' + start, end);
+}
+function pomoAlarmKeyFor(i){ return i ? 'pomo-' + i : 'pomo'; }
+// Every phase boundary this run will hit (from the current phase on), so the server can ping at each one even while the
+// page is frozen. `final` = the set ends there (loud, repeating alarm); the others are a single quiet nudge.
+function pomoPlanBoundaries(){
+  const out = [];
+  let t = pomo.endAt, mode = pomo.mode, idx = pomo.cycleIdx;
+  for(let i = 0; i < POMO_ALARM_KEYS.length && t != null; i++){
+    const wasFocus = mode === 'focus';
+    if(wasFocus) idx++;
+    const chain = wasFocus ? idx < pomo.cycles : idx > 0;
+    out.push({ at: t, final: !chain,
+      msg: wasFocus ? (chain ? 'Focus done — break time.' : (pomo.cycles > 1 ? 'All sessions done — well done.' : 'Focus session done — break time.')) : "Break's over — back to focus." });
+    if(!chain) break;
+    t += (wasFocus ? pomo.breakLen : pomo.workLen) * 1000;
+    mode = wasFocus ? 'break' : 'focus';
   }
+  return out;
+}
+function pomoScheduleAlarms(){
+  const plan = pomoPlanBoundaries();
+  plan.forEach((b, i) => wrScheduleAlarm(pomoAlarmKeyFor(i), b.at, 'Weekly Rhythm', b.msg, b.final ? 'wr-pomo' : 'wr-pomo-phase', b.final ? null : { maxRepeats: 1 }));
+  const unused = POMO_ALARM_KEYS.slice(plan.length); // rows left over from an earlier, longer run
+  if(unused.length) wrCancelAlarm(unused);
 }
 
 const pomoAlarmKey = 'pomo'; // stable id for the server-side scheduled alarm
@@ -5185,6 +5274,7 @@ const gpTimeEl = document.getElementById('gpTimeEl');
 const gpStartBtn = document.getElementById('gpStartBtn');
 const gpResetBtn = document.getElementById('gpResetBtn');
 const gpPresetBtns = document.getElementById('gpPresets').querySelectorAll('.pomo-preset-btn');
+const gpCycleBtns = document.getElementById('gpCycles').querySelectorAll('.pm-cy');
 const gpSessionsEl = document.getElementById('gpSessions');
 const gpLoggedEl = document.getElementById('gpLogged');
 
@@ -5220,7 +5310,7 @@ function pomoStopRinging(){
   gpEl.classList.remove('ringing');
   clearInterval(pomo.alarmId);
   pomo.alarmId = null;
-  wrCancelAlarm(pomoAlarmKey); // acknowledged locally — stop the server's repeat pushes
+  wrCancelAlarm(POMO_ALARM_KEYS); // acknowledged locally — stop the server's repeat pushes
   renderPomo(); renderCt(); dayPanels.forEach(renderList); // pomodoro no longer ringing/busy — unlock the other widgets
 }
 
@@ -5252,7 +5342,18 @@ function renderPomo(){
   gpStartBtn.title = gpStartBtn.disabled ? 'A block timer or timer/stopwatch session is already running' : '';
   gpSessionsEl.textContent = pomo.sessions;
   gpLoggedEl.textContent = minsToHM(pomo.focusSeconds/60);
-  gpPresetBtns.forEach(b => b.disabled = pomo.running);
+  gpPresetBtns.forEach(b => {
+    b.disabled = pomo.running;
+    b.classList.toggle('active', Number(b.dataset.work) * 60 === pomo.workLen && Number(b.dataset.brk) * 60 === pomo.breakLen);
+  });
+  gpCycleBtns.forEach(b => { b.disabled = pomo.running; b.classList.toggle('active', Number(b.dataset.n) === pomo.cycles); });
+  // dial caption: "focus", or "focus 2/4" / "break 2/4" inside a multi-session set
+  let label = pomo.mode === 'focus' ? 'focus' : 'break';
+  if(pomo.cycles > 1){
+    const n = pomo.mode === 'focus' ? Math.min(pomo.cycleIdx + 1, pomo.cycles) : pomo.cycleIdx;
+    if(n > 0) label += ' ' + n + '/' + pomo.cycles;
+  }
+  if(gpEl.dataset.label !== label) gpEl.dataset.label = label;
   renderPomoRing();
 }
 const PM_C = 2*Math.PI*96;
@@ -5267,16 +5368,17 @@ function renderPomoRing(){
   gpEl.classList.toggle('is-running', pomo.running);
 }
 
-// Credit any focus-seconds that elapsed since the last credit, in one lump sum — see the
-// matching comment on ctCreditElapsed below for why lastCredit advances by whole seconds only.
+// Credit focus-seconds to the per-day focusLog counter (Matrix history for days older than the Activity Log window).
+// Capped at the phase's own deadline so a late tick can never credit past the end. lastCredit advances by whole
+// seconds only. NOTE: the Activity Log / rail are NOT fed from here - see pomoFlushTracker.
 function pomoCreditElapsedFocus(now){
   if(pomo.mode === 'focus' && pomo.lastCredit != null){
-    const elapsed = Math.floor((now - pomo.lastCredit) / 1000);
+    const upto = Math.min(now, pomo.endAt != null ? pomo.endAt : now);
+    const elapsed = Math.floor((upto - pomo.lastCredit) / 1000);
     if(elapsed > 0){
-      if(wrIsLeader){ // only the elected tab writes credited time — see wrClaimLeadership above
+      if(wrIsLeader){ // only the elected tab writes this counter - see wrClaimLeadership above
         pomo.focusSeconds += elapsed;
         addFocusSeconds(elapsed);
-        pomo.trackerSeconds += elapsed;
       }
       pomo.lastCredit += elapsed * 1000;
     }
@@ -5285,53 +5387,131 @@ function pomoCreditElapsedFocus(now){
   }
 }
 
-// phase (focus or break) hit zero: log it, flip to the next phase, then ring. Pulled out of
-// pomoTick so the state-restore path below can reuse the exact same logging/ringing behavior
-// for a phase that finished while the app was closed/backgrounded, instead of just marking it
-// not-running with nothing credited and no alarm.
-function pomoFinishPhase(asOf){
-  asOf = asOf || Date.now();
+// One soft chime + nudge when a set rolls from one phase into the next on its own.
+function pomoPhaseChime(wasFocus){
+  const msg = wasFocus ? 'Focus done — break time.' : "Break's over — back to focus.";
+  wrChimeRing = 0; wrChime();
+  if('vibrate' in navigator){ try{ navigator.vibrate([150,80,150]); }catch(e){} }
+  if(document.hidden) wrNotify('Bitrhythm', msg, 'wr-pomo-phase');
+  else showToast(msg, 3500);
+}
+
+// The phase that ends at `endedAt` is over: log it, flip focus <-> break, then either roll straight into the next phase
+// (inside a multi-session set) or stop and ring. Everything is computed from `endedAt`, not "now", so the result is the
+// same on every device and when the page was frozen for a while. Returns true if the run continued on its own.
+function pomoCompletePhase(endedAt){
+  pomoCreditElapsedFocus(endedAt);
+  const wasFocus = pomo.mode === 'focus';
+  if(wasFocus){
+    wrSafe(() => pomoFlushTracker(endedAt), 'pomo log'); // the finished focus stretch goes into the Activity Log right now
+    pomo.sessions++;
+    pomo.cycleIdx++;
+  }
+  // inside a set: focus -> break while sessions remain, and a break that belongs to a set -> next focus
+  const chain = wasFocus ? pomo.cycleIdx < pomo.cycles : pomo.cycleIdx > 0;
+  if(wasFocus && !chain) pomo.cycleIdx = 0; // the set is complete
+  pomo.mode = wasFocus ? 'break' : 'focus';
+  pomo.remaining = pomo.mode === 'focus' ? pomo.workLen : pomo.breakLen;
+  pomo.warned30 = false;
+  if(chain){
+    const crossed = pomoAlarmKeyFor(pomo.bIdx);
+    pomo.bIdx++;
+    pomo.phaseStartedAt = endedAt;
+    pomo.endAt = endedAt + pomo.remaining * 1000;
+    pomo.lastCredit = endedAt;
+    pomo.segStart = pomo.mode === 'focus' ? endedAt : null;
+    if(Date.now() - endedAt < 4000){ // live crossing: chime. When catching up after a freeze stay quiet instead of replaying every switch
+      wrSafe(() => pomoPhaseChime(wasFocus), 'pomo chime');
+      if(!document.hidden) wrCancelAlarm(crossed); // we handled it on screen - no duplicate push
+    }
+    return true;
+  }
   clearInterval(pomo.timerId);
   const endedRunId = pomo.runId; pomo.runId = null;
   pomo.running = false;
-  pomo.warned30 = false;
-  if(pomo.mode === 'focus'){
-    pomo.sessions++;
-    pomo.mode = 'break';
-    pomo.remaining = pomo.breakLen;
-    wrSafe(pomoFlushTracker, 'pomo log'); // focus stretch just ended — log it to the rail now
-  } else {
-    pomo.mode = 'focus';
-    pomo.remaining = pomo.workLen;
-  }
+  pomo.segStart = null;
   pomoStartRinging();
   wrSafe(persistLocal);
   wrSafe(releaseWakeLockIfIdle);
   wrSafe(() => wrMarkRunEnded(endedRunId));
+  return false;
+}
+// Walks the run forward through every phase boundary that has already passed (a locked phone can cross several).
+function pomoAdvance(now){
+  let moved = false, guard = 0;
+  while(pomo.running && pomo.endAt != null && now >= pomo.endAt && guard++ < 16){
+    moved = true;
+    if(!pomoCompletePhase(pomo.endAt)) break;
+  }
+  if(moved && pomo.running) wrSafe(persistLocal); // a chained transition: save + sync the new phase right away
+  return moved;
 }
 function pomoTick(){
   try{ pomoTickCore(); }
   catch(e){
     wrReportError(e, 'pomoTick');
-    if(pomo.running && pomo.endAt && Date.now() >= pomo.endAt) wrSafe(() => pomoFinishPhase(Date.now()), 'pomo finish');
+    if(pomo.running && pomo.endAt && Date.now() >= pomo.endAt) wrSafe(() => pomoAdvance(Date.now()), 'pomo advance');
   }
 }
 function pomoTickCore(){
   if(!pomo.running) return;
   if(!wrShouldTick(pomo)) return;
   const now = Date.now();
-  pomoCreditElapsedFocus(now);
-  pomo.remaining = Math.max(0, Math.round((pomo.endAt - now) / 1000));
-
-  if(pomo.remaining <= 30 && pomo.remaining > 0 && !pomo.warned30){
-    pomo.warned30 = true;
-    notifyAlmostDone(pomo.mode === 'break' ? 'Break' : 'Focus session');
+  pomoAdvance(now);
+  if(pomo.running){
+    pomoCreditElapsedFocus(now);
+    pomo.remaining = pomoLeft(now);
+    if(pomo.remaining <= 30 && pomo.remaining > 0 && !pomo.warned30){
+      pomo.warned30 = true;
+      notifyAlmostDone(pomo.mode === 'break' ? 'Break' : 'Focus session');
+    }
   }
-
-  if(pomo.remaining <= 0){ pomoFinishPhase(now); }
   renderPomo();
   const nowSec = Math.floor(now / 1000);
   if(nowSec !== pomo._statsSec){ pomo._statsSec = nowSec; renderRail(); renderStats(); }
+}
+
+// Adopt a pomodoro state that arrived from another device (or this device's own cache). See wrKeepLiveRun for the rules:
+// a run that is live HERE is never stopped or overwritten by an older / "not running" copy; its own deadline logic
+// just gets a chance to catch up.
+function pomoApplyRemote(s){
+  if(!wrIsObj(s)) return;
+  const p = pomo, now = Date.now();
+  if(wrKeepLiveRun(p, s, 'phaseStartedAt')){ pomoAdvance(now); return; }
+  if(!p.running && !s.running && now - (p._localEditAt || 0) < 3000) return; // just changed a setting here - don't let an in-flight echo undo it
+  if(p.running){ // a genuinely newer run started on another device: bank ours, then follow theirs
+    wrSafe(() => { pomoCreditElapsedFocus(now); pomoFlushTracker(now); }, 'pomo bank');
+    p.running = false;
+  }
+  const wasRinging = p.ringing, localAlarmId = p.alarmId;
+  clearInterval(p.timerId);
+  const num = (v, d) => Number.isFinite(Number(v)) ? Number(v) : d;
+  const ts = v => (Number.isFinite(Number(v)) && Number(v) > 0) ? Number(v) : null;
+  p.workLen = Math.max(1, num(s.workLen, p.workLen));
+  p.breakLen = Math.max(1, num(s.breakLen, p.breakLen));
+  p.cycles = Math.min(POMO_MAX_CYCLES, Math.max(1, Math.round(num(s.cycles, 1))));
+  p.cycleIdx = Math.max(0, Math.round(num(s.cycleIdx, 0)));
+  p.mode = s.mode === 'break' ? 'break' : 'focus';
+  p.remaining = Math.max(0, num(s.remaining, p.mode === 'focus' ? p.workLen : p.breakLen));
+  p.running = !!s.running;
+  p.ringing = !!s.ringing;
+  p.endAt = ts(s.endAt);
+  p.phaseStartedAt = ts(s.phaseStartedAt);
+  p.segStart = p.running ? ts(s.segStart) : null;
+  p.bIdx = Math.max(0, Math.round(num(s.bIdx, 0)));
+  p.runId = s.runId || null;
+  p.sessions = Math.max(p.sessions || 0, num(s.sessions, 0)); // counters only ever grow
+  p.focusSeconds = Math.max(p.focusSeconds || 0, num(s.focusSeconds, 0));
+  p.warned30 = false;
+  if(wasRinging && !p.ringing){ silenceAcknowledgedAlarm(localAlarmId, gpEl, POMO_ALARM_KEYS); p.alarmId = null; }
+  if(p.running && p.endAt){
+    p.lastCredit = Math.min(now, p.endAt); // the other device already counted the gap - don't count it twice
+    p.timerId = setInterval(pomoTick, 250);
+    acquireWakeLock();
+    pomoAdvance(now); // finished while we were away? log it and ring exactly as a live tick would
+  } else if(p.running){
+    p.running = false; // "running" with no deadline can only be corrupt data
+  }
 }
 
 function ensurePomoNotifyPermission(){
@@ -5344,14 +5524,22 @@ gpStartBtn.addEventListener('click', () => {
   // while the alarm is ringing this button is the Stop button: it only silences, then Start begins the next phase
   if(pomo.ringing){ pomoStopRinging(); persistLocal(); return; }
   if(pomo.running){
-    // pause: lock in the precise remaining time from the deadline, not a tick count
-    pomoCreditElapsedFocus(Date.now()); // credit right up to the pause, same as ctState's pause
-    pomo.remaining = Math.max(0, Math.round((pomo.endAt - Date.now()) / 1000));
+    // catch up first: if the phase already ran out (tick not delivered yet) this click must not become a pause
+    pomoAdvance(Date.now());
+    if(!pomo.running){
+      renderPomo(); renderStats(); renderCt(); dayPanels.forEach(renderList);
+      persistLocal();
+      return;
+    }
+    // pause: bank the exact focus time up to this moment and lock in the remaining time from the deadline
+    const now = Date.now();
+    pomoCreditElapsedFocus(now);
+    pomo.remaining = pomoLeft(now);
+    pomoFlushTracker(now);
     pomo.running = false;
     clearInterval(pomo.timerId);
     releaseWakeLockIfIdle();
-    wrCancelAlarm(pomoAlarmKey);
-    pomoFlushTracker(); // log the focus stretch so far to the rail now that it's paused
+    wrCancelAlarm(POMO_ALARM_KEYS);
     { const rid = pomo.runId; pomo.runId = null; wrMarkRunEnded(rid); }
   } else if(isBlockTimerBusy() || isCtBusy()){
     return; // a block timer or the custom timer/stopwatch is already running
@@ -5360,19 +5548,21 @@ gpStartBtn.addEventListener('click', () => {
     // Warm up the alarm's AudioContext right on this click (a real user gesture) — see the
     // matching comment on the custom timer's Start handler below for why.
     wrGetAudio();
+    if(pomo.remaining <= 0) pomo.remaining = pomo.mode === 'focus' ? pomo.workLen : pomo.breakLen;
+    const t0 = Date.now();
     pomo.running = true;
     pomo.runId = wrNewRunId();
-    pomo.endAt = Date.now() + pomo.remaining * 1000;
-    pomo.lastCredit = Date.now();
-    pomo.phaseStartedAt = Date.now();
-    // Tick every 250ms so the visible countdown feels smooth; when foregrounded, throttling
-    // has no effect on correctness since every tick re-derives remaining from endAt.
+    pomo.bIdx = 0;
+    pomo.endAt = t0 + pomo.remaining * 1000;
+    pomo.lastCredit = t0;
+    pomo.phaseStartedAt = t0;
+    pomo.segStart = pomo.mode === 'focus' ? t0 : null;
+    pomo.warned30 = pomo.remaining <= 30;
+    // Tick every 250ms so the visible countdown feels smooth; every tick re-derives everything from endAt,
+    // so throttling can delay a repaint but never changes what gets logged.
     pomo.timerId = setInterval(pomoTick, 250);
     acquireWakeLock();
-    wrScheduleAlarm(pomoAlarmKey, pomo.endAt,
-      'Weekly Rhythm',
-      pomo.mode === 'break' ? "Focus session done — break time." : "Break's over — back to focus.",
-      'wr-pomo');
+    pomoScheduleAlarms(); // one server alarm per phase boundary of this set
   }
   renderPomo();
   renderStats(); // picks up any tracker session pomoFlushTracker() just logged (e.g. on pause)
@@ -5381,20 +5571,25 @@ gpStartBtn.addEventListener('click', () => {
 });
 
 gpResetBtn.addEventListener('click', () => {
+  const now = Date.now();
   if(pomo.ringing) pomoStopRinging();
-  pomoFlushTracker(); // log whatever focus time had accumulated before wiping the countdown
+  if(pomo.running){ pomoCreditElapsedFocus(now); pomoFlushTracker(now); } // log whatever focus time had run before wiping the countdown
   { const rid = pomo.runId; pomo.runId = null; wrMarkRunEnded(rid); }
   pomo.running = false;
   pomo.warned30 = false;
   clearInterval(pomo.timerId);
+  pomo.segStart = null;
   pomo.mode = 'focus';
   pomo.remaining = pomo.workLen;
+  pomo.cycleIdx = 0;
+  pomo.bIdx = 0;
+  pomo._localEditAt = now;
   renderPomo();
   renderStats();
   renderCt(); dayPanels.forEach(renderList); // pomodoro freed up — unlock the other widgets' Start buttons
   persistLocal();
   releaseWakeLockIfIdle();
-  wrCancelAlarm(pomoAlarmKey);
+  wrCancelAlarm(POMO_ALARM_KEYS);
 });
 
 gpPresetBtns.forEach(b => {
@@ -5404,8 +5599,22 @@ gpPresetBtns.forEach(b => {
     pomo.breakLen = Number(b.dataset.brk) * 60;
     pomo.mode = 'focus';
     pomo.remaining = pomo.workLen;
-    gpPresetBtns.forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
+    pomo.cycleIdx = 0;
+    pomo._localEditAt = Date.now();
+    renderPomo();
+    persistLocal();
+  });
+});
+
+// 1x-4x: how many focus sessions run back to back (with their breaks) from a single Start
+gpCycleBtns.forEach(b => {
+  b.addEventListener('click', () => {
+    if(pomo.running) return;
+    pomo.cycles = Math.min(POMO_MAX_CYCLES, Math.max(1, Number(b.dataset.n) || 1));
+    pomo.mode = 'focus';
+    pomo.remaining = pomo.workLen;
+    pomo.cycleIdx = 0;
+    pomo._localEditAt = Date.now();
     renderPomo();
     persistLocal();
   });
