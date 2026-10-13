@@ -2032,11 +2032,11 @@
           <button class="pomo-preset-btn pm-p active" data-work="25" data-brk="5" type="button">25 / 5</button>
           <button class="pomo-preset-btn pm-p" data-work="50" data-brk="10" type="button">50 / 10</button>
         </span>
-        <span class="pm-f pm-c" id="gpCycles" role="group" aria-label="Sessions to run back to back">
+        <span class="pm-f pm-c" id="gpCycles" role="group" aria-label="Focus sessions in a set">
           <button class="pomo-preset-btn pm-p pm-cy active" data-n="1" type="button" title="One session, then stop" aria-label="1 session">1×</button>
-          <button class="pomo-preset-btn pm-p pm-cy" data-n="2" type="button" title="2 sessions back to back, breaks included" aria-label="2 sessions">2×</button>
-          <button class="pomo-preset-btn pm-p pm-cy" data-n="3" type="button" title="3 sessions back to back, breaks included" aria-label="3 sessions">3×</button>
-          <button class="pomo-preset-btn pm-p pm-cy" data-n="4" type="button" title="4 sessions back to back, breaks included" aria-label="4 sessions">4×</button>
+          <button class="pomo-preset-btn pm-p pm-cy" data-n="2" type="button" title="2 focus sessions in a set - every focus / break waits for you to press Stop, then Start" aria-label="2 sessions">2×</button>
+          <button class="pomo-preset-btn pm-p pm-cy" data-n="3" type="button" title="3 focus sessions in a set - every focus / break waits for you to press Stop, then Start" aria-label="3 sessions">3×</button>
+          <button class="pomo-preset-btn pm-p pm-cy" data-n="4" type="button" title="4 focus sessions in a set - every focus / break waits for you to press Stop, then Start" aria-label="4 sessions">4×</button>
         </span>
         <span class="pm-ctl">
           <button class="pm-reset" id="gpResetBtn" type="button" aria-label="Reset" title="Reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
@@ -2786,6 +2786,26 @@ html.is-home, html.is-home body{ overflow:hidden; overscroll-behavior:none; }
   }
   .hv-home .hv-stat-col{ padding:0; border-right:0; gap:18px; }
   .hv-home .hv-stat-big{ padding-left:0; }
+}
+</style>
+<style id="safari-dock-fix">
+/* ================= Side dock: Safari-proof =================
+   Safari can leave a position:fixed + backdrop-filter element painted at a stale size (the pill shrinks to one button and the
+   rest disappears) after the page is restored from the back/forward cache, the tab is re-focused, the theme cross-fade ends or the
+   bar is revealed after sign-in. Two things make it robust:
+   1) the dock gets its own composited layer, and its edge light no longer uses a CSS mask (mask-composite on a pseudo-element
+      inside a blurred, fixed parent is the other classic Safari paint bug) - the same highlight is drawn with inset shadows;
+   2) a tiny self-heal script (below) forces one clean layout + repaint of the dock on those events. */
+@media (min-width:721px){
+  html:root:root #authBar > .topnav-links,
+  html:root:root #authBar > .dock-extras{
+    -webkit-transform:translateZ(0); transform:translateZ(0);
+    -webkit-backface-visibility:hidden; backface-visibility:hidden;
+    will-change:transform;
+    height:auto; min-height:0; max-height:none; overflow:visible; contain:none;
+    box-shadow:0 0 0 .5px var(--glass-hair), inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 1px rgba(255,255,255,.05), var(--glass-shadow) !important;
+  }
+  #authBar > .topnav-links::before, #authBar > .dock-extras::before{ content:none !important; display:none !important; }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -5346,9 +5366,10 @@ days.forEach((day, i) => {
 //     instead of 25 / 50.
 //   * A stretch is logged ONCE, when it ends (pause, reset, phase finished or a catch-up after the page was frozen),
 //     with the deterministic id 'p<segStart>' - so two devices logging the same stretch still make one entry.
-//   * A multi-session set (1x-4x) rolls from focus to break to focus on its own. Because every phase boundary is just
-//     `previous endAt + length`, any device (or this one after being frozen for an hour) re-derives the exact same
-//     chain with pomoAdvance(), logging every stretch it missed.
+//   * A multi-session set (2x-4x) NEVER rolls on by itself: every phase (focus or break) ends by ringing and waiting. Stop
+//     silences the alarm, Start begins the next phase (cycleIdx remembers where the set is). A run therefore only ever
+//     contains ONE phase, so a frozen / locked page can never skip past a boundary - pomoAdvance() completes at most one
+//     phase, logging exactly the focus stretch that finished.
 // ----------------------------------------------------------------------------------------------
 const POMO_MAX_CYCLES = 4;
 pomo = {
@@ -5390,19 +5411,14 @@ function pomoAlarmKeyFor(i){ return i ? 'pomo-' + i : 'pomo'; }
 // Every phase boundary this run will hit (from the current phase on), so the server can ping at each one even while the
 // page is frozen. `final` = the set ends there (loud, repeating alarm); the others are a single quiet nudge.
 function pomoPlanBoundaries(){
-  const out = [];
-  let t = pomo.endAt, mode = pomo.mode, idx = pomo.cycleIdx;
-  for(let i = 0; i < POMO_ALARM_KEYS.length && t != null; i++){
-    const wasFocus = mode === 'focus';
-    if(wasFocus) idx++;
-    const chain = wasFocus ? idx < pomo.cycles : idx > 0;
-    out.push({ at: t, final: !chain,
-      msg: wasFocus ? (chain ? 'Focus done — break time.' : (pomo.cycles > 1 ? 'All sessions done — well done.' : 'Focus session done — break time.')) : "Break's over — back to focus." });
-    if(!chain) break;
-    t += (wasFocus ? pomo.breakLen : pomo.workLen) * 1000;
-    mode = wasFocus ? 'break' : 'focus';
-  }
-  return out;
+  // Every phase ends in a ringing stop (the next phase waits for the user), so the only boundary a run can reach is the
+  // end of the CURRENT phase. One loud, repeating alarm for it - nothing is scheduled beyond it.
+  if(pomo.endAt == null) return [];
+  const wasFocus = pomo.mode === 'focus';
+  const done = pomo.cycleIdx + (wasFocus ? 1 : 0);
+  const setOver = wasFocus && done >= pomo.cycles;
+  return [{ at: pomo.endAt, final: true,
+    msg: wasFocus ? (setOver && pomo.cycles > 1 ? 'All sessions done — well done.' : 'Focus done — break time.') : "Break's over — back to focus." }];
 }
 function pomoScheduleAlarms(){
   const plan = pomoPlanBoundaries();
@@ -5541,9 +5557,10 @@ function pomoPhaseChime(wasFocus){
   else showToast(msg, 3500);
 }
 
-// The phase that ends at `endedAt` is over: log it, flip focus <-> break, then either roll straight into the next phase
-// (inside a multi-session set) or stop and ring. Everything is computed from `endedAt`, not "now", so the result is the
-// same on every device and when the page was frozen for a while. Returns true if the run continued on its own.
+// The phase that ends at `endedAt` is over: log it, flip focus <-> break, then STOP AND RING - always, including inside a
+// 2x-4x set. The next phase (already described by mode / remaining / cycleIdx) only begins when the user presses Stop and
+// then Start. Everything is computed from `endedAt`, not "now", so the result is the same on every device and when the
+// page was frozen for a while. Always returns false (the run never continues on its own).
 function pomoCompletePhase(endedAt){
   pomoCreditElapsedFocus(endedAt);
   const wasFocus = pomo.mode === 'focus';
@@ -5552,25 +5569,12 @@ function pomoCompletePhase(endedAt){
     pomo.sessions++;
     pomo.cycleIdx++;
   }
-  // inside a set: focus -> break while sessions remain, and a break that belongs to a set -> next focus
+  // inside a set: focus -> break while sessions remain, and a break that belongs to a set -> next focus (each one waits for the user)
   const chain = wasFocus ? pomo.cycleIdx < pomo.cycles : pomo.cycleIdx > 0;
-  if(wasFocus && !chain) pomo.cycleIdx = 0; // the set is complete
+  if(wasFocus && !chain) pomo.cycleIdx = 0; // the set is complete (mid-set, cycleIdx is kept so the next Start continues the set)
   pomo.mode = wasFocus ? 'break' : 'focus';
   pomo.remaining = pomo.mode === 'focus' ? pomo.workLen : pomo.breakLen;
   pomo.warned30 = false;
-  if(chain){
-    const crossed = pomoAlarmKeyFor(pomo.bIdx);
-    pomo.bIdx++;
-    pomo.phaseStartedAt = endedAt;
-    pomo.endAt = endedAt + pomo.remaining * 1000;
-    pomo.lastCredit = endedAt;
-    pomo.segStart = pomo.mode === 'focus' ? endedAt : null;
-    if(Date.now() - endedAt < 4000){ // live crossing: chime. When catching up after a freeze stay quiet instead of replaying every switch
-      wrSafe(() => pomoPhaseChime(wasFocus), 'pomo chime');
-      if(!document.hidden) wrCancelAlarm(crossed); // we handled it on screen - no duplicate push
-    }
-    return true;
-  }
   clearInterval(pomo.timerId);
   const endedRunId = pomo.runId; pomo.runId = null;
   pomo.running = false;
@@ -5581,12 +5585,12 @@ function pomoCompletePhase(endedAt){
   wrSafe(() => wrMarkRunEnded(endedRunId));
   return false;
 }
-// Walks the run forward through every phase boundary that has already passed (a locked phone can cross several).
+// Completes the phase whose deadline has passed (one phase at most - it rings and waits for Stop / Start).
 function pomoAdvance(now){
-  let moved = false, guard = 0;
-  while(pomo.running && pomo.endAt != null && now >= pomo.endAt && guard++ < 16){
+  let moved = false;
+  if(pomo.running && pomo.endAt != null && now >= pomo.endAt){ // at most ONE phase: it rings and waits for Stop / Start
     moved = true;
-    if(!pomoCompletePhase(pomo.endAt)) break;
+    pomoCompletePhase(pomo.endAt);
   }
   if(moved && pomo.running) wrSafe(persistLocal); // a chained transition: save + sync the new phase right away
   return moved;
@@ -5751,7 +5755,7 @@ gpPresetBtns.forEach(b => {
   });
 });
 
-// 1x-4x: how many focus sessions run back to back (with their breaks) from a single Start
+// 1x-4x: how many focus sessions make up a set. Every phase still waits for Stop, then Start.
 gpCycleBtns.forEach(b => {
   b.addEventListener('click', () => {
     if(pomo.running) return;
@@ -7004,6 +7008,36 @@ setInterval(() => {
     closing = false;
   }
   window.openDustProjector = open; window.closeDustProjector = close;
+})();
+</script>
+<script>
+/* Dock self-heal (Safari): re-layout + repaint the side dock when Safari may have left it half-painted. */
+(function dockSelfHeal(){
+  const bar = document.getElementById('authBar');
+  const parts = () => [document.querySelector('#authBar > .topnav-links'), document.getElementById('dockExtras')].filter(Boolean);
+  function heal(){
+    parts().forEach(el => {
+      if(getComputedStyle(el).display === 'none') return;
+      const prev = el.style.display;
+      el.style.display = 'none'; void el.offsetHeight; el.style.display = prev;   // same frame: no visible flicker
+    });
+  }
+  let raf = 0;
+  const healSoon = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => requestAnimationFrame(heal)); };
+  window.addEventListener('pageshow', healSoon);                 // back/forward cache restore
+  window.addEventListener('focus', healSoon);
+  window.addEventListener('resize', healSoon);
+  window.addEventListener('orientationchange', healSoon);
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) healSoon(); });
+  if('MutationObserver' in window){
+    if(bar) new MutationObserver(healSoon).observe(bar, { attributes:true, attributeFilter:['style'] });          // revealed after sign-in
+    const app = document.getElementById('appWrap');
+    if(app) new MutationObserver(healSoon).observe(app, { attributes:true, attributeFilter:['hidden'] });
+    new MutationObserver(() => { healSoon(); setTimeout(heal, 1000); })                                           // theme cross-fade / reveal ended
+      .observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+  }
+  [300, 1200, 2500].forEach(t => setTimeout(heal, t));
+  healSoon();
 })();
 </script>
 </body>
