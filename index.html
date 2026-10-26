@@ -2841,6 +2841,386 @@ html.is-home, html.is-home body{ height:100%; min-height:100dvh; }
   #authBar > .topnav-links::before, #authBar > .dock-extras::before{ content:none !important; display:none !important; }
 }
 </style>
+<style id="retro-flat">
+/* =====================================================================================================
+   RETRO FLAT SKIN  (loaded last, overrides the glass layers; delete this block to get the old look back)
+   1. glass -> flat: solid fills, 1px hairlines, no blur, no sheen, no soft drop shadows
+   2. page background is plain (no dot grid, no scanlines, no corner washes)
+   3. dial: orange knob, grey dot grille (wave + motes follow), own palette for dark mode
+   P = html:not(#_a):not(#_b)  -> two extra id-weights so these rules beat the older !important glass rules
+   ===================================================================================================== */
+
+/* ---------- tokens ---------- */
+:root{
+  /* glass tokens re-pointed at flat values; every older rule that reads them goes flat automatically */
+  --glass-fill:linear-gradient(#F5F4F7,#F5F4F7);
+  --glass-chip:#E4E4E8;
+  --glass-blur:none;
+  --glass-hair:#9E9EA2;
+  --glass-sep:#B4B4B7;
+  --glass-shadow:0 0 0 0 transparent;
+  --glass-edge:none;
+  /* dial palette, light mode: graphite dots on warm grey, orange knob */
+  --dial-dot:#ABABB0;      /* unlit dots */
+  --dial-ink:#47474D;      /* lit dots (progress fills towards this) */
+  --dial-mote:#F5F4F7;     /* drifting motes while a timer runs */
+  --dial-knob:#E8532B;
+  --dial-knob-ring:#C6C6C7;/* same as page bg: reads as a clean cut-out against the dots */
+}
+:root[data-theme="dark"]{
+  --glass-fill:linear-gradient(#232326,#232326);
+  --glass-chip:#34343A;
+  --glass-hair:#4C4C52;
+  --glass-sep:#38383D;
+  /* dial palette, dark mode: pale dots light up on charcoal, hotter orange knob */
+  --dial-dot:#3A3A40;
+  --dial-ink:#D6D6DB;
+  --dial-mote:#FFFFFF;
+  --dial-knob:#FF6A3D;
+  --dial-knob-ring:#19191B;
+}
+/* the dock / weekday tabs / date chip / matrix buttons stay dark in light mode: same trick as before, flat values */
+html:not([data-theme="dark"]) #authBar .topnav-links,
+html:not([data-theme="dark"]) #authBar .dock-extras,
+html:not([data-theme="dark"]) .tabs-row .tabs,
+html:not([data-theme="dark"]) .date-display,
+html:not([data-theme="dark"]) .mx-btn{
+  --glass-fill:linear-gradient(#232326,#232326);
+  --glass-blur:none;
+  --glass-chip:#3A3A40;
+  --glass-hair:#38383D;
+  --glass-sep:#38383D;
+  --glass-shadow:0 0 0 0 transparent;
+  --glass-edge:none;
+}
+
+/* ---------- no blur anywhere ---------- */
+html:not(#_a):not(#_b) *, html:not(#_a):not(#_b) *::before, html:not(#_a):not(#_b) *::after{
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+
+/* ---------- plain page background ---------- */
+html:not(#_a):not(#_b) body::before{ content:none !important; display:none !important; background:none !important; }
+html:not(#_a):not(#_b) .dust-dots, html:not(#_a):not(#_b) .dust-vig{ display:none !important; }
+html:not(#_a):not(#_b) body{ background:var(--bg) !important; background-image:none !important; }
+
+/* ---------- floating pieces: solid fill + 1px hairline ---------- */
+html:not(#_a):not(#_b) #authBar > .topnav-links,
+html:not(#_a):not(#_b) #authBar > .dock-extras,
+html:not(#_a):not(#_b) #pm-root .pm-dock,
+html:not(#_a):not(#_b) .wr-toast,
+html:not(#_a):not(#_b) .stats-edit-popover,
+html:not(#_a):not(#_b) .ct-window,
+html:not(#_a):not(#_b) .ct-arrow,
+html:not(#_a):not(#_b) .tabs-row .tabs,
+html:not(#_a):not(#_b) .day-total,
+html:not(#_a):not(#_b) .log-count,
+html:not(#_a):not(#_b) .date-display,
+html:not(#_a):not(#_b) .mx-btn:not(.active),
+html:not(#_a):not(#_b) .cat-palette,
+html:not(#_a):not(#_b) .vb-text,
+html:not(#_a):not(#_b) .dock-extras .iconbtn-label,
+html:not(#_a):not(#_b) .nd-card,
+html:not(#_a):not(#_b) .pm-fab.open{
+  background:var(--glass-fill) !important;
+  box-shadow:0 0 0 1px var(--glass-hair) !important;
+  text-shadow:none;
+}
+/* big cards */
+html:not(#_a):not(#_b) .day, html:not(#_a):not(#_b) .focus-card,
+html:not(#_a):not(#_b) .cat-manager, html:not(#_a):not(#_b) #viewLog .log-card{
+  background:var(--surface) !important;
+  box-shadow:0 0 0 1px var(--line) !important;
+}
+/* active / primary chips: one solid step lighter, no inner highlight, no drop shadow */
+html:not(#_a):not(#_b) .tabs-row .tabs .tab-btn.active,
+html:not(#_a):not(#_b) #pm-root .pm-dock .pm-p.active,
+html:not(#_a):not(#_b) #pm-root .pm-dock .pm-start:not(.running):not(.ringing),
+html:not(#_a):not(#_b) .task-start:not(.ringing):not(.running):not(.again),
+html:not(#_a):not(#_b) .nd-btn:not(.primary){
+  background:var(--glass-chip) !important;
+  box-shadow:none !important;
+}
+html:not(#_a):not(#_b) .task-start:not(.ringing):not(.running):not(.again){ box-shadow:0 0 0 1px var(--glass-hair) !important; }
+@media (min-width:721px){
+  html:not(#_a):not(#_b) #authBar .topnav-links .view-btn.active{ background:var(--glass-chip) !important; box-shadow:none !important; }
+}
+/* quiet buttons */
+html:not(#_a):not(#_b) .add-task-btn:not(.active), html:not(#_a):not(#_b) .cat-edit-toggle,
+html:not(#_a):not(#_b) .task-reset, html:not(#_a):not(#_b) .task-start.again{
+  background:var(--glass-fill) !important;
+  box-shadow:0 0 0 1px var(--glass-hair) !important;
+}
+/* Stop: orange outline instead of tinted glass; ringing = hard retro blink instead of a glow */
+html:not(#_a):not(#_b) .row .task-start.running, html:not(#_a):not(#_b) .row .task-start.ringing,
+html:not(#_a):not(#_b) .task-start.running, html:not(#_a):not(#_b) .task-start.ringing{
+  background:transparent !important; color:var(--night) !important; text-shadow:none !important;
+  box-shadow:0 0 0 1px var(--night) !important;
+}
+@keyframes wrStopBlink{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+html:not(#_a):not(#_b) .row .task-start.ringing{ animation:wrStopBlink 1s steps(1,end) infinite !important; }
+/* dialog primary */
+html:not(#_a):not(#_b) .nd-btn.primary{ background:var(--night) !important; color:var(--on-night) !important; text-shadow:none !important; box-shadow:none !important; }
+html:not(#_a):not(#_b) .nd-scrim{ background:rgba(8,8,10,.55); }
+/* small indicators: lit dot without the halo */
+html:not(#_a):not(#_b) .tab-dot{ box-shadow:none !important; }
+html:not(#_a):not(#_b) .hv-arrow{ box-shadow:0 0 0 1px var(--line) !important; }
+html:not(#_a):not(#_b) .ct-pill, html:not(#_a):not(#_b) .ct-knob.is-running .ct-pill{ box-shadow:none !important; }
+
+/* ---------- Pomodoro: opaque takeover, solid disc ---------- */
+html:not(#_a):not(#_b) .pm-bd{ background:var(--bg) !important; }
+html:not(#_a):not(#_b) .pm-fab:not(.open) .pm-knob, html:not(#_a):not(#_b) .pm-fab.live:not(.open) .pm-knob{
+  background:var(--pm-acc) !important; box-shadow:none !important;
+}
+html:not(#_a):not(#_b) .pm-fab .pm-knob svg, html:not(#_a):not(#_b) #enableAlarmsBtn.enabled svg{ filter:none !important; }
+
+/* ---------- phone chrome ---------- */
+@media (max-width:720px){
+  html:not(#_a):not(#_b) #authBar > .topnav-links{
+    background:#000 !important; box-shadow:0 0 0 1px #2E2E33 !important;
+  }
+  html:not(#_a):not(#_b) #authBar > .topnav-links::before{ background:none !important; content:none !important; }
+  html:not(#_a):not(#_b) #authBar.topnav::after{
+    height:100% !important; background:var(--bg) !important;
+    -webkit-mask-image:none !important; mask-image:none !important;
+  }
+  html:not(#_a):not(#_b) #authBar .topnav-collapsible{ background:var(--surface) !important; box-shadow:0 0 0 1px var(--line) !important; }
+}
+
+/* ---------- DIAL ---------- */
+/* knob: one solid orange disc, ringed in the page colour so it cuts cleanly through the dots and the 24h line */
+html:not(#_a):not(#_b) #globalTracker .dial-knob .dk-glass,
+html:not(#_a):not(#_b) #viewHome .dial-knob .dk-glass{
+  background:var(--dial-knob) !important; background-image:none !important;
+  border:0 !important; box-shadow:0 0 0 2px var(--dial-knob-ring) !important;
+}
+html:not(#_a):not(#_b) #globalTracker .dial-knob .dk-glass::before,
+html:not(#_a):not(#_b) #globalTracker .dial-knob .dk-glass::after{ content:none !important; display:none !important; }
+/* dot grille: grey. Unlit dots, lit dots (progress, wave highlight) and the orange-tinted base all come from these */
+html:not(#_a):not(#_b) #globalTracker .pulse-dial,
+html:not(#_a):not(#_b) #viewHome .pulse-dial{ --dot:var(--dial-dot); --dot-core:var(--dial-dot); }
+/* the progress fill is color-mix(var(--night) t%, base): give the dot layers their own --night so it mixes toward grey, not orange */
+html:not(#_a):not(#_b) .dial-dots, html:not(#_a):not(#_b) .dial-dust{ --night:var(--dial-ink); }
+/* motes that drift off the grille while a timer runs (were peach) */
+html:not(#_a):not(#_b) #globalTracker .dial-dust circle{ fill:var(--dial-mote); }
+html:not(#_a):not(#_b) .row .task-remaining{ text-shadow:none !important; }
+</style>
+<style id="braun">
+/* =====================================================================================================
+   BRAUN SHELF SKIN  (after retro-flat; delete this block to go back to the plain flat look)
+   warm off-white device tiles, LCD readouts, orange accents, matrix in warm greys + orange,
+   dark mode = charcoal with a dim green phosphor LCD
+   P = html:not(#_a):not(#_b)
+   ===================================================================================================== */
+:root{
+  --bg:#EFEDEA; --surface:#E8E6E2; --surface-2:#DDDAD5;
+  --line:#CFCCC6; --line-strong:#B8B4AB;
+  --text:#2A2A2C; --text-dim:#5F5C56; --text-faint:#8A867E;
+  --day-strong:#2A2A2C; --day-soft:#B8B4AB; --rest-line:#CFCCC6; --accent:#2A2A2C; --personal:#B8B4AB;
+  --pill:#DDDAD5; --pill-active:#EFEDEA; --pill-active-text:#2A2A2C; --pill-dim:#8A867E;
+  --topnav-bg:rgba(239,237,234,.9);
+  --glass-fill:linear-gradient(#E8E6E2,#E8E6E2); --glass-chip:#D9D6D0; --glass-hair:#B8B4AB; --glass-sep:#CFCCC6;
+  --lcd:#D3D6CC; --lcd-ink:#2A2A2C; --lcd-dim:#5F5C56; --lcd-line:#BDBFB4;
+  --dial-dot:#BDB9B1; --dial-ink:#4A4946; --dial-knob-ring:#E8E6E2;
+}
+:root[data-theme="dark"]{
+  --bg:#1B1B1A; --surface:#262624; --surface-2:#30302D;
+  --line:#3A3936; --line-strong:#52504B;
+  --text:#ECE9E3; --text-dim:#A9A59D; --text-faint:#77736C;
+  --day-strong:#ECE9E3; --day-soft:#77736C; --rest-line:#3A3936; --accent:#ECE9E3; --personal:#77736C;
+  --pill:#30302D; --pill-active:#3A3936; --pill-active-text:#ECE9E3; --pill-dim:#77736C;
+  --topnav-bg:rgba(27,27,26,.9);
+  --glass-fill:linear-gradient(#262624,#262624); --glass-chip:#3A3936; --glass-hair:#52504B; --glass-sep:#3A3936;
+  --lcd:#16211A; --lcd-ink:#9BE8A6; --lcd-dim:#5E9468; --lcd-line:#2A3D2F;
+  --dial-dot:#44423E; --dial-ink:#D8D4CB; --dial-knob-ring:#262624;
+}
+/* controls that used to stay dark in light mode are now light device chrome */
+html:not([data-theme="dark"]) #authBar .topnav-links,
+html:not([data-theme="dark"]) #authBar .dock-extras,
+html:not([data-theme="dark"]) .tabs-row .tabs,
+html:not([data-theme="dark"]) .date-display,
+html:not([data-theme="dark"]) .mx-btn{
+  color-scheme:light;
+  --bg:#EFEDEA; --surface:#E8E6E2; --line:#CFCCC6; --line-strong:#B8B4AB;
+  --text:#2A2A2C; --text-dim:#5F5C56; --text-faint:#8A867E; --night:#E8532B;
+  --glass-fill:linear-gradient(#E8E6E2,#E8E6E2); --glass-chip:#D9D6D0; --glass-hair:#B8B4AB; --glass-sep:#CFCCC6;
+}
+@media (max-width:720px){
+  html:not(#_a):not(#_b) #authBar > .topnav-links{ background:var(--surface) !important; box-shadow:0 0 0 1px var(--line) !important; }
+  html:not(#_a):not(#_b) #authBar > .topnav-links .view-btn, html:not(#_a):not(#_b) #authBar > .topnav-links .iconbtn{ color:var(--text-faint); }
+  html:not(#_a):not(#_b) #authBar > .topnav-links .view-btn:hover, html:not(#_a):not(#_b) #authBar > .topnav-links .iconbtn:hover,
+  html:not(#_a):not(#_b) #authBar > .topnav-links .view-btn.active{ color:var(--text); }
+  html:not(#_a):not(#_b) .topnav-links #enableAlarmsBtn::before{ background:var(--line); }
+}
+
+/* orange side nub on every tile, like the Braun devices */
+html:not(#_a):not(#_b) .day::before, html:not(#_a):not(#_b) .focus-card::before, html:not(#_a):not(#_b) .cat-manager::before,
+html:not(#_a):not(#_b) #viewLog .log-card::before{
+  content:'' !important; display:block !important; position:absolute !important; inset:auto !important;
+  top:60px !important; right:0 !important; width:5px !important; height:26px !important; padding:0 !important;
+  border-radius:3px 0 0 3px; background:#E8532B !important; -webkit-mask:none !important; mask:none !important; z-index:2; pointer-events:none;
+}
+
+html:not(#_a):not(#_b) #globalTracker .pulse-dial{ --ring-grey:#9A968E; }
+html:not(#_a):not(#_b):root[data-theme="dark"] #globalTracker .pulse-dial{ --ring-grey:#57544F; }
+
+/* LCD readouts: logged / left, date chip, day total, log count */
+html:not(#_a):not(#_b) .hv-stat-col{
+  background:var(--lcd); border:1px solid var(--lcd-line) !important; border-radius:8px; padding:14px 16px !important;
+}
+html:not(#_a):not(#_b) .hv-stat-col .hv-label{ color:var(--lcd-dim); }
+html:not(#_a):not(#_b) .hv-stat-col .hv-val{ color:var(--lcd-ink); }
+html:not(#_a):not(#_b) .date-display, html:not(#_a):not(#_b) .day-total, html:not(#_a):not(#_b) .log-count{
+  background:var(--lcd) !important; color:var(--lcd-ink) !important; box-shadow:0 0 0 1px var(--lcd-line) !important; border-radius:6px !important;
+}
+
+/* matrix: warm greys, orange for the best days */
+html:not(#_a):not(#_b) .mx-cell.mx-off{ background:#D9D6D0; border-color:#CFCCC6; }
+html:not(#_a):not(#_b) .mx-cell.mx-d2{ background:#B8B4AB; border-color:#A9A59D; }
+html:not(#_a):not(#_b) .mx-cell.mx-d1{ background:#6F6B64; border-color:#5F5C56; }
+html:not(#_a):not(#_b) .mx-cell.mx-bright{ background:#E8532B; border-color:#E8532B; }
+html:not(#_a):not(#_b) .mx-cell.mx-today{ box-shadow:0 0 0 2px var(--text); }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-cell.mx-off{ background:#30302D; border-color:#3A3936; }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-cell.mx-d2{ background:#55524D; border-color:#6A665F; }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-cell.mx-d1{ background:#8C887F; border-color:#9C988F; }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-cell.mx-bright{ background:#F0572C; border-color:#F0572C; }
+html:not(#_a):not(#_b) .mx-swatch[title="Off / under 30m"]{ background:#D9D6D0 !important; }
+html:not(#_a):not(#_b) .mx-swatch[title="Well below target"]{ background:#B8B4AB !important; }
+html:not(#_a):not(#_b) .mx-swatch[title="Below target"]{ background:#6F6B64 !important; }
+html:not(#_a):not(#_b) .mx-swatch[title="On target or above"]{ background:#E8532B !important; }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-swatch[title="Off / under 30m"]{ background:#30302D !important; }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-swatch[title="Well below target"]{ background:#55524D !important; }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-swatch[title="Below target"]{ background:#8C887F !important; }
+html:not(#_a):not(#_b):root[data-theme="dark"] .mx-swatch[title="On target or above"]{ background:#F0572C !important; }
+</style>
+<style id="braun-device">
+/* =====================================================================================================
+   BRAUN DEVICE LAYOUT (v2, after braun): no outlines, separate device tiles, round buttons, LCD readouts.
+   Delete this block (and #braun / #retro-flat) to return to the original look.   P = html:not(#_a):not(#_b)
+   ===================================================================================================== */
+:root{
+  --bg:#F1EFEC; --surface:#E4E1DC; --surface-2:#D7D3CC; --tile:#E4E1DC; --tile-deep:#D7D3CC;
+  --line:#D2CEC7; --line-strong:#B3AEA5; --text-faint:#7E7a73;
+  --topnav-bg:rgba(241,239,236,.92);
+  --glass-fill:linear-gradient(#E4E1DC,#E4E1DC); --glass-chip:#D7D3CC; --glass-hair:transparent; --glass-sep:#D2CEC7;
+  --dial-dot:#B9B4AB; --dial-ink:#3F3E3B; --dial-knob-ring:#F1EFEC;
+}
+:root[data-theme="dark"]{
+  --bg:#151514; --surface:#222220; --surface-2:#2C2C2A; --tile:#222220; --tile-deep:#2C2C2A;
+  --line:#353533; --line-strong:#4B4A47; --text-faint:#8A867E;
+  --topnav-bg:rgba(21,21,20,.92);
+  --glass-fill:linear-gradient(#222220,#222220); --glass-chip:#2C2C2A; --glass-hair:transparent; --glass-sep:#353533;
+  --lcd:#0F1A13; --lcd-ink:#9BE8A6; --lcd-dim:#5E9468; --lcd-line:#0F1A13;
+  --dial-dot:#4D4B47; --dial-ink:#E6E2DA; --dial-knob-ring:#151514;
+}
+html:not([data-theme="dark"]) #authBar .topnav-links, html:not([data-theme="dark"]) #authBar .dock-extras,
+html:not([data-theme="dark"]) .tabs-row .tabs, html:not([data-theme="dark"]) .date-display, html:not([data-theme="dark"]) .mx-btn{
+  --bg:#F1EFEC; --surface:#E4E1DC; --line:#D2CEC7; --line-strong:#B3AEA5; --text-faint:#7E7a73;
+  --glass-fill:linear-gradient(#E4E1DC,#E4E1DC); --glass-chip:#D7D3CC; --glass-hair:transparent; --glass-sep:#D2CEC7;
+}
+
+/* ---------- no outlines anywhere: shapes are made by fills ---------- */
+html:not(#_a):not(#_b) .day, html:not(#_a):not(#_b) .focus-card, html:not(#_a):not(#_b) .cat-manager,
+html:not(#_a):not(#_b) #viewLog .log-card, html:not(#_a):not(#_b) .hv-slide, html:not(#_a):not(#_b) .nd-card,
+html:not(#_a):not(#_b) .stats-edit-popover, html:not(#_a):not(#_b) .cat-palette, html:not(#_a):not(#_b) .wr-toast{
+  border-color:transparent !important; box-shadow:none !important;
+}
+html:not(#_a):not(#_b) .name-chip, html:not(#_a):not(#_b) .iconbtn, html:not(#_a):not(#_b) .add-task-btn,
+html:not(#_a):not(#_b) .cat-edit-toggle, html:not(#_a):not(#_b) .task-reset, html:not(#_a):not(#_b) .task-start:not(.running):not(.ringing),
+html:not(#_a):not(#_b) .mx-btn, html:not(#_a):not(#_b) .ct-btn, html:not(#_a):not(#_b) .ct-chip, html:not(#_a):not(#_b) .ct-arrow,
+html:not(#_a):not(#_b) .hv-arrow, html:not(#_a):not(#_b) .pomo-preset-btn, html:not(#_a):not(#_b) .add-block-btn{
+  border-color:transparent !important; box-shadow:none !important;
+}
+/* buttons sitting on a tile are one step deeper than the tile */
+html:not(#_a):not(#_b) .add-task-btn:not(.active), html:not(#_a):not(#_b) .cat-edit-toggle, html:not(#_a):not(#_b) .task-reset,
+html:not(#_a):not(#_b) .task-start.again, html:not(#_a):not(#_b) .hv-arrow, html:not(#_a):not(#_b) .ct-arrow,
+html:not(#_a):not(#_b) .task-start:not(.ringing):not(.running):not(.again){ background:var(--tile-deep) !important; color:var(--text) !important; }
+/* Stop = solid orange, no ring */
+html:not(#_a):not(#_b) .row .task-start.running, html:not(#_a):not(#_b) .row .task-start.ringing,
+html:not(#_a):not(#_b) .task-start.running, html:not(#_a):not(#_b) .task-start.ringing{
+  background:var(--night) !important; color:#fff !important; box-shadow:none !important;
+}
+html:not(#_a):not(#_b) .date-display, html:not(#_a):not(#_b) .day-total, html:not(#_a):not(#_b) .log-count{ box-shadow:none !important; }
+
+/* ---------- dock: capsule pills; only the active button has a fill, so the original glide animation reads as one chip sliding ---------- */
+@media (min-width:721px){
+  html:not(#_a):not(#_b) #authBar > .topnav-links, html:not(#_a):not(#_b) #authBar > .dock-extras{
+    background:var(--tile) !important; box-shadow:none !important; border-radius:999px !important; padding:10px 8px !important; gap:8px !important;
+  }
+  html:not(#_a):not(#_b) #authBar .topnav-links .view-btn, html:not(#_a):not(#_b) #authBar .dock-extras .iconbtn{
+    border-radius:50% !important; background:transparent !important; color:var(--text-dim);
+  }
+  html:not(#_a):not(#_b) #authBar .topnav-links .view-btn:not(.active):hover, html:not(#_a):not(#_b) #authBar .dock-extras .iconbtn:hover{ background:var(--tile-deep) !important; color:var(--text); }
+  html:not(#_a):not(#_b) #authBar .topnav-links .view-btn.active{ background:var(--night) !important; color:#fff !important; box-shadow:none !important; }
+  html:not(#_a):not(#_b) #authBar .nav-dot{ background:#fff !important; box-shadow:none !important; }
+}
+@media (max-width:720px){
+  html:not(#_a):not(#_b) #authBar > .topnav-links{ border-radius:22px 22px 0 0 !important; }
+  html:not(#_a):not(#_b) #authBar > .topnav-links .view-btn.active{ color:var(--night); }
+}
+
+html:not(#_a):not(#_b) .hv-stat-col{ border:0 !important; }
+
+/* ---------- timer: one Braun device ---------- */
+html:not(#_a):not(#_b) #viewTimer .ct-slider{ max-width:640px; }
+html:not(#_a):not(#_b) #viewTimer .ct-knob{
+  background:var(--tile) !important; border-radius:22px; padding:30px 30px 56px !important; gap:22px !important;
+}
+html:not(#_a):not(#_b) .ct-ghost{ display:none !important; }
+html:not(#_a):not(#_b) #viewTimer .ct-knob::before{
+  content:'bitrhythm'; position:absolute; left:30px; bottom:20px; font:700 11px 'Hanken Grotesk',sans-serif; letter-spacing:.04em; color:var(--text);
+}
+html:not(#_a):not(#_b) #viewTimer .ct-knob::after{
+  position:absolute; right:30px; bottom:20px; font:600 11px 'Hanken Grotesk',sans-serif; letter-spacing:.04em; color:var(--text-dim);
+}
+html:not(#_a):not(#_b) #ctKnobTimer::after{ content:'timer 1'; }
+html:not(#_a):not(#_b) #ctKnobSw::after{ content:'stopwatch 1'; }
+html:not(#_a):not(#_b) #viewTimer .ct-knob .pomo-time{
+  align-self:stretch; width:auto; background:var(--lcd); color:var(--lcd-ink); border-radius:10px; padding:12px 20px;
+  font-family:'Doto','Hanken Grotesk',monospace; font-weight:900; font-size:clamp(56px,11vw,92px); line-height:1; letter-spacing:.04em; margin:0 !important;
+}
+html:not(#_a):not(#_b) #viewTimer .ct-knob .pomo-time.long{ font-size:clamp(46px,9vw,72px); }
+html:not(#_a):not(#_b) .ct-rulerrow{ gap:12px; }
+html:not(#_a):not(#_b) .ct-rulerrow .ct-ruler, html:not(#_a):not(#_b) .ct-ruler{
+  height:108px !important; background:var(--tile-deep); border-radius:12px;
+  -webkit-mask-image:none !important; mask-image:none !important;
+}
+html:not(#_a):not(#_b) .ct-window{
+  width:3px !important; height:66px !important; top:auto !important; bottom:6px !important; transform:translateX(-50%) !important; padding:0 !important; border-radius:2px !important;
+  background:var(--night) !important; box-shadow:none !important;
+}
+html:not(#_a):not(#_b) .ct-window > *{ display:none !important; }
+html:not(#_a):not(#_b) .ct-tick em{ font-family:'Hanken Grotesk',sans-serif; font-size:12px; font-weight:600; color:var(--text-dim); }
+html:not(#_a):not(#_b) .ct-sub b{ font-family:'Doto','Hanken Grotesk',monospace; font-weight:900; letter-spacing:.06em; font-size:18px; }
+html:not(#_a):not(#_b) .ct-sub span{ font-size:12px; letter-spacing:.06em; color:var(--text-dim); }
+html:not(#_a):not(#_b) #viewTimer .ct-actions{ display:flex; align-items:center; justify-content:center; gap:18px; margin-top:2px; }
+html:not(#_a):not(#_b) #viewTimer .ct-btn{
+  width:58px; height:58px; min-width:0 !important; padding:0 !important; border-radius:50% !important;
+  background:var(--tile-deep) !important; color:var(--text) !important;
+  font-family:'Doto','Hanken Grotesk',monospace; font-weight:900; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+}
+html:not(#_a):not(#_b) #viewTimer .ct-btn.primary{ width:92px; height:92px; background:var(--night) !important; color:#fff !important; }
+html:not(#_a):not(#_b) #viewTimer .ct-chips{ display:flex; gap:12px; justify-content:center; }
+html:not(#_a):not(#_b) #viewTimer .ct-chip{
+  width:46px; height:46px; padding:0 !important; border-radius:50% !important; background:var(--tile-deep) !important; color:var(--text-dim) !important;
+  font-family:'Doto','Hanken Grotesk',monospace; font-weight:900; font-size:11px; letter-spacing:.02em; text-transform:uppercase;
+}
+html:not(#_a):not(#_b) #viewTimer .ct-chip.active{ background:var(--night) !important; color:#fff !important; }
+html:not(#_a):not(#_b) .ct-dots button{ background:var(--line-strong); }
+html:not(#_a):not(#_b) .ct-dots button.active{ background:var(--night); }
+/* matrix: filled cells, no outlines */
+html:not(#_a):not(#_b) .mx-cell{ border-color:transparent !important; }
+html:not(#_a):not(#_b) .mx-cell:not(.mx-off):not(.mx-d1):not(.mx-d2):not(.mx-bright):not(.mx-today){ background:var(--tile-deep); opacity:.55; }
+/* leftover glass rims (dark mode paints them with explicit white gradients): remove every one */
+html:not(#_a):not(#_b) .vb-text::before, html:not(#_a):not(#_b) .iconbtn-label::before, html:not(#_a):not(#_b) .stats-edit-popover::before,
+html:not(#_a):not(#_b) .mx-btn::after, html:not(#_a):not(#_b) .tabs::before, html:not(#_a):not(#_b) .date-display::before,
+html:not(#_a):not(#_b) .today-pill::before, html:not(#_a):not(#_b) .day-total::before, html:not(#_a):not(#_b) .log-count::before,
+html:not(#_a):not(#_b) .add-task-btn::after, html:not(#_a):not(#_b) .task-start::after, html:not(#_a):not(#_b) .cat-edit-toggle::after,
+html:not(#_a):not(#_b) .ct-window::before, html:not(#_a):not(#_b) .ct-arrow::before, html:not(#_a):not(#_b) .pm-dock::before,
+html:not(#_a):not(#_b) .task-reset::after, html:not(#_a):not(#_b) .view-btn::after, html:not(#_a):not(#_b) .iconbtn::after{
+  background:none !important; background-image:none !important; box-shadow:none !important; border-color:transparent !important;
+}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // If the Supabase script can't load (offline, blocked), the app must still boot and keep every timer working locally.
@@ -6346,7 +6726,7 @@ function renderStats(){
         </header>
         <div class="pulse-dial">
           <svg class="pulse-svg" viewBox="0 0 280 280" role="img" aria-label="Today: 24 hour clock and target progress">
-            <title>Outer line: your day from midnight (top), clockwise; the glass knob is the time now. Dots fill orange from the centre as you reach today's target.</title>
+            <title>Outer line: your day from midnight (top), clockwise; the orange knob is the time now. Dots fill grey from the centre as you reach today's target.</title>
             <g class="dial-dots">${dialDotsMarkup()}</g>
             <g class="dial-dust">${dialDustMarkup()}</g>
             <g class="dial-segs"></g>
