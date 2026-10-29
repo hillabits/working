@@ -52,8 +52,8 @@
     --radius-md:20px;
     --radius-sm:12px;
     --shadow-card:none;
-    --on-night:#ffffff;
-    --on-accent:#ffffff;
+    --on-night:#E9E5DA;
+    --on-accent:#E9E5DA;
     --topnav-bg:rgba(224,224,226,.88);
     --pill:#28282B;
     --pill-active:#F1F1F3;
@@ -80,18 +80,18 @@
     --surface-3:#36363A;
     --line:#38383D;
     --line-strong:#4C4C52;
-    --text:#F1F1F3;
-    --text-dim:#A2A2A9;
+    --text:#CECAC0;
+    --text-dim:#8F8B80;
     --text-faint:#6F6F76;
-    --day-strong:#E9E9EC;
+    --day-strong:#CECAC0;
     --day-soft:#6F6F76;
     --night:#F0572C;
     --night-glow:rgba(240,87,44,.22);
     --rest-line:#444449;
-    --accent:#E9E9EC;
+    --accent:#CECAC0;
     --health:#F0572C;
     --personal:#6F6F76;
-    --on-night:#ffffff;
+    --on-night:#E9E5DA;
     --on-accent:#141416;
     --topnav-bg:rgba(15,15,17,.86);
     --pill:#242427;
@@ -598,7 +598,7 @@
   #dustCam{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); opacity:.10; filter:grayscale(1) contrast(1.1); pointer-events:none; display:none; }
   /* analog-bits finish: dot grid + scanlines + vignette, all driven by the site's own line colour */
   /* identical to the page's body::before grid (same layers, size, offset, opacity) so open/close never shifts or changes the dots */
-  .dust-dots{ position:absolute; inset:0; pointer-events:none; opacity:.55;
+  .dust-dots{ display:none !important; position:absolute; inset:0; pointer-events:none; opacity:.55;
     background-image:
       repeating-linear-gradient(0deg, transparent 0 2px, var(--bg) 2px 3px),
       radial-gradient(circle, var(--line-strong) .9px, transparent 1.3px);
@@ -1427,6 +1427,7 @@
      Doto dot-matrix type in upper-case with wide tracking, a dot-grid page, faint scanlines on the cards. */
   /* dotted grid lives on the page background only (same look as the Dust Projector); cards stay clean */
   body::before{
+    display:none !important;
     content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
     background-image:
       repeating-linear-gradient(0deg, transparent 0 2px, var(--bg) 2px 3px),
@@ -1552,7 +1553,8 @@
   }
 
   /* ===== Dial v3 — speaker-grille tracker (dot grid, 24h knob, progress knob). Circle area only. ===== */
-  #globalTracker .pulse-dial{ --dot:color-mix(in srgb, var(--night) 45%, var(--bg)); --dot-core:var(--dot); --ring-grey:#B4B4B8; }
+  #globalTracker .pulse-dial{ --ink:var(--pill); --dot:color-mix(in srgb, var(--ink) 45%, var(--bg)); --dot-core:var(--dot); --ring-grey:#B4B4B8; }
+  html[data-theme="dark"] #globalTracker .pulse-dial{ --ink:#8D8D96; --dot:color-mix(in srgb, var(--ink) 38%, var(--bg)); }  /* soft slate grey: calm on dark, lets the orange knob stand out */
   html[data-theme="dark"] #globalTracker .pulse-dial{ --ring-grey:#4A4A50; }
   #globalTracker .dd{ fill:var(--dot); transition:fill .7s var(--ease); }
   #globalTracker .dd.c{ fill:var(--dot-core); }
@@ -1575,6 +1577,14 @@
     transform:translate(-50%,-50%);
   }
   #globalTracker .dk-glass::after{ display:none; }
+  /* the day ring now lives inside the knob: groove track + today's sessions (midnight at top, clockwise) */
+  #globalTracker .dk-ring{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
+  #globalTracker .dk-track{ fill:none; stroke:rgba(40,40,43,.16); stroke-width:4.8; }
+  #globalTracker .dk-segs path{ fill:none; stroke-linecap:round; }
+  #globalTracker .dk-segs path.c{ stroke-width:4.8; }
+  #globalTracker .dk-segs path.el{ stroke:rgba(206,202,192,.6); stroke-width:1.2; stroke-linecap:butt; }
+  #globalTracker .dk-segs path.live{ animation:dialLive 1.6s ease-in-out infinite; }
+  #globalTracker .dk-segs circle.now{ fill:#fff; }
   /* top bar: fully transparent, no frosted band / seam over the content */
   /* ================= Mobile refresh: same language as the web UI =================
      solid tiles, one-line task rows (dot · name · time · Start), calm dark Start pill, no glow / plus badge */
@@ -1623,6 +1633,208 @@
     background:transparent !important; border-bottom:0 !important;
     -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
   }
+</style>
+<style id="dock-sheet">
+/* ===== Phone bottom panel: the tab bar grows into a full-width sheet that also carries each tab's key data =====
+   Retro-cream sheet (#CECAC0) with a solid black tab pill inside it. Panes: Home = track record + %, Weekly = today's focus +
+   categories, Timer = start/stop + duration presets, Activity Log = nothing. Nodes are MOVED (not copied) so every handler keeps working. */
+#dockSheet{ display:none; }
+@media (max-width:720px){
+  :root{ --dock-h:96px; }
+  html:root{ --hv-bot:var(--dock-h); --hv-foot:0px; }   /* Home ends exactly where the bar begins */
+  body{ padding-bottom:calc(var(--dock-h) + 14px) !important; }
+  /* Pomodoro knob: unchanged 58px, sits at the bottom right on the same row as the tabs */
+  html:root #pm-root{ --fr:14px; --fb:calc(14px + env(safe-area-inset-bottom,0px)); }
+  html:root #pm-root .pm-fab{ z-index:62; }   /* above the bar (the top/bottom nav sits at z-index 50) */
+  /* bell + log out: top bar, right */
+  #authBar .top-right{ margin-left:auto; display:flex; align-items:center; gap:2px; align-self:center; }
+  #authBar .top-right .sync-dot{ width:9px; height:9px; margin:0 8px 0 0; align-self:center; flex:none; }
+  #authBar .top-right .sync-dot.synced, #authBar .top-right .sync-dot.syncing{ box-shadow:0 0 0 4px var(--night-glow); }
+  #authBar .top-right .iconbtn{ width:38px; height:38px; padding:0; display:grid; place-items:center; border:0; border-radius:50%; background:transparent; color:var(--text-dim); box-shadow:none; }
+  #authBar .top-right .iconbtn svg{ width:20px; height:20px; }
+  #authBar .top-right .iconbtn .iconbtn-label{ display:none !important; }
+  #authBar .top-right .iconbtn:active{ background:var(--tint-active, rgba(0,0,0,.06)); }
+  html:root .pm-stage{ padding-bottom:calc(var(--dock-h) + 28px); }
+  /* Pomodoro open: the bar shows the Pomodoro settings (presets, sets, reset, start) instead of the tab's data */
+  #dockSheet .ds-pane[data-pane="pomo"]{ display:none; }
+  html.pm-open #dockSheet > .ds-pane{ display:none !important; }
+  html.pm-open #dockSheet > .ds-pane[data-pane="pomo"]{ display:block !important; }
+  #dockSheet .pm-dock{ position:static !important; display:flex; flex-direction:column; align-items:stretch; gap:10px; width:100%; max-width:none; padding:0; border-radius:0; background:none !important; box-shadow:none !important; -webkit-backdrop-filter:none; backdrop-filter:none; }
+  #dockSheet .pm-dock::before{ display:none !important; }
+  #dockSheet .pm-dock button{ font-family:inherit; border:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  #dockSheet .pm-f{ display:flex; gap:8px; margin:0; padding:0; border:0; }
+  #dockSheet .pm-c{ margin:0; padding:0; border:0; }
+  #dockSheet .pm-p{ flex:1; height:46px; border-radius:100px; background:#1C1C1F; color:rgba(206,202,192,.7); font-weight:600; font-size:14px; white-space:nowrap; transition:background-color .15s ease,color .15s ease; }
+  #dockSheet .pm-p.active{ background:#CECAC0; color:#000; box-shadow:none; }
+  #dockSheet .pm-dock .pm-p, #dockSheet .pm-dock .pm-p.active{ transform:none !important; }
+  #dockSheet .pm-cy{ height:40px; min-width:0; padding:0 6px; font-size:13px; font-variant-numeric:tabular-nums; }
+  #dockSheet .pm-ctl{ display:flex; align-items:center; gap:8px; margin:0; padding:0; border:0; }
+  #dockSheet .pm-reset{ width:52px; height:52px; flex:none; display:grid; place-items:center; border-radius:50%; background:#1C1C1F; color:#CECAC0; }
+  #dockSheet .pm-reset svg{ width:21px; height:21px; display:block; }
+  #dockSheet .pm-start{ flex:1; height:52px; min-width:0; border-radius:100px; background:#CECAC0 !important; color:#000 !important; font-weight:700; font-size:14px; box-shadow:none !important; }
+  #dockSheet .pm-start.running, #dockSheet .pm-start.ringing{ background:var(--night) !important; color:var(--on-night) !important; }
+  #dockSheet .pm-start:disabled, #dockSheet .pm-p:disabled{ opacity:.4; cursor:not-allowed; }
+  #dockSheet .pm-x{ display:none; }
+  #authBar .topnav-collapsible{ display:none !important; }
+
+  /* the black tab pill now floats inside the sheet */
+  html:root:root:root #authBar > .topnav-links{
+    left:14px; right:calc(14px + 58px + 8px); bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    border-radius:0 !important; padding:4px 8px; background:transparent !important; box-shadow:none !important; z-index:42;
+  }
+  #authBar > .topnav-links .view-btn{ padding:13px 0 20px; }
+
+  #dockSheet{
+    display:block; position:fixed; left:0; right:0; bottom:0; z-index:41; box-sizing:border-box;
+    padding:14px 14px calc(92px + env(safe-area-inset-bottom,0px));
+    background:#000; border-radius:30px 30px 0 0; box-shadow:none;
+    /* one total-black bar: retro-white text on black, in both themes */
+    --text:#CECAC0; --text-dim:rgba(206,202,192,.62); --text-faint:rgba(206,202,192,.42);
+    --line:rgba(206,202,192,.18); --line-strong:rgba(206,202,192,.34);
+    --surface:#141416; --surface-2:#1C1C1F; --bg:#000;
+    color:#CECAC0;
+  }
+  #dockSheet.is-empty{ padding-top:14px; }
+  #dockSheet .ds-pane{ display:none; }
+  #dockSheet .ds-pane.on{ display:block; }
+  #dockSheet .ds-tg{ display:none; }
+  #dockSheet .ds-tg.on{ display:block; }
+
+  /* Home: track record + percentage */
+  #dockSheet .hv-stats{ margin:0; padding:0; border-top:0; align-items:center; }
+  #dockSheet .hv-stat-col{ border-right-color:var(--line); }
+  #dockSheet .hv-pct{ font-size:clamp(54px,17vw,84px); }
+
+  /* Weekly: today's focus + categories (flat, no cards) */
+  #dockSheet .ds-pane[data-pane="schedule"]{ overflow-y:auto; }
+  #dockSheet .focus-card, #dockSheet .cat-manager{ background:transparent !important; border:0 !important; box-shadow:none !important; padding:0 !important; }
+  #dockSheet .focus-card{ margin-bottom:18px; }
+  #dockSheet #catManagerMount{ display:block; }
+
+  /* Weekly pane: swipe between "Today's to-do" and "Categories" (scroll-snap pager), retro mono type */
+  #dockSheet .ds-pane[data-pane="schedule"]{ overflow:visible; max-height:none; }
+  #dockSheet .ds-swipe{ display:flex; margin:0 -14px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
+  #dockSheet .ds-slide{ flex:0 0 100%; box-sizing:border-box; padding:0 14px; scroll-snap-align:start; scroll-snap-stop:always; max-height:206px; overflow-y:auto; font-family:'Doto','Hanken Grotesk',sans-serif; }
+  #dockSheet .ds-slide:has(.cat-swatch-btn){ max-height:300px; }
+  #dockSheet .ds-dots{ display:flex; justify-content:center; gap:7px; margin-top:12px; }
+  #dockSheet .ds-dots button{ width:7px; height:7px; padding:0; border:0; border-radius:100px; background:rgba(206,202,192,.3); cursor:pointer; transition:width .4s cubic-bezier(.22,.9,.24,1), background-color .25s ease; }
+  #dockSheet .ds-dots button.on{ width:22px; background:var(--night); }
+
+  #dockSheet .focus-card{ position:relative; margin:0; }
+  #dockSheet .focus-title, #dockSheet .cat-manager-title{ margin:0 0 6px; gap:0; font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:800; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:#CECAC0; }
+  #dockSheet .focus-title-icon, #dockSheet .cat-title-icon{ display:none; }
+  #dockSheet .focus-list{ display:flex; flex-direction:column; gap:0; }
+  #dockSheet .focus-row{ gap:12px; padding:11px 0; background:none; border-radius:0; border-bottom:1px dashed rgba(206,202,192,.2); font-size:15px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+  #dockSheet .focus-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:700; }
+  #dockSheet .focus-dot{ width:9px; height:9px; border-radius:2px; }
+  #dockSheet .focus-time{ font-size:13px; font-weight:700; letter-spacing:.06em; color:var(--text-dim); text-transform:uppercase; }
+  #dockSheet .focus-foot{ position:absolute; top:2px; right:0; margin:0; padding:0; border:0; display:flex; gap:10px; font-family:'Doto','Hanken Grotesk',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text-faint); }
+
+  #dockSheet .cat-manager{ position:relative; }
+  #dockSheet .cat-manager-head{ display:flex; align-items:center; justify-content:space-between; margin:0 0 12px; }
+  #dockSheet .cat-manager-title{ margin:0; }
+  #dockSheet .cat-edit-toggle{ height:auto !important; min-height:0; padding:5px 13px !important; border-radius:100px; background:transparent !important; border:1px solid rgba(206,202,192,.4) !important; box-shadow:none !important; color:#CECAC0 !important; font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:800; font-size:11px; letter-spacing:.14em; text-transform:uppercase; }
+  #dockSheet .cat-manager-list{ display:flex; flex-direction:column; gap:0; }
+  #dockSheet .cat-row-view{ gap:12px; padding:10px 0; background:none; min-width:0; border-bottom:1px dashed rgba(206,202,192,.2); }
+  #dockSheet .cat-swatch-static{ width:12px; height:12px; border-radius:3px; flex:none; }
+  #dockSheet .cat-name-static{ font-size:14px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #dockSheet .cat-manager-list:has(.cat-swatch-btn){ gap:10px; }
+
+  /* Digital retro clock face: the data sits inside an inset LCD-style screen (dark glass, faint scanlines, soft glow) */
+  #dockSheet .hv-stats, #dockSheet .focus-card, #dockSheet .cat-manager{
+    position:relative; box-sizing:border-box; overflow:hidden; padding:16px 20px !important;
+    border-radius:22px; border:1px solid rgba(206,202,192,.16) !important;
+    background:linear-gradient(180deg,#0D0D0E 0%,#050505 100%);
+    box-shadow:inset 0 0 0 3px #000, inset 0 2px 14px rgba(0,0,0,.9), 0 1px 0 rgba(206,202,192,.08) !important;
+  }
+  #dockSheet .hv-stats::after, #dockSheet .focus-card::after, #dockSheet .cat-manager::after{
+    content:''; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+    background:repeating-linear-gradient(0deg, rgba(206,202,192,.035) 0 1px, transparent 1px 3px);
+  }
+  #dockSheet .hv-val, #dockSheet .focus-name, #dockSheet .focus-time, #dockSheet .cat-name-static{ text-shadow:0 0 9px rgba(206,202,192,.28); }
+  #dockSheet .hv-pct{ text-shadow:0 0 16px rgba(240,87,44,.55); font-size:clamp(48px,15vw,72px); }
+  #dockSheet .hv-val{ font-size:clamp(22px,6.4vw,28px); }
+  #dockSheet .hv-stat-big{ padding-left:16px; }
+  #dockSheet .hv-stat-col{ padding-right:12px; }
+  #dockSheet .focus-foot{ top:17px; right:20px; }
+  #dockSheet .ds-slide{ padding-top:2px; padding-bottom:2px; }
+
+  /* ===== LCD v2: a lighter charcoal "glass" (clearly different from the black bar), tighter spacing, one fixed block ===== */
+  #dockSheet{ --lcd-a:#2A2A2F; --lcd-b:#1D1D21; }
+  #dockSheet .hv-stats, #dockSheet .ds-lcd{
+    position:relative; box-sizing:border-box; overflow:hidden;
+    border-radius:16px; border:1px solid rgba(206,202,192,.18) !important;
+    background:linear-gradient(180deg,var(--lcd-a) 0%,var(--lcd-b) 100%) !important;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.55), inset 0 2px 12px rgba(0,0,0,.55), 0 1px 0 rgba(206,202,192,.06) !important;
+  }
+  #dockSheet .hv-stats{ padding:13px 18px !important; }
+  #dockSheet .ds-lcd{ padding:13px 0 12px; }
+  #dockSheet .ds-lcd::after, #dockSheet .hv-stats::after{ content:''; position:absolute; inset:0; pointer-events:none; border-radius:inherit; background:repeating-linear-gradient(0deg, rgba(206,202,192,.04) 0 1px, transparent 1px 3px); }
+  /* the old per-page blocks go flat: the single LCD frame stays put while only its content swipes */
+  #dockSheet .ds-lcd .focus-card, #dockSheet .ds-lcd .cat-manager{ background:none !important; border:0 !important; box-shadow:none !important; padding:0 !important; border-radius:0; overflow:visible; }
+  #dockSheet .ds-lcd .focus-card::after, #dockSheet .ds-lcd .cat-manager::after{ display:none; }
+  #dockSheet .ds-lcd .ds-swipe{ margin:0; }
+  #dockSheet .ds-lcd .ds-slide{ display:flex; flex-direction:column; padding:0 18px; max-height:none; overflow:visible; }
+  #dockSheet .ds-lcd .focus-card, #dockSheet .ds-lcd #catManagerMount{ flex:1; position:relative; padding-bottom:22px !important; display:flex; flex-direction:column; }
+  #dockSheet .ds-lcd .cat-manager{ flex:1; }
+  #dockSheet .ds-lcd .focus-title{ margin:0 0 2px; }
+  #dockSheet .ds-lcd .cat-manager-head{ margin:0 0 2px; min-height:26px; }
+  #dockSheet .ds-lcd .ds-slide, #dockSheet .ds-lcd .ds-slide > *, #dockSheet .ds-lcd .focus-card, #dockSheet .ds-lcd .cat-manager, #dockSheet .ds-lcd .focus-list, #dockSheet .ds-lcd .focus-row, #dockSheet .ds-lcd .cat-manager-list{ min-width:0; max-width:100%; box-sizing:border-box; }
+  #dockSheet .ds-lcd .focus-list, #dockSheet .ds-lcd .cat-manager-list{ max-height:103px; overflow-y:auto; }
+  #dockSheet .ds-lcd .focus-row{ padding:8px 0; font-size:14px; }
+  #dockSheet .ds-lcd .cat-row-view{ padding:8px 0; }
+  #dockSheet .ds-lcd .cat-name-static{ font-size:14px; }
+  /* summary + page dots share the LCD's bottom line (dots sit in the middle) */
+  #dockSheet .ds-lcd .focus-foot{ position:absolute; left:0; right:0; bottom:0; top:auto; justify-content:space-between; font-size:10px; }
+  #dockSheet .ds-lcd .ds-dots{ position:absolute; left:50%; bottom:13px; transform:translateX(-50%); margin:0; gap:5px; }
+  #dockSheet .ds-lcd .ds-dots button{ width:5px; height:5px; }
+  #dockSheet .ds-lcd .ds-dots button.on{ width:16px; }
+  #dockSheet .ds-lcd .ds-slide:has(.cat-swatch-btn), #dockSheet .ds-lcd:has(.cat-swatch-btn) .ds-slide{ max-height:none; }
+  #dockSheet .ds-lcd:has(.cat-swatch-btn) .cat-manager-list{ max-height:230px; }
+  /* matching glass for the other controls */
+  .dashboard-grid > .sidebar{ display:none; }
+
+  /* Timer: start/stop + duration presets */
+  #dockSheet .ct-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  #dockSheet .ct-btn{ height:54px; border-radius:100px; font-size:13px; }
+  #dockSheet .ct-btn:not(.primary){ background:#1C1C1F; border-color:#1C1C1F; color:#CECAC0; }
+  #dockSheet .ct-btn.primary.running{ background:#CECAC0; border-color:#CECAC0; color:#000; }
+  #dockSheet .ct-chips{ display:flex; flex-wrap:nowrap; gap:8px; justify-content:space-between; margin-top:12px; }
+  #dockSheet .ct-chip{ flex:1; height:40px; border-radius:100px; color:#CECAC0; border-color:rgba(206,202,192,.28); background:transparent; }
+  #dockSheet .ct-chip.active{ background:var(--night); border-color:var(--night); color:#fff; }
+
+  /* Home: no big headings, no pager dots under the content (the Today/Matrix switch lives in the bar now), stats left the slide:
+     the dial and the matrix get the whole free area above the bar and are centred in it */
+  .hv-head{ display:none !important; }
+  .hv-dots{ display:none !important; }
+  .hv-slide{ padding-top:0; }
+  html:root #viewHome .pulse-dial{ --dial:max(150px, min(100cqw, calc(100cqh - 24px))); margin-block:auto; }
+  .hv-matrix-body{ padding-top:10px; }
+  #viewHome .mx-readout{ margin-bottom:4px; }
+
+  /* Home pane: Today stats (page 1) or Matrix year controls (page 2) */
+  #dockSheet .ds-pane[data-pane="home"]{ position:relative; }
+  #dockSheet .ds-hg{ display:none; }
+  #dockSheet .ds-hg.on{ display:block; animation:dsIn .55s cubic-bezier(.22,.9,.24,1) both; }
+  #dockSheet .ds-hdots{ position:absolute; left:50%; bottom:7px; transform:translateX(-50%); display:flex; gap:5px; z-index:2; }
+  #dockSheet .ds-hdots button{ position:relative; width:5px; height:5px; padding:0; border:0; border-radius:100px; background:rgba(206,202,192,.3); cursor:pointer; transition:width .4s cubic-bezier(.22,.9,.24,1), background-color .25s ease; }
+  #dockSheet .ds-hdots button::after{ content:''; position:absolute; inset:-10px -6px; }
+  #dockSheet .ds-hdots button.on{ width:16px; background:var(--night); }
+  /* matrix year row = another LCD block */
+  #dockSheet .matrix-head{ margin:0 !important; padding:12px 14px 16px; position:relative; box-sizing:border-box; overflow:hidden; border-radius:16px; border:1px solid rgba(206,202,192,.18);
+    background:linear-gradient(180deg,var(--lcd-a) 0%,var(--lcd-b) 100%); box-shadow:inset 0 0 0 2px rgba(0,0,0,.55), inset 0 2px 12px rgba(0,0,0,.55), 0 1px 0 rgba(206,202,192,.06); }
+  #dockSheet .matrix-head::after{ content:''; position:absolute; inset:0; pointer-events:none; border-radius:inherit; background:repeating-linear-gradient(0deg, rgba(206,202,192,.04) 0 1px, transparent 1px 3px); }
+  #dockSheet .matrix-controls{ display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; }
+  #dockSheet .mx-period{ flex:1; text-align:center; font-family:'Doto','Hanken Grotesk',sans-serif; font-weight:900; font-size:30px; letter-spacing:.08em; color:#CECAC0; text-shadow:0 0 10px rgba(206,202,192,.3); }
+  #dockSheet .mx-btn{ width:46px; height:40px; padding:0; display:grid; place-items:center; border:0 !important; border-radius:100px; background:#141416 !important; color:#CECAC0 !important; box-shadow:none !important; font-size:16px; cursor:pointer; }
+  #dockSheet .mx-btn.mx-play{ background:var(--night) !important; color:var(--on-night) !important; }
+
+  /* morph: the incoming pane eases in while the bar itself animates its height (see JS) */
+  @keyframes dsIn{ from{ opacity:0; transform:translateY(14px) scale(.985); filter:blur(5px); } to{ opacity:1; transform:none; filter:none; } }
+  #dockSheet .ds-pane.on, #dockSheet .ds-tg.on, html.pm-open #dockSheet > .ds-pane[data-pane="pomo"]{ animation:dsIn .55s cubic-bezier(.22,.9,.24,1) both; }
+  @media (prefers-reduced-motion:reduce){ #dockSheet .ds-pane.on, #dockSheet .ds-tg.on, html.pm-open #dockSheet > .ds-pane[data-pane="pomo"]{ animation:none; } }
+  #viewTimer:not([hidden]){ min-height:calc(100dvh - 92px - var(--dock-h) - env(safe-area-inset-bottom,0px)); }
+}
 </style>
 </head>
 <body>
@@ -2554,10 +2766,21 @@ html .row .task-start.ringing{ animation:wrStopGlow 1s ease-in-out infinite; }
     background:linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 26%) !important;
   }
   /* icons readable on black in both themes */
-  #authBar > .topnav-links .view-btn, #authBar > .topnav-links .iconbtn{ color:rgba(255,255,255,.5); position:relative; z-index:1; }
-  #authBar > .topnav-links .view-btn:hover, #authBar > .topnav-links .iconbtn:hover{ color:rgba(255,255,255,.85); }
-  #authBar > .topnav-links .view-btn.active{ color:#fff; }
+  #authBar > .topnav-links .view-btn, #authBar > .topnav-links .iconbtn{ color:rgba(206,202,192,.5); position:relative; z-index:1; }
+  #authBar > .topnav-links .view-btn:hover, #authBar > .topnav-links .iconbtn:hover{ color:rgba(206,202,192,.85); }
+  #authBar > .topnav-links .view-btn.active{ color:#CECAC0; }
   .topnav-links #enableAlarmsBtn::before{ background:rgba(255,255,255,.14); }
+}
+
+/* ===== Phone bottom bar: simple and flat, solid black. No glass edge, no sheen, no shadow fade. ===== */
+@media (max-width:720px){
+  html:root:root #authBar > .topnav-links{
+    background:#000 !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    border-radius:24px 24px 0 0;
+    box-shadow:none !important;
+  }
+  html:root:root #authBar > .topnav-links::before{ content:none !important; display:none !important; }
 }
 
 /* ===== Timer page on phones: centred in the free area between the top bar and the bottom tab bar ===== */
@@ -2672,6 +2895,16 @@ html[data-theme="dark"] #globalTracker .dk-glass{
   -webkit-backdrop-filter:blur(12px) saturate(1.4) !important; backdrop-filter:blur(12px) saturate(1.4) !important;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), 0 8px 18px -8px rgba(0,0,0,.65) !important;
 }
+
+/* Dial knob: flat, solid brand orange (same --night as the other orange assets). No gradient, no glow, no edge light. */
+html:not([data-theme="dark"]) #globalTracker .dk-glass,
+html[data-theme="dark"] #globalTracker .dk-glass{
+  background:var(--night) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  box-shadow:0 4px 12px -6px rgba(0,0,0,.35) !important;
+}
+html:not([data-theme="dark"]) #globalTracker .dk-glass::before,
+html[data-theme="dark"] #globalTracker .dk-glass::before{ display:none !important; }
 </style>
 <style id="home-view">
 /* ================= HOME: one calm screen, no scrolling =================
@@ -3433,7 +3666,7 @@ function growStats(){
   const dg = document.querySelector('.dial-dots');
   if(dg){ const p0 = parseFloat(dg.dataset.pct) || 0; paintDialDots(0); requestAnimationFrame(() => requestAnimationFrame(() => { dg._lp = null; paintDialDots(p0); })); }
   // the day ring fades up, and the "now" dot sweeps round from midnight to the current time
-  const segs = document.querySelector('.dial-segs');
+  const segs = document.querySelector('.dk-ring');
   if(segs) segs.animate([{ opacity:0 }, { opacity:1 }], { duration:900, delay:300, easing:EASE, fill:'backwards' });
   { const kn = document.querySelector('.dial-knob');
     if(kn && kn._a != null) sweepDialKnob(kn);
@@ -4886,15 +5119,22 @@ function getLiveTracking(){
   }
   return null;
 }
+// Edge fade: dots stay solid in the middle, then fade out smoothly toward the rim, so the grille reads as a soft, round disc
+const DIAL_FADE_FROM = 58, DIAL_FADE_TO = 117, DIAL_FADE_MIN = .06;
+function dialEdgeFade(d){
+  if(d <= DIAL_FADE_FROM) return 1;
+  const t = Math.min(1, (d - DIAL_FADE_FROM)/(DIAL_FADE_TO - DIAL_FADE_FROM));
+  return Math.max(DIAL_FADE_MIN, 1 - Math.pow(t, 1.5));
+}
 function dialDotsMarkup(){
-  // speaker grille: 31-col dot grid clipped to a clean circle, black core block, like the reference
-  const P=8, N=15, RM=117, CR=61; let s='';
+  // speaker grille: bigger, calmer dot grid clipped to a clean circle (pitch 12 = ~300 dots instead of ~670)
+  const P=12, N=10, RM=117, CR=61, R_MIN=2.2, R_MAX=4.6; let s='';
   for(let r=-N;r<=N;r++) for(let c=-N;c<=N;c++){
     const x=c*P, y=r*P, d=Math.hypot(x,y);
     if(d>RM) continue;
     const core = Math.pow(Math.abs(x),2.6)+Math.pow(Math.abs(y),2.6) <= Math.pow(CR,2.6);
     const tw = ((c+N)*3+(r+N)*5)%4===0;
-    s += `<circle class="dd${core?' c':''}${tw?' tw':''}" cx="${(140+x).toFixed(1)}" cy="${(140+y).toFixed(1)}" r="${(1.5+1.5*Math.pow(1-d/117,1.2)).toFixed(2)}" data-e="${d.toFixed(1)}" data-c="${core?1:0}" style="transition-delay:${Math.round(d/117*240)}ms;--tw:-${(((c+N)*7+(r+N)*11)%18)/10}s"/>`;
+    s += `<circle class="dd${core?' c':''}${tw?' tw':''}" cx="${(140+x).toFixed(1)}" cy="${(140+y).toFixed(1)}" r="${(R_MIN+(R_MAX-R_MIN)*Math.pow(1-d/117,1.2)).toFixed(2)}" data-e="${d.toFixed(1)}" data-c="${core?1:0}" style="opacity:${dialEdgeFade(d).toFixed(2)};transition-delay:${Math.round(d/117*240)}ms;--tw:-${(((c+N)*7+(r+N)*11)%18)/10}s"/>`;
   }
   return s;
 }
@@ -4906,12 +5146,12 @@ function initDialFX(){
   const g = document.querySelector('.dial-dots'); if(!g) return;
   if(!g._fx){
     g._fx = true;
-    for(const el of g.children){ el._x = el.cx.baseVal.value - 140; el._y = el.cy.baseVal.value - 140; el._d = Math.hypot(el._x, el._y); el._r0 = el.r.baseVal.value; }
+    for(const el of g.children){ el._x = el.cx.baseVal.value - 140; el._y = el.cy.baseVal.value - 140; el._d = Math.hypot(el._x, el._y); el._r0 = el.r.baseVal.value; el._f = dialEdgeFade(el._d); }
     const svg = g.ownerSVGElement, pt = e => { const b = svg.getBoundingClientRect(), k = 280/b.width; return { x:(e.clientX-b.left)*k-140, y:(e.clientY-b.top)*k-140 }; };
     svg.addEventListener('pointermove', e => { DFX.ptr = pt(e); });
     svg.addEventListener('pointerleave', () => { DFX.ptr = null; });
     svg.addEventListener('pointercancel', () => { DFX.ptr = null; });
-    svg.addEventListener('pointerdown', e => { const q = pt(e); DFX.ptr = q; if(!DFX.still) dialPulse(q.x, q.y, 130, 9, .85, 0); });
+    svg.addEventListener('pointerdown', e => { const q = pt(e); DFX.ptr = q; if(!DFX.still) dialPulse(q.x, q.y, 130, 13, .85, 0); });
     if('IntersectionObserver' in window) new IntersectionObserver(es => { DFX.vis = es[es.length-1].isIntersecting; }).observe(svg);
   }
   if(!DFX.run){ DFX.run = true; requestAnimationFrame(dialFXFrame); }
@@ -4931,11 +5171,11 @@ function dialFXFrame(ts){
   const ptr = DFX.ptr;
   for(const el of g.children){
     if(el._d === undefined) continue;
-    let i = DFX.still ? 0 : .5*Math.exp(-Math.pow(el._d - f0, 2)/288);
+    let i = DFX.still ? 0 : .5*Math.exp(-Math.pow(el._d - f0, 2)/512);
     for(const [ox,oy,fr,w,a] of act){ const q = Math.hypot(el._x-ox, el._y-oy) - fr; i += a*Math.exp(-q*q/(2*w*w)); }
-    if(ptr && !DFX.still){ const q = Math.hypot(el._x-ptr.x, el._y-ptr.y); if(q < 30) i += Math.pow(1 - q/30, 2)*.9; }
+    if(ptr && !DFX.still){ const q = Math.hypot(el._x-ptr.x, el._y-ptr.y); if(q < 44) i += Math.pow(1 - q/44, 2)*.9; }
     i = Math.min(1.4, i);
-    const op = Math.round(Math.min(1, .8 + .2*(el._t||0) + .3*i)*20)/20, rr = Math.round(el._r0*(1 + .45*i)*5)/5;
+    const op = Math.round(Math.min(1, .8 + .2*(el._t||0) + .3*i)*(el._f ?? 1)*50)/50, rr = Math.round(el._r0*(1 + .36*i)*5)/5;
     if(el._o !== op){ el._o = op; el.style.opacity = op; }
     if(el._rr !== rr){ el._rr = rr; el.setAttribute('r', rr); }
   }
@@ -4980,7 +5220,7 @@ function paintDialDots(pct, force){
     let t = Math.max(0, Math.min(1, (F - el._e)/SOFT));
     t = Math.min(1, t*1.5); t = Math.round(t*40)/40;
     if(el._t === t) continue; el._t = t; el.classList.toggle('on', t > 0);
-    el.style.fill = t > 0 ? `color-mix(in srgb, var(--night) ${Math.round(t*100)}%, ${el._b || 'var(--dot)'})` : (el._b || '');
+    el.style.fill = t > 0 ? `color-mix(in srgb, var(--ink) ${Math.round(t*100)}%, ${el._b || 'var(--dot)'})` : (el._b || '');
   }
 }
 // The knob is positioned with left/top (never a transform animation): backdrop-filter stays live on every
@@ -5020,7 +5260,7 @@ function renderRail(panel){
     const sig = (localStorage.getItem(TRACKER_KEY) || '') + '|' + Math.floor(Date.now()/1000) + '|' + (lv ? lv.cat + ':' + lv.seconds + ':' + lv.startedAt : '') + '|' + categories.map(c => c.id + c.color).join(',');
     if(segs._sig === sig) return;
     segs._sig = sig; }
-  const R = 125, CX = 140, CY = 140;
+  const R = 47.6, CX = 50, CY = 50; // ring flush with the knob's outer edge (100x100 viewBox)
   const pt = m => { const a = m/1440*2*Math.PI; return [CX + R*Math.sin(a), CY - R*Math.cos(a)]; };
   const arc = (s, e) => {
     e = Math.min(1439, Math.max(e, s + 2));        // keep very short sessions visible as a dot
@@ -5040,18 +5280,18 @@ function renderRail(panel){
     const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(x.at - sec*1000))));
     const cat = getCategory(x.cat || 'day-soft');
     WS.push([startMin, endMin, cat.color || 'var(--rest-line)']);
-    out += `<path d="${arc(startMin, endMin)}" stroke="${cat.color || 'var(--rest-line)'}"><title>${escapeHtml(x.label || x.source || 'Session')} — ${ctDurationFmt(sec)}</title></path>`;
+    out += `<path class="c" d="${arc(startMin, endMin)}" stroke="${cat.color || 'var(--rest-line)'}"><title>${escapeHtml(x.label || x.source || 'Session')} — ${ctDurationFmt(sec)}</title></path>`;
   });
   if(live){
     const endMin = toScaleMinutes(new Date());
     const startMin = Math.max(SCALE_START, Math.min(endMin, toScaleMinutes(new Date(live.startedAt))));
     const cat = getCategory(live.cat || 'day-soft');
     WS.push([startMin, endMin, cat.color || 'var(--rest-line)']);
-    out += `<path class="live" d="${arc(startMin, endMin)}" stroke="${cat.color || 'var(--rest-line)'}"><title>${escapeHtml(live.label)} — running now (${ctDurationFmt(live.seconds)})</title></path>`;
+    out += `<path class="live c" d="${arc(startMin, endMin)}" stroke="${cat.color || 'var(--rest-line)'}"><title>${escapeHtml(live.label)} — running now (${ctDurationFmt(live.seconds)})</title></path>`;
   }
-  segs.innerHTML = out;
+  { const kr = document.querySelector('.dk-segs'); if(kr) kr.innerHTML = out; }
+  segs.innerHTML = '';   // nothing is drawn on the big dot circle any more
   setDialKnob(toScaleMinutes(new Date())/1440*360);
-  dialWedges(WS);
 }
 function renderList(panel){ morphRender(panel.listEl, () => buildList(panel)); }
 function buildList(panel){
@@ -6332,10 +6572,11 @@ function renderStats(){
   if(homeEl){
     // update in place: same DOM nodes stay alive, so the dots keep animating
     homeEl.querySelector('.hv-caption').textContent = caption;
-    homeEl.querySelector('.hv-pct-n').textContent = pctShown;
-    homeEl.querySelector('[data-hv="done"]').textContent = doneText;
-    homeEl.querySelector('[data-hv="left"]').textContent = leftText;
-    homeEl.querySelector('[data-hv="target"]').textContent = targetText;
+    // (on phones these four live in the bottom panel, outside .hv-pager, so look them up on the document)
+    document.querySelector('.hv-pct-n').textContent = pctShown;
+    document.querySelector('[data-hv="done"]').textContent = doneText;
+    document.querySelector('[data-hv="left"]').textContent = leftText;
+    document.querySelector('[data-hv="target"]').textContent = targetText;
   } else {
     { const gb=document.getElementById('globalTrackerBlock'), eb=document.getElementById('globalTargetBtn'), ep=document.getElementById('globalTargetEditor'); if(gb&&eb&&ep){ gb.appendChild(eb); gb.appendChild(ep); } }
     slot.innerHTML=`<div class="hv-pager" id="hvPager">
@@ -6351,7 +6592,7 @@ function renderStats(){
             <g class="dial-dust">${dialDustMarkup()}</g>
             <g class="dial-segs"></g>
           </svg>
-          <div class="dial-knob" aria-hidden="true"><i class="dk-glass"></i></div>
+          <div class="dial-knob" aria-hidden="true"><i class="dk-glass"><svg class="dk-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="dk-track" cx="50" cy="50" r="47.6"/><g class="dk-segs"></g></svg></i></div>
         </div>
         <div class="hv-stats">
           <div class="hv-stat-col">
@@ -6534,9 +6775,13 @@ function renderFocusSidebar(panel){
   alarm.setAttribute('aria-label', 'Push notifications');
   logout.setAttribute('aria-label', 'Log out');
   const mq = window.matchMedia('(min-width:721px)');
+  const bar = document.getElementById('authBar');
+  const syncDot = document.getElementById('syncStatus');
+  let topRight = document.getElementById('topRight');
+  if(!topRight && bar){ topRight = document.createElement('div'); topRight.id = 'topRight'; topRight.className = 'top-right'; bar.appendChild(topRight); }
   function place(){
     if(mq.matches){ extras.append(alarm, logout); }
-    else { nav.append(alarm, logout); }
+    else { topRight.append(...(syncDot ? [syncDot] : []), alarm, logout); }   // phones: top bar, right side
   }
   place();
   if(mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
@@ -6703,7 +6948,7 @@ setInterval(() => {
 
   let running=false, raf=0, W=0, H=0, DPR=1, N=0, P=[], last=0, idleK=1;
   let days=[], LUT=new Float32Array(720).fill(.5);
-  let light=false, bg=[15,15,17], accent=[240,87,44], ink=[241,241,243];
+  let light=false, bg=[15,15,17], accent=[240,87,44], ink=[206,202,192];
   let tips={}, throwEv=null, mouse=null, lastMouseThrow=0;
   let hands=null, stream=null, camOn=false, busy=false;
 
@@ -6717,7 +6962,7 @@ setInterval(() => {
   }
   function readTheme(){
     light = document.documentElement.getAttribute('data-theme') !== 'dark';
-    bg = rgbOf('--bg',[15,15,17]); accent = rgbOf('--night',[240,87,44]); ink = rgbOf('--text',[241,241,243]);
+    bg = rgbOf('--bg',[15,15,17]); accent = rgbOf('--night',[240,87,44]); ink = rgbOf('--text',[206,202,192]);
     // in light theme the glowing "lighter" blend can't work, so colours get deepened and multiplied instead
     ctx.fillStyle = `rgb(${bg})`; ctx.fillRect(0,0,W,H);
     gctx.clearRect(0,0,gcv.width,gcv.height);
@@ -7065,6 +7310,154 @@ setInterval(() => {
   }
   [300, 1200, 2500].forEach(t => setTimeout(heal, t));
   healSoon();
+})();
+</script>
+<script id="dock-sheet-js">
+(function(){
+  const bar = document.getElementById('authBar'); if(!bar) return;
+  const mq = window.matchMedia('(max-width:720px)');
+  const sheet = document.createElement('div'); sheet.id = 'dockSheet';
+  sheet.innerHTML = '<div class="ds-pane" data-pane="home"><div class="ds-hg on" data-h="0"></div><div class="ds-hg" data-h="1"></div><div class="ds-hdots" role="group" aria-label="Today / Matrix"><button type="button" class="on" data-i="0" aria-label="Today"></button><button type="button" data-i="1" aria-label="Matrix report"></button></div></div><div class="ds-pane" data-pane="schedule"><div class="ds-lcd"><div class="ds-swipe"><div class="ds-slide" data-s="0"></div><div class="ds-slide" data-s="1"></div></div><div class="ds-dots"><button type="button" class="on" aria-label="Today\'s to-do"></button><button type="button" aria-label="Categories"></button></div></div></div>'
+    + '<div class="ds-pane" data-pane="timer"><div class="ds-tg" data-g="0"></div><div class="ds-tg" data-g="1"></div></div>'
+    + '<div class="ds-pane" data-pane="log"></div><div class="ds-pane" data-pane="pomo"></div>';
+  bar.appendChild(sheet);
+  const pane = n => sheet.querySelector('[data-pane="'+n+'"]');
+  const grp  = n => sheet.querySelector('.ds-tg[data-g="'+n+'"]');
+  const $ = id => document.getElementById(id);
+  const moved = new Map();               // node -> comment placeholder marking where it lives on desktop
+  const refs = {};
+
+  function toDock(node, target){
+    if(!node || node.parentNode === target) return;
+    if(!moved.has(node)){ const ph = document.createComment('dock'); node.parentNode.insertBefore(ph, node); moved.set(node, ph); }
+    target.appendChild(node);
+  }
+  function fromDock(node, ph){
+    if(ph.parentNode) ph.parentNode.insertBefore(node, ph);
+    ph.remove(); moved.delete(node);
+  }
+  function viewName(){
+    for(const [id,n] of [['viewHome','home'],['viewSchedule','schedule'],['viewTimer','timer'],['viewLog','log']]){
+      const el = $(id); if(el && !el.hidden) return n;
+    }
+    return 'home';
+  }
+  function showPane(){
+    const v = viewName();
+    sheet.querySelectorAll(':scope > .ds-pane').forEach(p => p.classList.toggle('on', p.dataset.pane === v));
+    const cur = $('ctKnobSw') && $('ctKnobSw').classList.contains('is-current') ? 1 : 0;
+    sheet.querySelectorAll('.ds-tg').forEach(g => g.classList.toggle('on', +g.dataset.g === cur));
+    sheet.classList.toggle('is-empty', v === 'log');
+  }
+  // phone wording: "Today's focus" reads "Today's to-do" inside the bar
+  function retitle(on){
+    const t = refs.focus && refs.focus.querySelector('.focus-title'); if(!t) return;
+    const tn = [...t.childNodes].reverse().find(n => n.nodeType === 3 && n.nodeValue.trim()); if(!tn) return;
+    if(on){ if(!t.dataset.orig) t.dataset.orig = tn.nodeValue; tn.nodeValue = "Today's to-do"; }
+    else if(t.dataset.orig){ tn.nodeValue = t.dataset.orig; delete t.dataset.orig; }
+  }
+  // swipe pager dots follow the scroll position; tapping a dot snaps to that page
+  const swipe = sheet.querySelector('.ds-swipe'), dotBtns = [...sheet.querySelectorAll('.ds-dots button')];
+  swipe.addEventListener('scroll', () => { const i = Math.round(swipe.scrollLeft / (swipe.clientWidth || 1)); dotBtns.forEach((d,k) => d.classList.toggle('on', k === i)); }, { passive:true });
+  dotBtns.forEach((d,k) => d.addEventListener('click', () => swipe.scrollTo({ left:k * swipe.clientWidth, behavior:'smooth' })));
+  // Home pane shows the Today stats on page 1 and the Matrix controls (year row) on page 2, following the pager
+  const hGroups = [...sheet.querySelectorAll('.ds-hg')], hDots = [...sheet.querySelectorAll('.ds-hdots button')];
+  const pagerIdx = () => (typeof homePager !== 'undefined' && homePager && homePager.index) ? homePager.index() : 0;
+  function homeSync(){
+    const i = pagerIdx();
+    hGroups.forEach((g,k) => g.classList.toggle('on', k === i));
+    hDots.forEach((d,k) => d.classList.toggle('on', k === i));
+  }
+  hDots.forEach((d,k) => d.addEventListener('click', () => { window.__pagerWant = k; setTimeout(() => { if(window.__pagerWant === k) window.__pagerWant = null; }, 1500); if(typeof homePager !== 'undefined' && homePager) homePager.go(k); }));
+  function bindPager(){
+    const pg = document.getElementById('hvPager');
+    if(pg && !pg.__dsSeg){ pg.__dsSeg = true; pg.addEventListener('scroll', () => requestAnimationFrame(homeSync), { passive:true }); }
+    homeSync();
+  }
+  function sync(){
+    if(!mq.matches){
+      retitle(false);
+      [...moved].forEach(([node,ph]) => fromDock(node, ph));
+      document.documentElement.style.removeProperty('--dock-h');
+      return;
+    }
+    // Home: today's track record + percentage (a rebuilt slide makes a fresh node; drop the stale one)
+    const fresh = document.querySelector('#globalStatsSlot .hv-stats');
+    refs.mx = refs.mx || document.querySelector('#viewMatrix .matrix-head');
+    toDock(refs.mx, hGroups[1]);
+    if(fresh){ const old = pane('home').querySelector('.hv-stats'); if(old && old !== fresh){ const ph = moved.get(old); if(ph) ph.remove(); moved.delete(old); old.remove(); } toDock(fresh, hGroups[0]); }
+    // Weekly: today's focus + categories
+    refs.focus = refs.focus || document.querySelector('.sidebar .focus-card');
+    refs.cats  = refs.cats  || $('catManagerMount');
+    toDock(refs.focus, sheet.querySelector('.ds-slide[data-s="0"]')); toDock(refs.cats, sheet.querySelector('.ds-slide[data-s="1"]'));
+    retitle(true);
+    // Timer: Start/Stop + duration presets (timer), Start/Stop (stopwatch)
+    refs.tAct  = refs.tAct  || document.querySelector('#ctKnobTimer .ct-actions');
+    refs.tChip = refs.tChip || $('ctDurationPresets');
+    refs.sAct  = refs.sAct  || document.querySelector('#ctKnobSw .ct-actions');
+    toDock(refs.tAct, grp(0)); toDock(refs.tChip, grp(0)); toDock(refs.sAct, grp(1));
+    // Pomodoro settings (shown while the Pomodoro is open)
+    bindPager();
+    refs.pm = refs.pm || document.querySelector('#pm-root .pm-dock');
+    toDock(refs.pm, pane('pomo'));
+    showPane();
+    document.documentElement.style.setProperty('--dock-h', sheet.offsetHeight + 'px');
+  }
+  let raf = 0; const queue = () => { if(raf) return; raf = requestAnimationFrame(() => { raf = 0; sync(); }); };
+
+  // keep in step with: view switches, the timer/stopwatch slider, Home re-renders, breakpoint changes, sheet height
+  const mo = new MutationObserver(queue);
+  ['viewHome','viewSchedule','viewTimer','viewLog'].forEach(id => { const el = $(id); if(el) mo.observe(el, { attributes:true, attributeFilter:['hidden'] }); });
+  ['ctKnobTimer','ctKnobSw'].forEach(id => { const el = $(id); if(el) mo.observe(el, { attributes:true, attributeFilter:['class'] }); });
+  const slot = $('globalStatsSlot'); if(slot) mo.observe(slot, { childList:true, subtree:true });
+  if(mq.addEventListener) mq.addEventListener('change', queue); else mq.addListener(queue);
+  // Morph: whenever the bar's natural height changes (tab switch, Pomodoro open, list edit) it eases from the old height to the new one
+  // instead of jumping; --dock-h follows every frame so the page content above it glides in step.
+  const reduce = () => window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  let lastH = 0, animating = false, endT = 0;
+  function finish(){ animating = false; clearTimeout(endT); sheet.style.transition = ''; sheet.style.height = ''; sheet.style.overflow = ''; lastH = sheet.offsetHeight; document.documentElement.style.setProperty('--dock-h', lastH + 'px'); }
+  if(window.ResizeObserver) new ResizeObserver(() => {
+    if(!mq.matches){ lastH = 0; return; }
+    const h = sheet.offsetHeight, root = document.documentElement;
+    root.style.setProperty('--dock-h', h + 'px');
+    if(animating) return;
+    if(lastH && Math.abs(h - lastH) > 3 && !reduce()){
+      const from = lastH, to = h; animating = true;
+      sheet.style.transition = 'none'; sheet.style.overflow = 'hidden'; sheet.style.height = from + 'px';
+      void sheet.offsetHeight;
+      sheet.style.transition = 'height .55s cubic-bezier(.22,.9,.24,1)';
+      requestAnimationFrame(() => { sheet.style.height = to + 'px'; });
+      sheet.addEventListener('transitionend', function te(e){ if(e.target !== sheet) return; sheet.removeEventListener('transitionend', te); finish(); });
+      endT = setTimeout(finish, 700);
+      return;
+    }
+    lastH = h;
+  }).observe(sheet);
+  window.addEventListener('resize', queue);
+  sync(); setTimeout(queue, 300); setTimeout(queue, 1200);
+})();
+</script>
+<script id="auto-fullscreen-js">
+(function(){
+  // Seamless phone UI: hide the browser/Android system bars. Browsers only allow fullscreen from a user gesture,
+  // so it kicks in on the first tap, and again on the next tap if it was exited. iOS Safari has no page fullscreen
+  // (use "Add to Home Screen" there; the app already declares itself standalone-capable).
+  const phone = window.matchMedia('(max-width:720px)'), touch = window.matchMedia('(pointer:coarse)');
+  const standalone = () => window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone;
+  const root = document.documentElement;
+  if(!root.requestFullscreen || standalone()) return;
+  function go(){
+    if(!phone.matches || !touch.matches || document.fullscreenElement) return;
+    try{ const r = root.requestFullscreen({ navigationUI:'hide' }); if(r && r.catch) r.catch(() => {}); }catch(e){}
+  }
+  ['pointerup','touchend','click'].forEach(ev => document.addEventListener(ev, go, { passive:true, capture:true }));
+  // entering fullscreen resizes the viewport, which can cancel a smooth pager scroll that the same tap started: finish it
+  function resettle(){
+    const want = window.__pagerWant; if(want == null || typeof homePager === 'undefined' || !homePager) return;
+    const pg = document.getElementById('hvPager'); if(!pg) return;
+    if(homePager.index() !== want) pg.scrollTo({ left:want * pg.clientWidth, behavior:'auto' });
+  }
+  document.addEventListener('fullscreenchange', () => { [150, 450, 900].forEach(t => setTimeout(resettle, t)); });
 })();
 </script>
 </body>
