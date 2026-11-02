@@ -1831,7 +1831,9 @@
   /* Home pane: Today stats (page 1) or Matrix year controls (page 2) */
   #dockSheet .ds-pane[data-pane="home"]{ position:relative; }
   #dockSheet .ds-hg{ display:none; }
-  #dockSheet .ds-hg.on{ display:block; animation:dsIn .42s cubic-bezier(.22,.9,.24,1) both; }
+  #dockSheet .ds-hg.on{ display:block; animation:dsIn .36s cubic-bezier(.2,.7,.2,1) .09s both; }
+  #dockSheet .ds-hg > .hv-stats, #dockSheet .ds-hg > .matrix-head{ min-height:124px; box-sizing:border-box; }
+  #dockSheet .matrix-head{ display:flex; align-items:center; }
   #dockSheet .ds-hdots{ position:absolute; left:50%; bottom:7px; transform:translateX(-50%); display:flex; gap:5px; z-index:2; }
   #dockSheet .ds-hdots button{ position:relative; width:5px; height:5px; padding:0; border:0; border-radius:100px; background:rgba(206,202,192,.3); cursor:pointer; transition:width .4s cubic-bezier(.22,.9,.24,1), background-color .25s ease; }
   #dockSheet .ds-hdots button::after{ content:''; position:absolute; inset:-10px -6px; }
@@ -1847,20 +1849,23 @@
 
   /* morph: the incoming pane eases in while the bar itself animates its height (see JS) */
   @keyframes dsIn{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
-  #dockSheet{ contain:layout style; }
+  #dockSheet{ contain:layout style; will-change:transform; }
   #dockSheet.is-morph{ display:flex !important; flex-direction:column; justify-content:flex-end; will-change:clip-path; }
-  #dockSheet .ds-pane.on, #dockSheet .ds-tg.on, html.pm-open #dockSheet > .ds-pane[data-pane="pomo"]{ animation:dsIn .42s cubic-bezier(.22,.9,.24,1) both; }
+  #dockSheet .ds-pane.on, #dockSheet .ds-tg.on, html.pm-open #dockSheet > .ds-pane[data-pane="pomo"]{ animation:dsIn .36s cubic-bezier(.2,.7,.2,1) .09s both; }
   @media (prefers-reduced-motion:reduce){ #dockSheet .ds-pane.on, #dockSheet .ds-tg.on, html.pm-open #dockSheet > .ds-pane[data-pane="pomo"]{ animation:none; } #dockSheet .ds-ghost{ display:none; } }
-  /* the previous content is cloned and dissolves while the new content fades up and the bar resizes */
-  @keyframes dsOut{ from{ opacity:1; transform:none; filter:none; } to{ opacity:0; transform:translateY(-12px) scale(.985); filter:blur(5px); } }
-  #dockSheet .ds-ghost{ position:absolute; z-index:5; pointer-events:none; animation:dsOut .4s cubic-bezier(.4,0,.2,1) forwards; }
-  #dockSheet .ds-ghost *{ animation:none !important; pointer-events:none !important; }
+  /* the previous content keeps its place and fades while the new content fades up and the bar glides */
+  @keyframes dsOut{ from{ opacity:1; transform:none; } to{ opacity:0; transform:translateY(-10px); } }
+  #dockSheet .ds-pane{ position:relative; }
+  #dockSheet .ds-pane.out, html.pm-open #dockSheet > .ds-pane.out{ display:block !important; position:absolute !important; left:14px; right:14px; top:14px; z-index:3; pointer-events:none; animation:dsOut .14s ease-out forwards !important; }
+  #dockSheet .ds-hg.out, #dockSheet .ds-tg.out{ display:block !important; position:absolute !important; left:0; right:0; top:0; z-index:3; pointer-events:none; animation:dsOut .14s ease-out forwards !important; }
   #viewTimer:not([hidden]){ min-height:calc(100dvh - 92px - var(--dock-h) - env(safe-area-inset-bottom,0px)); }
 }
 </style>
 <style id="swipe-no-scrollbars">
 /* arrows are gone: Timer/Stopwatch and Today/Matrix change by swiping (dots stay as the indicator) */
 .ct-arrow, .ct-arrow-spacer, .hv-arrow{ display:none !important; }
+/* big page headings ("Today's Productivity", "Matrix Report" + captions) are removed on every screen size */
+.hv-head{ display:none !important; }
 #ctViewport{ touch-action:pan-y; }
 .hv-pager{ touch-action:pan-x pan-y; cursor:grab; }
 .hv-pager:active{ cursor:grabbing; }
@@ -1902,6 +1907,69 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar{ display:
 @media (max-width:720px) and (max-height:720px){
   #viewTimer{ --ct-ruler-h:104px; }
   html:root #viewTimer .ct-knob .pomo-time, html:root #viewTimer #ctKnobSw .pomo-time{ margin-top:18px; }
+}
+</style>
+<style id="weekly-retro">
+/* Weekly on phones: the ORIGINAL web design (glass tabs, white day card, START pills); only the layout changes so nothing scrolls.
+   Rows are fixed-height lines flowed into swipeable pages; the number of rows per page is measured by JS. */
+@media (max-width:720px){
+  html:root #viewSchedule:not([hidden]){
+    position:fixed; left:0; right:0; top:var(--hv-top); bottom:var(--dock-h);
+    padding:8px 18px 14px; box-sizing:border-box; overflow:hidden; z-index:1;
+    display:flex; flex-direction:column; gap:12px;
+    transition:bottom .44s cubic-bezier(.4,0,.2,1);
+  }
+  html:has(#viewSchedule:not([hidden])), html:has(#viewSchedule:not([hidden])) body{ overflow:hidden; overscroll-behavior:none; }
+  #viewSchedule{ --wk-row-h:62px; }
+  #viewSchedule .tabs-row{ flex:none; margin:0; }
+  #viewSchedule .dashboard-grid{ flex:1; min-height:0; display:block; position:relative; margin:0; padding:0; }
+  #viewSchedule #days{ height:100%; }
+  #viewSchedule .day:not([hidden]){ height:100%; box-sizing:border-box; margin:0; padding:20px 20px 30px; display:flex; flex-direction:column; gap:8px; overflow:hidden; }
+  #viewSchedule .day-head, #viewSchedule .list-header{ flex:none; margin:0; }
+  #viewSchedule .day .list{
+    flex:1; min-height:0; margin:0; padding:0;
+    display:grid; grid-auto-flow:column; grid-auto-columns:100%; grid-template-rows:repeat(var(--wk-rows,4), var(--wk-row-h));
+    overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; touch-action:pan-x;
+  }
+  #viewSchedule .day .list > .row:not(.editing){ height:var(--wk-row-h); box-sizing:border-box; margin:0; scroll-snap-align:start; min-width:0; }
+  #viewSchedule .day .list > .row:not(.editing) .label-wrap{ min-width:0; }
+  #viewSchedule .day .list > .row:not(.editing) .label, #viewSchedule .day .list > .row:not(.editing) .task-sub{ display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* editing needs a real form: only then does the list scroll inside the card */
+  #viewSchedule .day .list:has(.row.editing){ display:block; overflow-y:auto; overflow-x:hidden; touch-action:pan-y; }
+  /* page dots */
+  #viewSchedule .wk-dots{ position:absolute; left:50%; bottom:10px; transform:translateX(-50%); display:flex; gap:5px; z-index:2; }
+  #viewSchedule .wk-dots button{ position:relative; width:5px; height:5px; padding:0; border:0; border-radius:100px; background:color-mix(in srgb, var(--text) 25%, transparent); cursor:pointer; transition:width .4s cubic-bezier(.22,.9,.24,1), background-color .25s ease; }
+  #viewSchedule .wk-dots button::after{ content:''; position:absolute; inset:-10px -6px; }
+  #viewSchedule .wk-dots button.on{ width:16px; background:var(--night); }
+  #viewSchedule .wk-dots:empty{ display:none; }
+}
+</style>
+<style id="plain-seamless">
+/* ===== Plain & seamless: no LED/LCD blocks, no bezels, scanlines, glows, borders or divider lines anywhere ===== */
+@media (max-width:720px){
+  /* --- bottom bar: content sits straight on the black --- */
+  #dockSheet{ padding:18px 22px calc(92px + env(safe-area-inset-bottom,0px)); }
+  #dockSheet.is-empty{ padding-top:14px; }
+  #dockSheet .hv-stats, #dockSheet .ds-lcd, #dockSheet .matrix-head{
+    background:none !important; border:0 !important; box-shadow:none !important; border-radius:0 !important; overflow:visible !important; padding:0 !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  }
+  #dockSheet .hv-stats::after, #dockSheet .ds-lcd::after, #dockSheet .matrix-head::after, #dockSheet .focus-card::after, #dockSheet .cat-manager::after{ display:none !important; content:none !important; }
+  #dockSheet .hv-stat-col{ border:0 !important; }
+  #dockSheet .hv-stat-big{ padding-left:20px; }
+  #dockSheet *{ text-shadow:none !important; }
+  #dockSheet .ds-hg > .hv-stats, #dockSheet .ds-hg > .matrix-head{ min-height:0; }   /* each page takes only the room it needs; the bar glides between sizes */
+  #dockSheet .ds-pane[data-pane="home"]{ padding-bottom:16px; }
+  #dockSheet .ds-hdots{ bottom:0; }
+  #dockSheet .ds-lcd .ds-slide{ padding:0 !important; }
+  #dockSheet .ds-lcd .focus-row, #dockSheet .ds-lcd .cat-row-view{ border:0 !important; }
+  #dockSheet .ds-lcd .ds-dots{ bottom:2px; }
+  #dockSheet .cat-edit-toggle, #dockSheet .mx-btn, #dockSheet .ct-chip{ background:#1C1C1F !important; border:0 !important; box-shadow:none !important; outline:0 !important; background-image:none !important; }
+  #dockSheet .cat-edit-toggle::before, #dockSheet .cat-edit-toggle::after, #dockSheet .mx-btn::before, #dockSheet .mx-btn::after{ display:none !important; }
+  #dockSheet .ct-chip.active{ background:var(--night) !important; }
+  #dockSheet .mx-btn.mx-play{ background:var(--night) !important; }
+  #dockSheet .ds-pane.out, html.pm-open #dockSheet > .ds-pane.out{ left:22px; right:22px; top:18px; }
+
 }
 </style>
 </head>
@@ -7402,32 +7470,17 @@ setInterval(() => {
     }
     return 'home';
   }
-  // --- morph: snapshot what is visible right before a swap, so it can dissolve while the new content arrives ---
-  let lastSig = null, lastPane = null;
-  const smOn = () => !document.getElementById('ctKnobSw') ? 0 : (document.getElementById('ctKnobSw').classList.contains('is-current') ? 1 : 0);
+  // --- cross-fade without cloning: whatever stops being visible keeps its place for ~0.26s with an .out class (opacity/translate only) ---
   const pmOpen = () => document.documentElement.classList.contains('pm-open');
-  const sigNow = (pmv) => viewName() + '|' + smOn() + '|' + pagerIdx() + '|' + ((pmv === undefined ? pmOpen() : pmv) ? 1 : 0);
-  const visPane = () => [...sheet.querySelectorAll(':scope > .ds-pane')].find(p => p.offsetHeight > 0 && getComputedStyle(p).display !== 'none');
-  function ghostSwap(sig){
-    if(sig === lastSig) return;
-    const first = lastSig === null; lastSig = sig;
-    if(first || !mq.matches || !sheet.offsetHeight) return;
-    const vis = visPane();
-    if(!vis || vis.dataset.pane !== lastPane) return;           // DOM already swapped by CSS: nothing to snapshot
-    const cs = getComputedStyle(sheet), g = document.createElement('div');
-    g.className = 'ds-ghost'; g.setAttribute('aria-hidden', 'true'); g.setAttribute('inert', '');
-    g.style.cssText = 'left:' + cs.paddingLeft + ';right:' + cs.paddingRight + ';top:' + cs.paddingTop + ';';
-    g.appendChild(vis.cloneNode(true)); sheet.appendChild(g);
-    setTimeout(() => g.remove(), 450);
-  }
+  function leave(el){ if(!el || !mq.matches) return; el.classList.add('out'); clearTimeout(el.__outT); el.__outT = setTimeout(() => el.classList.remove('out'), 180); }
   function showPane(){
-    ghostSwap(sigNow());
+    const was = [...sheet.querySelectorAll(':scope > .ds-pane.on, .ds-tg.on')];
     const v = viewName();
     sheet.querySelectorAll(':scope > .ds-pane').forEach(p => p.classList.toggle('on', p.dataset.pane === v));
     const cur = $('ctKnobSw') && $('ctKnobSw').classList.contains('is-current') ? 1 : 0;
     sheet.querySelectorAll('.ds-tg').forEach(g => g.classList.toggle('on', +g.dataset.g === cur));
     sheet.classList.toggle('is-empty', v === 'log');
-    const vp = visPane(); lastPane = vp ? vp.dataset.pane : lastPane;
+    was.forEach(e => { if(e.classList.contains('on')) e.classList.remove('out'); else leave(e); });
   }
   // phone wording: "Today's focus" reads "Today's to-do" inside the bar
   function retitle(on){
@@ -7442,25 +7495,25 @@ setInterval(() => {
   dotBtns.forEach((d,k) => d.addEventListener('click', () => swipe.scrollTo({ left:k * swipe.clientWidth, behavior:'smooth' })));
   // Home pane shows the Today stats on page 1 and the Matrix controls (year row) on page 2, following the pager
   const hGroups = [...sheet.querySelectorAll('.ds-hg')], hDots = [...sheet.querySelectorAll('.ds-hdots button')];
-  const pagerIdx = () => (typeof homePager !== 'undefined' && homePager && homePager.index) ? homePager.index() : 0;
-  function homeSync(){
-    const i = pagerIdx();
-    ghostSwap(sigNow());
+  let hIdx = 0;                                        // cached: updated from scroll events / dot taps, never by reading layout during a switch
+  function homeSync(i){
+    if(i == null) i = hIdx; else hIdx = i;
+    const was = hGroups.filter(g => g.classList.contains('on'));
     hGroups.forEach((g,k) => g.classList.toggle('on', k === i));
     hDots.forEach((d,k) => d.classList.toggle('on', k === i));
-    const vp = visPane(); lastPane = vp ? vp.dataset.pane : lastPane;
+    was.forEach(g => { if(g.classList.contains('on')) g.classList.remove('out'); else leave(g); });
   }
-  hDots.forEach((d,k) => d.addEventListener('click', () => { window.__pagerWant = k; setTimeout(() => { if(window.__pagerWant === k) window.__pagerWant = null; }, 1500); if(typeof homePager !== 'undefined' && homePager) homePager.go(k); }));
+  hDots.forEach((d,k) => d.addEventListener('click', () => { homeSync(k); window.__pagerWant = k; setTimeout(() => { if(window.__pagerWant === k) window.__pagerWant = null; }, 1500); if(typeof homePager !== 'undefined' && homePager) homePager.go(k); }));
   function bindPager(){
     const pg = document.getElementById('hvPager');
-    if(pg && !pg.__dsSeg){ pg.__dsSeg = true; pg.addEventListener('scroll', () => requestAnimationFrame(homeSync), { passive:true }); }
+    if(pg && !pg.__dsSeg){ pg.__dsSeg = true; pg.addEventListener('scroll', () => requestAnimationFrame(() => homeSync((typeof homePager !== 'undefined' && homePager && homePager.index) ? homePager.index() : 0)), { passive:true }); }
     homeSync();
   }
   function sync(){
     if(!mq.matches){
       retitle(false);
       [...moved].forEach(([node,ph]) => fromDock(node, ph));
-      document.documentElement.style.removeProperty('--dock-h');
+      dockViews().forEach(v => { v.style.bottom = ''; }); document.body.style.paddingBottom = '';
       return;
     }
     // Home: today's track record + percentage (a rebuilt slide makes a fresh node; drop the stale one)
@@ -7483,28 +7536,46 @@ setInterval(() => {
     refs.pm = refs.pm || document.querySelector('#pm-root .pm-dock');
     toDock(refs.pm, pane('pomo'));
     showPane();
-    if(!animating) document.documentElement.style.setProperty('--dock-h', sheet.offsetHeight + 'px');
+    // (bar height is picked up by the ResizeObserver below; reading offsetHeight here would force a layout mid-switch)
   }
   let raf = 0; const queue = () => { if(raf) return; raf = requestAnimationFrame(() => { raf = 0; sync(); }); };
 
   // keep in step with: view switches, the timer/stopwatch slider, Home re-renders, breakpoint changes, sheet height
   document.addEventListener('click', e => {
     if(!mq.matches || !e.target.closest || !e.target.closest('.pm-fab')) return;
-    const willOpen = !pmOpen();
-    ghostSwap(sigNow(willOpen)); lastPane = willOpen ? 'pomo' : viewName();
+    const opening = !pmOpen();
+    leave(opening ? sheet.querySelector(':scope > .ds-pane.on') : pane('pomo'));
   }, true);
   const mo = new MutationObserver(queue);
   ['viewHome','viewSchedule','viewTimer','viewLog'].forEach(id => { const el = $(id); if(el) mo.observe(el, { attributes:true, attributeFilter:['hidden'] }); });
   ['ctKnobTimer','ctKnobSw'].forEach(id => { const el = $(id); if(el) mo.observe(el, { attributes:true, attributeFilter:['class'] }); });
-  const slot = $('globalStatsSlot'); if(slot) mo.observe(slot, { childList:true, subtree:true });
+  const slot = $('globalStatsSlot');
+  if(slot) new MutationObserver(() => { const pg = $('hvPager'); if(slot.querySelector('.hv-stats') || !pg || !pg.__dsSeg) queue(); }).observe(slot, { childList:true, subtree:true });
   if(mq.addEventListener) mq.addEventListener('change', queue); else mq.addListener(queue);
   // Morph (optimised): the page above is re-laid-out ONCE to its final size (never per frame, which re-styled the whole document),
   // and the visual glide is done with a compositor-only translate on the centred content (FLIP). Only the bar's own tiny subtree
   // animates its height each frame.
   const reduce = () => window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const EASE = 'cubic-bezier(.22,.9,.24,1)', DUR = 480;
+  const EASE = 'cubic-bezier(.4,0,.2,1)', DUR = 440;
   let lastH = 0, animating = false, endT = 0;
-  const setDockH = h => document.documentElement.style.setProperty('--dock-h', h + 'px');
+  // Bar height is written straight onto the few fixed views that need it (not onto :root, where changing a custom property
+  // re-styles every element on the page). One layout pass, once per change.
+  const dockViews = () => ['viewHome','viewTimer','viewSchedule'].map(id => document.getElementById(id)).filter(Boolean);
+  let homeMax = 0;
+  const setDockH = h => {
+    const home = document.getElementById('viewHome'), onHome = viewName() === 'home';
+    if(onHome) homeMax = Math.max(homeMax, h); else homeMax = 0;
+    let moved = 0;
+    dockViews().forEach(v => {
+      const want = (v === home && onHome) ? homeMax : h;
+      const was = parseFloat(v.style.bottom) || 0;
+      if(!v.hidden && v.style.bottom !== want + 'px') moved = want - was;
+      v.style.bottom = want + 'px';
+    });
+    document.body.style.paddingBottom = (h + 14) + 'px';
+    const pr = document.getElementById('pm-root'); if(pr) pr.style.setProperty('--dock-h', h + 'px');
+    return moved;
+  };
   function flip(d){
     const els = [...document.querySelectorAll('#viewHome:not([hidden]) .pulse-dial, #viewTimer:not([hidden]) > *')].filter(e => e.offsetParent);
     els.forEach(e => { e.style.transition = 'none'; e.style.translate = '0 ' + d + 'px'; });
@@ -7512,21 +7583,26 @@ setInterval(() => {
     els.forEach(e => { e.style.transition = 'translate ' + DUR + 'ms ' + EASE; e.style.translate = '0 0'; });
     setTimeout(() => els.forEach(e => { e.style.transition = ''; e.style.translate = ''; }), DUR + 60);
   }
-  function finish(){ animating = false; clearTimeout(endT); sheet.classList.remove('is-morph'); sheet.style.transition = ''; sheet.style.height = ''; sheet.style.clipPath = ''; lastH = sheet.offsetHeight; setDockH(lastH); }
+  function finish(){ animating = false; clearTimeout(endT); window.__dockAnim = false; window.dispatchEvent(new Event('resize')); sheet.style.transition = ''; sheet.style.height = ''; sheet.style.transform = ''; sheet.style.willChange = ''; lastH = sheet.offsetHeight; setDockH(lastH); }
   if(window.ResizeObserver) new ResizeObserver(() => {
     if(!mq.matches){ lastH = 0; return; }
     if(animating) return;                         // ignore the resizes we cause ourselves
     const h = sheet.offsetHeight;
     if(lastH && Math.abs(h - lastH) > 3 && !reduce()){
       const from = lastH, to = h; animating = true;
-      setDockH(to); flip((to - from) / 2);        // one layout pass for the page + a transform glide
-      // The bar is given its final content layout once, in a box as tall as the larger of the two sizes (content bottom-aligned),
-      // and only its top edge is revealed/hidden with a clip-path: paint-only, no layout work per frame.
-      const mx = Math.max(from, to), cp = y => 'inset(' + y + 'px 0 0 0 round 30px 30px 0 0)';
-      sheet.classList.add('is-morph'); sheet.style.transition = 'none'; sheet.style.height = mx + 'px'; sheet.style.clipPath = cp(mx - from);
+      // Compositor-only motion: the bar gets its final layout once and glides with transform (no layout/paint per frame).
+      //  grow  : final-size box starts pushed down by the difference and slides up to 0
+      //  shrink: box keeps the old height (content stays top-aligned) and slides down by the difference; then snaps to natural size
+      const d = to - from; window.__dockAnim = true;
+      sheet.style.transition = 'none';
+      if(d > 0) sheet.style.transform = 'translate3d(0,' + d + 'px,0)'; else sheet.style.height = from + 'px';
       void sheet.offsetHeight;
-      sheet.style.transition = 'clip-path ' + DUR + 'ms ' + EASE;
-      requestAnimationFrame(() => { sheet.style.clipPath = cp(mx - to); });
+      sheet.style.transition = 'transform ' + DUR + 'ms ' + EASE;
+      requestAnimationFrame(() => {
+        sheet.style.transform = d > 0 ? 'translate3d(0,0,0)' : 'translate3d(0,' + (-d) + 'px,0)';
+        // heavy part (page layout for the new bar height + glide of the centred content) one frame later
+        requestAnimationFrame(() => { const moved = setDockH(to); if(moved) flip(moved / 2); });
+      });
       endT = setTimeout(finish, DUR + 40);
       return;
     }
@@ -7554,6 +7630,41 @@ setInterval(() => {
     }
   }, true);
   document.addEventListener('pointercancel', () => { sx = null; }, true);
+})();
+</script>
+<script id="weekly-pager-js">
+(function(){
+  const view = document.getElementById('viewSchedule'), days = document.getElementById('days'); if(!view || !days) return;
+  const grid = view.querySelector('.dashboard-grid');
+  const mq = window.matchMedia('(max-width:720px)');
+  const dots = document.createElement('div'); dots.className = 'wk-dots'; grid.appendChild(dots);
+  const rowH = () => parseFloat(getComputedStyle(view).getPropertyValue('--wk-row-h')) || 62;
+  let pageIdx = 0;
+  const activeList = () => days.querySelector('.day:not([hidden]) .list');
+  function paintDots(n){
+    if(dots.children.length !== n){ dots.innerHTML = Array.from({length:n}, (_,i) => '<button type="button" aria-label="Page ' + (i+1) + '"></button>').join(''); [...dots.children].forEach((b,i) => b.addEventListener('click', () => { const l = activeList(); if(l) l.scrollTo({ left:i * l.clientWidth, behavior:'smooth' }); })); }
+    [...dots.children].forEach((b,i) => b.classList.toggle('on', i === pageIdx));
+  }
+  function layout(){
+    if(window.__dockAnim) return;                       // measure once the bar has finished gliding
+    if(!mq.matches || view.hidden){ dots.innerHTML = ''; return; }
+    const list = activeList(); if(!list){ dots.innerHTML = ''; return; }
+    if(list.querySelector('.row.editing')){ dots.innerHTML = ''; list.style.removeProperty('scroll-snap-type'); return; }   // editing = scrolling form, no pages
+    const rows = Math.max(2, Math.floor(list.clientHeight / rowH()));
+    view.style.setProperty('--wk-rows', rows);
+    const n = list.querySelectorAll(':scope > .row').length;
+    const pages = Math.max(1, Math.ceil(n / rows));
+    if(!list.__wk){ list.__wk = true; list.addEventListener('scroll', () => { pageIdx = Math.round(list.scrollLeft / (list.clientWidth || 1)); [...dots.children].forEach((b,i) => b.classList.toggle('on', i === pageIdx)); }, { passive:true }); }
+    pageIdx = Math.min(pageIdx, pages - 1);
+    paintDots(pages > 1 ? pages : 0);
+  }
+  // measured two frames after a switch, so the first frames of the new page and the bar glide are never blocked by it
+  let raf = 0; const queue = () => { if(raf) return; raf = requestAnimationFrame(() => requestAnimationFrame(() => { raf = 0; layout(); })); };
+  new MutationObserver(m => { if(m.some(x => x.type === 'childList' || x.attributeName === 'hidden' || x.attributeName === 'class')) { pageIdx = 0; queue(); } }).observe(days, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class'] });
+  new MutationObserver(queue).observe(view, { attributes:true, attributeFilter:['hidden'] });
+  if(window.ResizeObserver) new ResizeObserver(queue).observe(grid);
+  window.addEventListener('resize', queue); mq.addEventListener ? mq.addEventListener('change', queue) : mq.addListener(queue);
+  queue(); setTimeout(queue, 400);
 })();
 </script>
 </body>
