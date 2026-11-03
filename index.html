@@ -1694,7 +1694,7 @@
     --surface:#141416; --surface-2:#1C1C1F; --bg:#000;
     color:#CECAC0;
   }
-  #dockSheet.is-empty{ padding-top:14px; }
+  #dockSheet.is-empty{ padding-top:0; padding-bottom:calc(86px + env(safe-area-inset-bottom,0px)); }   /* Activity Log: only the tab icons, so the bar hugs them */
   #dockSheet .ds-pane{ display:none; }
   #dockSheet .ds-pane.on{ display:block; }
   #dockSheet .ds-tg{ display:none; }
@@ -1864,6 +1864,8 @@
 <style id="swipe-no-scrollbars">
 /* arrows are gone: Timer/Stopwatch and Today/Matrix change by swiping (dots stay as the indicator) */
 .ct-arrow, .ct-arrow-spacer, .hv-arrow{ display:none !important; }
+/* the date pill above the weekday tabs ("Monday, Nov 2") is removed everywhere */
+.date-display{ display:none !important; }
 /* big page headings ("Today's Productivity", "Matrix Report" + captions) are removed on every screen size */
 .hv-head{ display:none !important; }
 #ctViewport{ touch-action:pan-y; }
@@ -1947,9 +1949,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar{ display:
 <style id="plain-seamless">
 /* ===== Plain & seamless: no LED/LCD blocks, no bezels, scanlines, glows, borders or divider lines anywhere ===== */
 @media (max-width:720px){
+  /* --- top bar: the soft backdrop used to reach 24px below the bar and washed out whatever sat right under it (e.g. the Weekly tabs).
+         It now stays inside the bar's own height, with no blur. --- */
+  html:root #authBar.topnav::after{
+    height:100% !important;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 94%, transparent) 72%, color-mix(in srgb, var(--bg) 0%, transparent) 100%) !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important; -webkit-mask-image:none !important; mask-image:none !important;
+  }
   /* --- bottom bar: content sits straight on the black --- */
   #dockSheet{ padding:18px 22px calc(92px + env(safe-area-inset-bottom,0px)); }
-  #dockSheet.is-empty{ padding-top:14px; }
+  #dockSheet.is-empty{ padding-top:0; padding-bottom:calc(86px + env(safe-area-inset-bottom,0px)); }   /* Activity Log: only the tab icons, so the bar hugs them */
   #dockSheet .hv-stats, #dockSheet .ds-lcd, #dockSheet .matrix-head{
     background:none !important; border:0 !important; box-shadow:none !important; border-radius:0 !important; overflow:visible !important; padding:0 !important;
     -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
@@ -5263,14 +5272,16 @@ function dialEdgeFade(d){
   return Math.max(DIAL_FADE_MIN, 1 - Math.pow(t, 1.5));
 }
 function dialDotsMarkup(){
-  // speaker grille: bigger, calmer dot grid clipped to a clean circle (pitch 12 = ~300 dots instead of ~670)
-  const P=12, N=10, RM=117, CR=61, R_MIN=2.2, R_MAX=4.6; let s='';
-  for(let r=-N;r<=N;r++) for(let c=-N;c<=N;c++){
-    const x=c*P, y=r*P, d=Math.hypot(x,y);
+  // retro speaker grille: dots sit on a 45-degree (diamond) lattice, i.e. staggered rows, so the eye reads diagonal lines
+  // instead of a straight square grid. Nearest-neighbour distance is P (17): about half as many dots as before, each one bigger.
+  const P=17, H=P/Math.SQRT2, M=11, RM=117, CR=61, R_MIN=3.2, R_MAX=6.8; let s='';
+  for(let j=-M;j<=M;j++) for(let i=-M;i<=M;i++){
+    if(((i+j)%2+2)%2) continue;                    // checkerboard = rotated lattice
+    const x=i*H, y=j*H, d=Math.hypot(x,y);
     if(d>RM) continue;
     const core = Math.pow(Math.abs(x),2.6)+Math.pow(Math.abs(y),2.6) <= Math.pow(CR,2.6);
-    const tw = ((c+N)*3+(r+N)*5)%4===0;
-    s += `<circle class="dd${core?' c':''}${tw?' tw':''}" cx="${(140+x).toFixed(1)}" cy="${(140+y).toFixed(1)}" r="${(R_MIN+(R_MAX-R_MIN)*Math.pow(1-d/117,1.2)).toFixed(2)}" data-e="${d.toFixed(1)}" data-c="${core?1:0}" style="opacity:${dialEdgeFade(d).toFixed(2)};transition-delay:${Math.round(d/117*240)}ms;--tw:-${(((c+N)*7+(r+N)*11)%18)/10}s"/>`;
+    const tw = ((i+M)*3+(j+M)*5)%4===0;
+    s += `<circle class="dd${core?' c':''}${tw?' tw':''}" cx="${(140+x).toFixed(1)}" cy="${(140+y).toFixed(1)}" r="${(R_MIN+(R_MAX-R_MIN)*Math.pow(1-d/117,1.2)).toFixed(2)}" data-e="${d.toFixed(1)}" data-c="${core?1:0}" style="opacity:${dialEdgeFade(d).toFixed(2)};transition-delay:${Math.round(d/117*240)}ms;--tw:-${(((i+M)*7+(j+M)*11)%18)/10}s"/>`;
   }
   return s;
 }
@@ -5287,7 +5298,7 @@ function initDialFX(){
     svg.addEventListener('pointermove', e => { DFX.ptr = pt(e); });
     svg.addEventListener('pointerleave', () => { DFX.ptr = null; });
     svg.addEventListener('pointercancel', () => { DFX.ptr = null; });
-    svg.addEventListener('pointerdown', e => { const q = pt(e); DFX.ptr = q; if(!DFX.still) dialPulse(q.x, q.y, 130, 13, .85, 0); });
+    svg.addEventListener('pointerdown', e => { const q = pt(e); DFX.ptr = q; if(!DFX.still) dialPulse(q.x, q.y, 130, 18, .85, 0); });
     if('IntersectionObserver' in window) new IntersectionObserver(es => { DFX.vis = es[es.length-1].isIntersecting; }).observe(svg);
   }
   if(!DFX.run){ DFX.run = true; requestAnimationFrame(dialFXFrame); }
@@ -5307,9 +5318,9 @@ function dialFXFrame(ts){
   const ptr = DFX.ptr;
   for(const el of g.children){
     if(el._d === undefined) continue;
-    let i = DFX.still ? 0 : .5*Math.exp(-Math.pow(el._d - f0, 2)/512);
+    let i = DFX.still ? 0 : .5*Math.exp(-Math.pow(el._d - f0, 2)/980);
     for(const [ox,oy,fr,w,a] of act){ const q = Math.hypot(el._x-ox, el._y-oy) - fr; i += a*Math.exp(-q*q/(2*w*w)); }
-    if(ptr && !DFX.still){ const q = Math.hypot(el._x-ptr.x, el._y-ptr.y); if(q < 44) i += Math.pow(1 - q/44, 2)*.9; }
+    if(ptr && !DFX.still){ const q = Math.hypot(el._x-ptr.x, el._y-ptr.y); if(q < 60) i += Math.pow(1 - q/60, 2)*.9; }
     i = Math.min(1.4, i);
     const op = Math.round(Math.min(1, .8 + .2*(el._t||0) + .3*i)*(el._f ?? 1)*50)/50, rr = Math.round(el._r0*(1 + .36*i)*5)/5;
     if(el._o !== op){ el._o = op; el.style.opacity = op; }
